@@ -1,0 +1,80 @@
+{
+  "name": "updateme",
+  "version": "2.0.1",
+  "private": true,
+  "scripts": {
+    "android": "env PATH=\"/home/linuxbrew/.linuxbrew/opt/openjdk@17/bin:/home/linuxbrew/.linuxbrew/bin:$PATH\" react-native run-android",
+    "ios": "react-native run-ios",
+    "lint": "eslint .",
+    "start": "react-native start",
+    "test": "jest",
+    "build": "rm -rf ./android/app/build;env PATH=\"/home/linuxbrew/.linuxbrew/opt/openjdk@17/bin:/home/linuxbrew/.linuxbrew/bin:$PATH\" react-native build-android --mode=release; cd android && env PATH=\"/home/linuxbrew/.linuxbrew/opt/openjdk@17/bin:/home/linuxbrew/.linuxbrew/bin:$PATH\" ./gradlew assembleRelease"
+  },
+  "dependencies": {
+    "@notifee/react-native": "^7.8.2",
+    "@pchmn/expo-material3-theme": "^1.3.2",
+    "@react-native-clipboard/clipboard": "^1.14.1",
+    "@react-native-community/slider": "^4.5.2",
+    "@react-navigation/material-top-tabs": "^6.6.13",
+    "@react-navigation/native": "^6.1.17",
+    "@react-navigation/stack": "^6.3.29",
+    "deepmerge": "^4.3.1",
+    "expo": "^50.0.0",
+    "react": "18.2.0",
+    "react-native": "0.73.8",
+    "react-native-background-fetch": "^4.2.5",
+    "react-native-blob-util": "^0.19.9",
+    "react-native-color-picker": "^0.6.0",
+    "react-native-drawer-layout": "^3.3.0",
+    "react-native-fast-image": "^8.6.3",
+    "react-native-gesture-handler": "^2.16.2",
+    "react-native-mmkv": "^2.12.2",
+    "react-native-pager-view": "^6.3.3",
+    "react-native-paper": "^5.12.3",
+    "react-native-reanimated": "^3.11.0",
+    "react-native-reanimated-carousel": "^3.5.1",
+    "react-native-safe-area-context": "^4.10.1",
+    "react-native-screens": "^3.31.1",
+    "react-native-share": "^10.2.0",
+    "react-native-svg": "^15.2.0",
+    "react-native-tab-view": "^3.5.2",
+    "react-native-vector-icons": "^10.1.0",
+    "zustand": "^4.5.2"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.20.0",
+    "@babel/preset-env": "^7.20.0",
+    "@babel/runtime": "^7.20.0",
+    "@react-native/babel-preset": "0.73.21",
+    "@react-native/eslint-config": "0.73.2",
+    "@react-native/metro-config": "0.73.5",
+    "@react-native/typescript-config": "0.73.1",
+    "@types/react": "^18.2.6",
+    "@types/react-native-vector-icons": "^6.4.18",
+    "@types/react-native-video": "^5.0.20",
+    "@types/react-test-renderer": "^18.0.0",
+    "babel-jest": "^29.6.3",
+    "babel-plugin-module-resolver": "^5.0.2",
+    "eslint": "^8.19.0",
+    "jest": "^29.6.3",
+    "prettier": "2.8.8",
+    "react-test-renderer": "18.2.0",
+    "typescript": "5.0.4"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "expo": {
+    "autolinking": {
+      "exclude": [
+        "expo-application",
+        "expo-asset",
+        "expo-constants",
+        "expo-file-system",
+        "expo-font",
+        "expo-keep-awake"
+      ]
+    }
+  },
+  "packageManager": "pnpm@9.1.0+sha512.67f5879916a9293e5cf059c23853d571beaf4f753c707f40cb22bed5fb1578c6aad3b6c4107ccb3ba0b35be003eb621a16471ac836c87beb53f9d54bb4612724"
+}

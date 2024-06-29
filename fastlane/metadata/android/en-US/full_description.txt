@@ -1,0 +1,16 @@
+Update Me offers a seamless experience for accessing a vast library of modded apps tailored for Android devices. With features designed to enhance usability and security, you'll find everything you need in one place.
+
+Key Features:
+
+- **Download and Install Modded Apps**: Access a wide range of modded apps with ease, tailored specifically for Android devices.
+- **Multiple Versions and Modders**: Choose your preferred version and modder from various sources to find the perfect modded app for your needs.
+- **Update Notifications**: Stay informed with notifications when updates are available for your selected apps and providers, ensuring you always have the latest features and improvements.
+- **Regularly Updated Library**: Enjoy a constantly refreshed collection of the best and most popular modded apps available online.
+- **Troubleshooting and Advice Tips**: Access troubleshooting and advice tips to help resolve any issues and enhance your app experience.
+- **Suggest Apps to be Featured**: Suggest apps to be featured, helping to expand and improve the app library.
+- **Styled with Material Design**: Experience a modern and intuitive design with Material Design, providing a clean and user-friendly interface.
+- **Built with React Native**: Enjoy a smooth, responsive, and user-friendly interface, thanks to the app being built with React Native.
+- **Virus and Security Checks**: Rest assured that all APKs are thoroughly scanned for viruses and security threats, ensuring safe downloads.
+- **Secure and Licensed**: Licensed under the Apache License 2.0, the app ensures flexibility, security, and reliability for all users.
+
+Experience the best of modded apps with Update Me, designed to provide a secure, intuitive, and continuously updated platform for all your app needs.
