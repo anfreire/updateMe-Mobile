@@ -82,12 +82,20 @@ android {
         versionCode 6
         versionName "2.2.1"
     }
+
+    dependenciesInfo {
+        // Disables dependency metadata when building APKs.
+        includeInApk = false
+        // Disables dependency metadata when building Android App Bundles.
+        includeInBundle = false
+    }
+
 }
 
 dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
-    implementation("com.facebook.react:flipper-integration")
+    implementation("com.facebook.react:flipper-integration:0.73.8")
     implementation project(':react-native-share')
     implementation "androidx.appcompat:appcompat:1.0.0"
 

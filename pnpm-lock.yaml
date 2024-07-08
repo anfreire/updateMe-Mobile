@@ -17,9 +17,15 @@ importers:
       '@react-native-clipboard/clipboard':
         specifier: ^1.14.1
         version: 1.14.1(react-native-macos@0.73.26(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(react-native@0.73.8(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(react@18.2.0))(react@18.2.0))(react-native-windows@0.73.12(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(react-native@0.73.8(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(react@18.2.0))(react@18.2.0))(react-native@0.73.8(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(react@18.2.0))(react@18.2.0)
+      '@react-native-community/cli-platform-android':
+        specifier: ^13.6.9
+        version: 13.6.9
       '@react-native-community/slider':
         specifier: ^4.5.2
         version: 4.5.2
+      '@react-native/gradle-plugin':
+        specifier: ^0.74.85
+        version: 0.74.85
       '@react-navigation/material-top-tabs':
         specifier: ^6.6.13
         version: 6.6.13(@react-navigation/native@6.1.17(react-native@0.73.8(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(react@18.2.0))(react@18.2.0))(react-native-pager-view@6.3.3(react-native@0.73.8(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(react@18.2.0))(react@18.2.0))(react-native-tab-view@3.5.2(react-native-pager-view@6.3.3(react-native@0.73.8(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(react@18.2.0))(react@18.2.0))(react-native@0.73.8(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(react@18.2.0))(react@18.2.0))(react-native@0.73.8(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(react@18.2.0))(react@18.2.0)
@@ -56,6 +62,9 @@ importers:
       react-native-fast-image:
         specifier: ^8.6.3
         version: 8.6.3(react-native@0.73.8(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(react@18.2.0))(react@18.2.0)
+      react-native-flipper:
+        specifier: ^0.212.0
+        version: 0.212.0(react-native@0.73.8(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(react@18.2.0))(react@18.2.0)
       react-native-gesture-handler:
         specifier: ^2.16.2
         version: 2.16.2(react-native@0.73.8(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(react@18.2.0))(react@18.2.0)
@@ -1296,6 +1305,9 @@ packages:
   '@react-native-community/cli-platform-android@12.3.6':
     resolution: {integrity: sha512-DeDDAB8lHpuGIAPXeeD9Qu2+/wDTFPo99c8uSW49L0hkmZJixzvvvffbGQAYk32H0TmaI7rzvzH+qzu7z3891g==}
 
+  '@react-native-community/cli-platform-android@13.6.9':
+    resolution: {integrity: sha512-9KsYGdr08QhdvT3Ht7e8phQB3gDX9Fs427NJe0xnoBh+PDPTI2BD5ks5ttsH8CzEw8/P6H8tJCHq6hf2nxd9cw==}
+
   '@react-native-community/cli-platform-ios@12.3.6':
     resolution: {integrity: sha512-3eZ0jMCkKUO58wzPWlvAPRqezVKm9EPZyaPyHbRPWU8qw7JqkvnRlWIaYDGpjCJgVW4k2hKsEursLtYKb188tg==}
 
@@ -1307,6 +1319,9 @@ packages:
 
   '@react-native-community/cli-tools@12.3.6':
     resolution: {integrity: sha512-FPEvZn19UTMMXUp/piwKZSh8cMEfO8G3KDtOwo53O347GTcwNrKjgZGtLSPELBX2gr+YlzEft3CoRv2Qmo83fQ==}
+
+  '@react-native-community/cli-tools@13.6.9':
+    resolution: {integrity: sha512-OXaSjoN0mZVw3nrAwcY1PC0uMfyTd9fz7Cy06dh+EJc+h0wikABsVRzV8cIOPrVV+PPEEXE0DBrH20T2puZzgQ==}
 
   '@react-native-community/cli-types@12.3.6':
     resolution: {integrity: sha512-xPqTgcUtZowQ8WKOkI9TLGBwH2bGggOC4d2FFaIRST3gTcjrEeGRNeR5aXCzJFIgItIft8sd7p2oKEdy90+01Q==}
@@ -1399,6 +1414,10 @@ packages:
 
   '@react-native/gradle-plugin@0.73.4':
     resolution: {integrity: sha512-PMDnbsZa+tD55Ug+W8CfqXiGoGneSSyrBZCMb5JfiB3AFST3Uj5e6lw8SgI/B6SKZF7lG0BhZ6YHZsRZ5MlXmg==}
+    engines: {node: '>=18'}
+
+  '@react-native/gradle-plugin@0.74.85':
+    resolution: {integrity: sha512-1VQSLukJzaVMn1MYcs8Weo1nUW8xCas2XU1KuoV7OJPk6xPnEBFJmapmEGP5mWeEy7kcTXJmddEgy1wwW0tcig==}
     engines: {node: '>=18'}
 
   '@react-native/js-polyfills@0.73.1':
@@ -4322,6 +4341,12 @@ packages:
       react: ^17 || ^18
       react-native: '>=0.60.0'
 
+  react-native-flipper@0.212.0:
+    resolution: {integrity: sha512-bDRfIgE3v/jjEEdnvGP0T6maDD+bXhDAQ/SZUYTKd/CQ6YIU1c0EF+e0urU62LNMv6XEFQKz226McdddyVhYZA==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0
+      react-native: '>0.62.0'
+
   react-native-gesture-handler@2.16.2:
     resolution: {integrity: sha512-vGFlrDKlmyI+BT+FemqVxmvO7nqxU33cgXVsn6IKAFishvlG3oV2Ds67D5nPkHMea8T+s1IcuMm0bF8ntZtAyg==}
     peerDependencies:
@@ -7080,6 +7105,17 @@ snapshots:
     transitivePeerDependencies:
       - encoding
 
+  '@react-native-community/cli-platform-android@13.6.9':
+    dependencies:
+      '@react-native-community/cli-tools': 13.6.9
+      chalk: 4.1.2
+      execa: 5.1.1
+      fast-glob: 3.3.2
+      fast-xml-parser: 4.3.6
+      logkitty: 0.7.1
+    transitivePeerDependencies:
+      - encoding
+
   '@react-native-community/cli-platform-ios@12.3.6':
     dependencies:
       '@react-native-community/cli-tools': 12.3.6
@@ -7114,6 +7150,22 @@ snapshots:
     dependencies:
       appdirsjs: 1.2.7
       chalk: 4.1.2
+      find-up: 5.0.0
+      mime: 2.6.0
+      node-fetch: 2.7.0
+      open: 6.4.0
+      ora: 5.4.1
+      semver: 7.6.2
+      shell-quote: 1.8.1
+      sudo-prompt: 9.2.1
+    transitivePeerDependencies:
+      - encoding
+
+  '@react-native-community/cli-tools@13.6.9':
+    dependencies:
+      appdirsjs: 1.2.7
+      chalk: 4.1.2
+      execa: 5.1.1
       find-up: 5.0.0
       mime: 2.6.0
       node-fetch: 2.7.0
@@ -7368,6 +7420,8 @@ snapshots:
   '@react-native/eslint-plugin@0.73.1': {}
 
   '@react-native/gradle-plugin@0.73.4': {}
+
+  '@react-native/gradle-plugin@0.74.85': {}
 
   '@react-native/js-polyfills@0.73.1': {}
 
@@ -10892,6 +10946,11 @@ snapshots:
       use-latest-callback: 0.1.9(react@18.2.0)
 
   react-native-fast-image@8.6.3(react-native@0.73.8(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(react@18.2.0))(react@18.2.0):
+    dependencies:
+      react: 18.2.0
+      react-native: 0.73.8(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(react@18.2.0)
+
+  react-native-flipper@0.212.0(react-native@0.73.8(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(react@18.2.0))(react@18.2.0):
     dependencies:
       react: 18.2.0
       react-native: 0.73.8(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(react@18.2.0)
