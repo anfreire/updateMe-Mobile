@@ -20,6 +20,7 @@ const makeAppBannerMessage = (data: bannerData) => {
   for (const key in data) {
     let prefix = '';
     dependencies = data[key as keyof bannerData];
+    if (dependencies.length === 0) continue;
     switch (key) {
       case 'Missing dependencies':
         prefix =
