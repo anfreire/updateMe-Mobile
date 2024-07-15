@@ -3,33 +3,8 @@ import {useSettings} from '@/states/persistent/settings';
 import {useIndex} from '@/states/temporary';
 import {useApp} from '@/states/temporary/app';
 import BackgroundFetch, {HeadlessEvent} from 'react-native-background-fetch';
-import notifee from '@notifee/react-native';
 import {useBackground} from '@/states/persistent/background';
-
-export const sendNotification = (
-  title: string,
-  message: string,
-  type: 'new-release' | 'app-updates',
-) => {
-  notifee
-    .createChannel({
-      id: `updateMe-${type}`,
-      name: `Update Me ${type}`,
-    })
-    .then(channelId => {
-      notifee.displayNotification({
-        title: title,
-        body: message,
-        android: {
-          smallIcon: 'ic_small_icon',
-          channelId,
-          pressAction: {
-            id: 'default',
-          },
-        },
-      });
-    });
-};
+import { sendNotification } from './notifications';
 
 const backgroundCallback = async () => {
   const {background, setBackground} = useBackground.getState();
@@ -78,6 +53,7 @@ const backgroundCallback = async () => {
     sendNotification(title, message, 'app-updates');
   }
 };
+
 export const initBackgroundTasks = async () =>
   await BackgroundFetch.configure(
     {

@@ -81,6 +81,16 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 6
         versionName "2.2.1"
+
+        ndk {
+            abiFilters 'armeabi-v7a', 'arm64-v8a'
+        }
+    }
+
+    applicationVariants.all { variant ->
+        variant.outputs.all {
+            outputFileName = "updateMe.apk"
+        }
     }
 
     dependenciesInfo {
@@ -90,14 +100,14 @@ android {
         includeInBundle = false
     }
 
-    splits {
-        abi {
-            enable true
-            reset()
-            include 'armeabi-v7a', 'arm64-v8a'
-            universalApk true
-        }
-    }
+    // splits {
+    //     abi {
+    //         enable true
+    //         reset()
+    //         include 'armeabi-v7a', 'arm64-v8a'
+    //         universalApk true
+    //     }
+    // }
 
     packagingOptions {
         exclude 'lib/x86/*'

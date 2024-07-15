@@ -15,6 +15,8 @@ import {useSettings} from '@/states/persistent/settings';
 import {useDialogs} from '@/states/temporary/dialogs';
 import {useApp} from '@/states/temporary/app';
 import {useTips} from '@/states/temporary/tips';
+import PermissionsModule from '@/lib/permissions';
+import { initBackgroundTasks } from '@/lib/background';
 
 function App(): React.JSX.Element {
   const theme = useTheme();
@@ -27,6 +29,11 @@ function App(): React.JSX.Element {
   ]);
   const openDialog = useDialogs().openDialog;
   const fetchTips = useTips().fetchTips;
+  const [releaseNotification, updateNotification] = useSettings(state => [
+    state.settings.notifications.newReleaseNotification,
+    state.settings.notifications.updatesNotification,
+  ]);
+    
 
   useEffect(() => {
     if (info.version && localVersion && info.version > localVersion)
@@ -34,6 +41,11 @@ function App(): React.JSX.Element {
   }, [info]);
 
   useEffect(() => {
+    if (releaseNotification || updateNotification) {
+      PermissionsModule.grantPostNotification().then(_ =>
+        initBackgroundTasks(),
+      );
+    }
     const fun = () => deleteOnLeave && FilesModule.deleteAllFiles();
     fun();
     fetchTips();

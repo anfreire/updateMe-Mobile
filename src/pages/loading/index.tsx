@@ -1,6 +1,6 @@
-import {useFocusEffect, useNavigation} from '@react-navigation/native';
+import { useNavigation} from '@react-navigation/native';
 import {View} from 'react-native';
-import React, {useCallback, useEffect} from 'react';
+import React, { useEffect} from 'react';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -12,9 +12,6 @@ import {Path, Svg} from 'react-native-svg';
 import {useIndex} from '@/states/temporary';
 import {useTheme} from '@/theme';
 import {useApp} from '@/states/temporary/app';
-import {initBackgroundTasks, sendNotification} from '@/lib/background';
-import {useSettings} from '@/states/persistent/settings';
-import PermissionsModule from '@/lib/permissions';
 
 const AnimatedSvg = Animated.createAnimatedComponent(Svg);
 const AnimatedPath = Animated.createAnimatedComponent(Path);
@@ -61,10 +58,6 @@ export default function LoadingScreen() {
     state.fetchInfo,
     state.getVersion,
   ]);
-  const [releaseNotification, updateNotification] = useSettings(state => [
-    state.settings.notifications.newReleaseNotification,
-    state.settings.notifications.updatesNotification,
-  ]);
 
   async function fetchData(indexFetched: boolean = false) {
     if (!indexFetched) {
@@ -82,11 +75,6 @@ export default function LoadingScreen() {
   }
 
   useEffect(() => {
-    if (releaseNotification || updateNotification) {
-      PermissionsModule.grantPostNotification().then(_ =>
-        initBackgroundTasks(),
-      );
-    }
     getLocalVersion().then(_ => fetchData());
   }, []);
 

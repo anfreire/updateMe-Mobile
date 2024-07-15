@@ -45,7 +45,7 @@ export default function AppScreen({navigation, route}: any) {
   useScreenCallback({
     repeat: {
       callback: refresh,
-      interval: 2500,
+      interval: 1000,
     },
   });
 

@@ -1,17 +1,20 @@
 {
   "name": "updateme",
-  "version": "2.0.1",
+  "version": "2.2.2",
   "private": true,
   "scripts": {
-    "android": "env PATH=\"/home/linuxbrew/.linuxbrew/opt/openjdk@17/bin:/home/linuxbrew/.linuxbrew/bin:$PATH\" react-native run-android",
+    "android": "env PATH=\"/home/linuxbrew/.linuxbrew/opt/openjdk@17/bin:/home/linuxbrew/.linuxbrew/bin:$PATH\" react-native run-android --active-arch-only",
     "ios": "react-native run-ios",
     "lint": "eslint .",
     "start": "react-native start",
     "test": "jest",
-    "build": "rm -rf ./android/app/build;env PATH=\"/home/linuxbrew/.linuxbrew/opt/openjdk@17/bin:/home/linuxbrew/.linuxbrew/bin:$PATH\" react-native build-android --mode=release; cd android && env PATH=\"/home/linuxbrew/.linuxbrew/opt/openjdk@17/bin:/home/linuxbrew/.linuxbrew/bin:$PATH\" ./gradlew clean assembleRelease"
+    "build-clean": "rm -rf android/app/build; cd android && env PATH=\"/home/linuxbrew/.linuxbrew/opt/openjdk@17/bin:/home/linuxbrew/.linuxbrew/bin:$PATH\" ./gradlew clean",
+    "build-rn": "env PATH=\"/home/linuxbrew/.linuxbrew/opt/openjdk@17/bin:/home/linuxbrew/.linuxbrew/bin:$PATH\" react-native build-android --mode=release",
+    "build-gradle": "cd android && env PATH=\"/home/linuxbrew/.linuxbrew/opt/openjdk@17/bin:/home/linuxbrew/.linuxbrew/bin:$PATH\" ./gradlew assembleRelease",
+    "build": "pnpm run build-clean && pnpm run build-rn && pnpm run build-gradle && rm -rf updateMe.apk; mv /home/anfreire/Documents/Projects/updateMe-Mobile/android/app/build/outputs/apk/release/updateMe.apk /home/anfreire/Documents/Projects/updateMe-Mobile/.",
+    "publish": "/home/anfreire/Documents/Projects/updateMe-Mobile/push_release.sh"
   },
   "dependencies": {
-    "@notifee/react-native": "^7.8.2",
     "@pchmn/expo-material3-theme": "^1.3.2",
     "@react-native-clipboard/clipboard": "^1.14.1",
     "@react-native-community/cli-platform-android": "^13.6.9",
@@ -53,6 +56,7 @@
     "@react-native/metro-config": "0.73.5",
     "@react-native/typescript-config": "0.73.1",
     "@types/react": "^18.2.6",
+    "@types/react-native-push-notification": "^8.1.4",
     "@types/react-native-vector-icons": "^6.4.18",
     "@types/react-native-video": "^5.0.20",
     "@types/react-test-renderer": "^18.0.0",

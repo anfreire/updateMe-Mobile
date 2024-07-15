@@ -16,9 +16,10 @@ const clearedBannerData: bannerData = {
 };
 
 const makeAppBannerMessage = (data: bannerData) => {
-  const dependencies = data['Missing dependencies'];
+  let dependencies: string[] = [];
   for (const key in data) {
     let prefix = '';
+    dependencies = data[key as keyof bannerData];
     switch (key) {
       case 'Missing dependencies':
         prefix =
