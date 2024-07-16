@@ -1,6 +1,6 @@
 {
   "name": "updateme",
-  "version": "2.2.2",
+  "version": "2.2.1",
   "private": true,
   "scripts": {
     "android": "env PATH=\"/home/linuxbrew/.linuxbrew/opt/openjdk@17/bin:/home/linuxbrew/.linuxbrew/bin:$PATH\" react-native run-android --active-arch-only",
@@ -11,7 +11,8 @@
     "build-clean": "rm -rf android/app/build; cd android && env PATH=\"/home/linuxbrew/.linuxbrew/opt/openjdk@17/bin:/home/linuxbrew/.linuxbrew/bin:$PATH\" ./gradlew clean",
     "build-rn": "env PATH=\"/home/linuxbrew/.linuxbrew/opt/openjdk@17/bin:/home/linuxbrew/.linuxbrew/bin:$PATH\" react-native build-android --mode=release",
     "build-gradle": "cd android && env PATH=\"/home/linuxbrew/.linuxbrew/opt/openjdk@17/bin:/home/linuxbrew/.linuxbrew/bin:$PATH\" ./gradlew assembleRelease",
-    "build": "pnpm run build-clean && pnpm run build-rn && pnpm run build-gradle && rm -rf updateMe.apk; mv /home/anfreire/Documents/Projects/updateMe-Mobile/android/app/build/outputs/apk/release/updateMe.apk /home/anfreire/Documents/Projects/updateMe-Mobile/.",
+    "build-sign": "/opt/Android/Sdk/build-tools/34.0.0/apksigner sign --ks android/app/anfreire_key.keystore --ks-key-alias anfreire_key --out updateMe.apk android/app/build/outputs/apk/release/updateMe.apk",
+    "build": "pnpm run build-clean && pnpm run build-rn && pnpm run build-gradle && cd /home/anfreire/Documents/Projects/updateMe-Mobile && pnpm run build-sign",
     "publish": "/home/anfreire/Documents/Projects/updateMe-Mobile/push_release.sh"
   },
   "dependencies": {

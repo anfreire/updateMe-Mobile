@@ -21,9 +21,7 @@
 alt="Get it on GitHub" align="center" height="80" /></a>
 </div>
 
-
 &nbsp;
-
 
 <div align="center">
   <img height="750" alt="Menu" src="https://github.com/anfreire/updateMe-Mobile/blob/master/fastlane/metadata/android/en-US/images/screenshots/screenshot1.jpg?raw=true"/>
@@ -31,7 +29,6 @@ alt="Get it on GitHub" align="center" height="80" /></a>
     <img height="750" alt="Settings" src="https://github.com/anfreire/updateMe-Mobile/blob/master/fastlane/metadata/android/en-US/images/screenshots/screenshot3.jpg?raw=true"/>
     <img height="750" alt="VT" src="https://github.com/anfreire/updateMe-Mobile/blob/master/fastlane/metadata/android/en-US/images/screenshots/screenshot4.jpg?raw=true"/>
 </div>
-
 
 &nbsp;
 
@@ -64,3 +61,21 @@ alt="Get it on GitHub" align="center" height="80" /></a>
 
 <h3 align="center">Secure and Licensed</h3>
 <p align="center">Licensed under the Apache License 2.0, the app ensures flexibility, security, and reliability for all users.</p>
+
+&nbsp;
+
+<h2 align="center">User Permissions</h2>
+<div align="center">
+
+|                 Permission | Description                                                                                                |
+| -------------------------: | ---------------------------------------------------------------------------------------------------------- |
+|                 `INTERNET` | Allows the app to access the internet to fetch updated app repositories.                                   |
+|     `ACCESS_NETWORK_STATE` | Allows the app to check network connectivity status to determine if it can fetch updated app repositories. |
+| `REQUEST_INSTALL_PACKAGES` | Allows the app to request the installation of downloaded APKs when the user decides to install them.       |
+|  `REQUEST_DELETE_PACKAGES` | Allows the app to request the deletion of downloaded APKs when the user decides to delete them.            |
+|       `QUERY_ALL_PACKAGES` | Allows the app to query all installed packages to verify if the app is installed and up-to-date.           |
+|                  `VIBRATE` | Allows the app to vibrate the device when a notification is received.                                      |
+|       `POST_NOTIFICATIONS` | Allows the app to send notifications to the user when updates are available.                               |
+|   `RECEIVE_BOOT_COMPLETED` | Allows the app to detect when the device is restarted to check for updates in the background.              |
+
+</div>
