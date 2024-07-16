@@ -24,10 +24,10 @@ alt="Get it on GitHub" align="center" height="80" /></a>
 &nbsp;
 
 <div align="center">
-  <img height="750" alt="Menu" src="https://github.com/anfreire/updateMe-Mobile/blob/master/fastlane/metadata/android/en-US/images/screenshots/screenshot1.jpg?raw=true"/>
-    <img height="750" alt="App" src="https://github.com/anfreire/updateMe-Mobile/blob/master/fastlane/metadata/android/en-US/images/screenshots/screenshot2.jpg?raw=true"/>
-    <img height="750" alt="Settings" src="https://github.com/anfreire/updateMe-Mobile/blob/master/fastlane/metadata/android/en-US/images/screenshots/screenshot3.jpg?raw=true"/>
-    <img height="750" alt="VT" src="https://github.com/anfreire/updateMe-Mobile/blob/master/fastlane/metadata/android/en-US/images/screenshots/screenshot4.jpg?raw=true"/>
+  <img height="750" alt="Menu" src="https://github.com/anfreire/updateMe-Mobile/blob/master/fastlane/metadata/android/en-US/images/phoneScreenshots/phoneScreenshot1.jpg?raw=true"/>
+    <img height="750" alt="App" src="https://github.com/anfreire/updateMe-Mobile/blob/master/fastlane/metadata/android/en-US/images/phoneScreenshots/phoneScreenshot2.jpg?raw=true"/>
+    <img height="750" alt="Settings" src="https://github.com/anfreire/updateMe-Mobile/blob/master/fastlane/metadata/android/en-US/images/phoneScreenshots/phoneScreenshot3.jpg?raw=true"/>
+    <img height="750" alt="VT" src="https://github.com/anfreire/updateMe-Mobile/blob/master/fastlane/metadata/android/en-US/images/phoneScreenshots/phoneScreenshot4.jpg?raw=true"/>
 </div>
 
 &nbsp;
