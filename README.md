@@ -19,6 +19,9 @@
  <a href="https://github.com/anfreire/updateMe-Mobile/releases">
 <img src="https://user-images.githubusercontent.com/69304392/148696068-0cfea65d-b18f-4685-82b5-329a330b1c0d.png"
 alt="Get it on GitHub" align="center" height="80" /></a>
+ <a href="https://apt.izzysoft.de/packages/com.updateme">
+<img src="https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroid.png"
+alt="Get it on IzzyOnDroid" align="center" height="80" /></a>
 </div>
 
 &nbsp;
