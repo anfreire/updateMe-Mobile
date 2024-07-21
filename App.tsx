@@ -17,6 +17,7 @@ import {useApp} from '@/states/temporary/app';
 import {useTips} from '@/states/temporary/tips';
 import PermissionsModule from '@/lib/permissions';
 import { initBackgroundTasks } from '@/lib/background';
+import { useToken } from '@/states/persistent/token';
 
 function App(): React.JSX.Element {
   const theme = useTheme();
@@ -41,6 +42,7 @@ function App(): React.JSX.Element {
   }, [info]);
 
   useEffect(() => {
+    useToken.getState().init();
     if (releaseNotification || updateNotification) {
       PermissionsModule.grantPostNotification().then(_ =>
         initBackgroundTasks(),

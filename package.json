@@ -12,8 +12,8 @@
     "build-rn": "env PATH=\"/home/linuxbrew/.linuxbrew/opt/openjdk@17/bin:/home/linuxbrew/.linuxbrew/bin:$PATH\" react-native build-android --mode=release",
     "build-gradle": "cd android && env PATH=\"/home/linuxbrew/.linuxbrew/opt/openjdk@17/bin:/home/linuxbrew/.linuxbrew/bin:$PATH\" ./gradlew assembleRelease",
     "build-sign": "/opt/Android/Sdk/build-tools/34.0.0/apksigner sign --ks android/app/anfreire_key.keystore --ks-key-alias anfreire_key --out updateMe.apk android/app/build/outputs/apk/release/updateMe.apk",
-    "build": "pnpm run build-clean && pnpm run build-rn && pnpm run build-gradle && cd /home/anfreire/Documents/Projects/updateMe-Mobile && pnpm run build-sign",
-    "publish": "/home/anfreire/Documents/Projects/updateMe-Mobile/push_release.sh"
+    "build": "pnpm run build-clean && pnpm run build-rn && pnpm run build-gradle && cd /home/anfreire/Documents/Projects/Mobile/updateMe && pnpm run build-sign",
+    "publish": "/home/anfreire/Documents/Projects/Mobile/updateMe/push_release.sh"
   },
   "dependencies": {
     "@pchmn/expo-material3-theme": "^1.3.2",
@@ -84,5 +84,5 @@
       ]
     }
   },
-  "packageManager": "pnpm@9.1.0+sha512.67f5879916a9293e5cf059c23853d571beaf4f753c707f40cb22bed5fb1578c6aad3b6c4107ccb3ba0b35be003eb621a16471ac836c87beb53f9d54bb4612724"
+  "packageManager": "pnpm@9.5.0+sha512.140036830124618d624a2187b50d04289d5a087f326c9edfc0ccd733d76c4f52c3a313d4fc148794a2a9d81553016004e6742e8cf850670268a7387fc220c903"
 }

@@ -1,11 +1,14 @@
 import {Dimensions, View} from 'react-native';
-import {Button, TextInput} from 'react-native-paper';
-import React, {useReducer, useState} from 'react';
+import {Button, Chip, Text, TextInput} from 'react-native-paper';
+import React, {useEffect, useReducer, useState} from 'react';
 import {useFocusEffect} from '@react-navigation/native';
 import {ScrollView} from 'react-native';
 import {useToast} from '@/states/temporary/toast';
 
-type FieldsDataType = Record<string, {label: string; errorMessage: string}>;
+type FieldsDataType = Record<
+  string,
+  {label: string; errorMessage: string; suggestions?: string[]}
+>;
 //------------------------------------------------------
 // TYPES
 interface FieldState {
@@ -54,6 +57,7 @@ const fieldsReducer = (
 
 function Field({
   label,
+  suggestions,
   fieldKey,
   state,
   dispatch,
@@ -63,6 +67,7 @@ function Field({
   scrollViewRef,
 }: {
   label: string;
+  suggestions?: string[];
   fieldKey: string;
   state: FieldState;
   dispatch: React.Dispatch<FieldsAction>;
@@ -73,7 +78,6 @@ function Field({
 }) {
   const [layoutReady, setLayoutReady] = useState(false);
   const viewRef = React.useRef<View>(null);
-
   const onFocused = () => {
     if (layoutReady) {
       viewRef.current?.measureLayout(
@@ -84,6 +88,16 @@ function Field({
       );
     }
   };
+
+  useEffect(() => {
+    if (suggestions?.length) {
+      onFocused();
+      dispatch({
+        type: 'ERROR',
+        value: {field: fieldKey, value: true},
+      });
+    }
+  }, [suggestions]);
 
   return (
     <View
@@ -96,6 +110,7 @@ function Field({
         mode="outlined"
         onFocus={onFocused}
         label={label}
+        disabled={disabled}
         editable={!disabled}
         multiline={numberOfLines > 1}
         numberOfLines={1}
@@ -110,6 +125,33 @@ function Field({
         }}
         error={state.error}
       />
+      {suggestions?.length ? (
+        <View
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexWrap: 'wrap',
+            marginBottom: 10,
+            marginTop: 5,
+            gap: 5,
+          }}>
+          {suggestions.map((suggestion, index) => (
+            <Chip
+              compact
+              onPress={() =>
+                dispatch({
+                  type: 'CHANGE',
+                  value: {field: fieldKey, value: suggestion},
+                })
+              }
+              key={index}>
+              {suggestion}
+            </Chip>
+          ))}
+        </View>
+      ) : null}
     </View>
   );
 }
@@ -158,6 +200,12 @@ export default function FormScreen({
         return;
       }
     }
+    for (const key in state) {
+      dispatch({
+        type: 'ERROR',
+        value: {field: key, value: false},
+      });
+    }
     submit(
       Object.fromEntries(
         Object.entries(state).map(([key, value]) => [key, value.value]),
@@ -197,6 +245,7 @@ export default function FormScreen({
           {Object.entries(fieldsData).map(([key, value]) => (
             <Field
               key={key}
+              suggestions={value.suggestions}
               label={value.label}
               fieldKey={key}
               state={state[key]}

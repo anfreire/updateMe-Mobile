@@ -40,12 +40,14 @@ export default function AppScreen({navigation, route}: any) {
   }));
 
   const refresh = () =>
-    refreshVersions().then(() => refreshCurrApp({index, versions}));
+    refreshVersions().then(() => {
+      refreshCurrApp({index});
+    });
 
   useScreenCallback({
     repeat: {
       callback: refresh,
-      interval: 1000,
+      interval: 2500,
     },
   });
 

@@ -1,7 +1,7 @@
-import FormScreen from "@/components/form";
-import { FormSpree } from "@/lib/formspree";
-import { useFeedback } from "@/states/persistent/feedback";
-import { useToast } from "@/states/temporary/toast";
+import FormScreen from '@/components/form';
+import {useFeedback} from '@/states/persistent/feedback';
+import {useToken} from '@/states/persistent/token';
+import {useToast} from '@/states/temporary/toast';
 
 const FieldsData: Record<string, {label: string; errorMessage: string}> = {
   name: {
@@ -35,15 +35,31 @@ export default function ReportScreen() {
     setDisabled: (value: boolean) => void,
   ) => {
     setDisabled(true);
-    FormSpree.submitForm('reports', data).then(res => {
-      if (res) {
-        registerReport();
-        openToast('Report submitted', 'success');
-      } else {
+    fetch('http://updateme.fortunacasino.store/reports', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        ...data,
+        token: useToken.getState().token,
+      }),
+    })
+      .then(response => {
+        if (response.status === 201) {
+          registerReport();
+          openToast('Report submitted successfully', 'success');
+          return;
+        }
+        response.json().then(data => {
+            openToast(data.message ?? 'Failed to submit report', 'error');
+            setDisabled(false);
+        });
+      })
+      .catch(() => {
         openToast('Failed to submit report', 'error');
         setDisabled(false);
-      }
-    });
+      });
   };
 
   return <FormScreen fieldsData={FieldsData} init={init} submit={submit} />;

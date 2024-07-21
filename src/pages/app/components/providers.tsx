@@ -8,6 +8,7 @@ import {useToast} from '@/states/temporary/toast';
 import {AppScreenChildProps} from '..';
 import ProvidersMenu from './providersMenu';
 import MultiIcon from '@/components/multiIcon';
+import Clipboard from '@react-native-clipboard/clipboard';
 
 export default function AppProvider(props: AppScreenChildProps) {
   const [tableSize, setTableSize] = useState({
@@ -149,9 +150,7 @@ export default function AppProvider(props: AppScreenChildProps) {
                     }}
                     onLongPress={() =>
                       Linking.openURL(
-                        `https://www.virustotal.com/gui/file/${
-                          props.currApp.providers[provider].sha256
-                        }`,
+                        `https://www.virustotal.com/gui/file/${props.currApp.providers[provider].sha256}`,
                       )
                     }
                     onPress={() =>
@@ -166,7 +165,9 @@ export default function AppProvider(props: AppScreenChildProps) {
                       <Icon
                         size={18}
                         source={
-                          props.currApp!.providers[provider].safe ? 'check' : 'close'
+                          props.currApp!.providers[provider].safe
+                            ? 'check'
+                            : 'close'
                         }
                       />
                       <MultiIcon
@@ -187,6 +188,14 @@ export default function AppProvider(props: AppScreenChildProps) {
                       width: tableSize.packageName,
                       justifyContent: 'center',
                     }}
+                    onLongPress={() => {
+                      Clipboard.setString(
+                        props.currApp!.providers[provider].packageName,
+                      );
+                      openToast(
+                        `${provider}'s package name copied to clipboard`,
+                      );
+                    }}
                     onPress={() =>
                       openToast(`Package names are unique app identifiers`)
                     }>
@@ -200,7 +209,13 @@ export default function AppProvider(props: AppScreenChildProps) {
                     }}
                     onPress={() =>
                       openToast(`Versions are different app releases`)
-                    }>
+                    }
+                    onLongPress={() => {
+                      Clipboard.setString(
+                        props.currApp!.providers[provider].version,
+                      );
+                      openToast(`${provider}'s version copied to clipboard`);
+                    }}>
                     {props.currApp!.providers[provider].version}
                   </DataTable.Cell>
                   <DataTable.Cell
