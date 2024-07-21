@@ -35,7 +35,7 @@ export default function ReportScreen() {
     setDisabled: (value: boolean) => void,
   ) => {
     setDisabled(true);
-    fetch('http://updateme.fortunacasino.store/reports', {
+    fetch('https://updateme.fortunacasino.store/reports', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
