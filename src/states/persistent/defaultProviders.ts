@@ -1,4 +1,5 @@
 import {StateStorage, createJSONStorage, persist} from 'zustand/middleware';
+import { IndexProps, useIndex } from '@/states/temporary/index';
 import {MMKV} from 'react-native-mmkv';
 import {create} from 'zustand';
 
@@ -19,11 +20,12 @@ const zustandStorage: StateStorage = {
 export interface useDefaultProvidersProps {
   defaultProviders: Record<string, string>;
   setDefaultProvider: (appName: string, provider: string) => void;
+  sanitize: (index?: IndexProps) => void;
 }
 
 export const useDefaultProviders = create<useDefaultProvidersProps>()(
   persist(
-    set => ({
+    (set, get) => ({
       defaultProviders: {},
       setDefaultProvider: (appName: string, provider: string) => {
         set(state => ({
@@ -33,6 +35,19 @@ export const useDefaultProviders = create<useDefaultProvidersProps>()(
           },
         }));
       },
+      sanitize: (index?: IndexProps) => {
+        index ||= useIndex.getState().index;
+        let filteredProviders: Record<string, string> = {};
+        for (const appName in get().defaultProviders) {
+          if (!(appName in index) || !(get().defaultProviders[appName] in index[appName].providers)) {
+            continue;
+          }
+          filteredProviders[appName] = get().defaultProviders[appName];
+        }
+        if (JSON.stringify(filteredProviders) !== JSON.stringify(get().defaultProviders)) {
+          set({defaultProviders: filteredProviders});
+        }
+      }
     }),
     {
       name: 'default-providers',

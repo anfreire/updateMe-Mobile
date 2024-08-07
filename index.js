@@ -11,19 +11,16 @@ import { ToastWrapper } from "@/global/toast";
 import { DialogsWrapper } from "@/global/dialogs";
 import BackgroundFetch from "react-native-background-fetch";
 import { headlessTask } from "@/lib/background";
-import { ComputedProvider } from "@/providers/computed";
 
 BackgroundFetch.registerHeadlessTask(headlessTask);
 function Root() {
 	return (
 		<ThemeProvider>
-			<ComputedProvider>
-				<ToastWrapper>
-					<DialogsWrapper>
-						<App />
-					</DialogsWrapper>
-				</ToastWrapper>
-			</ComputedProvider>
+			<ToastWrapper>
+				<DialogsWrapper>
+					<App />
+				</DialogsWrapper>
+			</ToastWrapper>
 		</ThemeProvider>
 	);
 }

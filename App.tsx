@@ -1,12 +1,11 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
-
-import React, { useEffect } from "react";
-import { SafeAreaView, StatusBar, View } from "react-native";
+import React, { useEffect, useMemo } from "react";
+import {
+	SafeAreaView,
+	StatusBar,
+	StatusBarStyle,
+	StyleSheet,
+	View,
+} from "react-native";
 import Pages from "@/pages";
 import FilesModule from "@/lib/files";
 import { useTheme } from "@/theme";
@@ -18,6 +17,7 @@ import { useTips } from "@/states/temporary/tips";
 import PermissionsModule from "@/lib/permissions";
 import { initBackgroundTasks } from "@/lib/background";
 import { useToken } from "@/states/persistent/token";
+import { StatesBridgeManager } from "@/states/bridge";
 
 function App(): React.JSX.Element {
 	const theme = useTheme();
@@ -39,7 +39,7 @@ function App(): React.JSX.Element {
 	useEffect(() => {
 		if (localVersion && info.version && info.version > localVersion)
 			openDialog("newVersion");
-	}, [info, localVersion]);
+	}, [info, localVersion, openDialog]);
 
 	useEffect(() => {
 		if (releaseNotification || updateNotification) {
@@ -50,39 +50,48 @@ function App(): React.JSX.Element {
 	}, [releaseNotification, updateNotification]);
 
 	useEffect(() => {
-		initToken();
-		fetchTips();
-		const deleteOnLeaveCallback = () => {
-			if (deleteOnLeave) FilesModule.deleteAllFiles();
-		};
+		initToken(); // Check if the user token exists, if not, it will be initialized
+		fetchTips(); // Fetch tips from the server
 
-		return deleteOnLeaveCallback;
-	}, []);
+		if (deleteOnLeave) FilesModule.deleteAllFiles(); // Clean up files on app enter (In case it didn't clean up on exit)
+
+		return () => {
+			if (deleteOnLeave) FilesModule.deleteAllFiles(); // Clean up files on app exit
+		};
+	}, []); // It must run only at the start and end of the app
+
+	const statusBarProps: {
+		backgroundColor: string;
+		barStyle: StatusBarStyle;
+	} = useMemo(
+		() => ({
+			backgroundColor: theme.schemedTheme.surfaceContainer,
+			barStyle:
+				theme.colorScheme === "dark" ? "light-content" : "dark-content",
+		}),
+		[theme.schemedTheme, theme.colorScheme],
+	);
 
 	return (
 		<>
-			<StatusBar
-				backgroundColor={theme.schemedTheme.surfaceContainer}
-				barStyle={
-					theme.colorScheme === "dark"
-						? "light-content"
-						: "dark-content"
-				}
-			/>
+			<StatusBar {...statusBarProps} />
 			<SafeAreaView>
-				<View
-					style={{
-						width: "100%",
-						height: "100%",
-					}}
-				>
+				<View style={styles.appWrapper}>
 					<DrawerWrapper>
 						<Pages />
 					</DrawerWrapper>
 				</View>
 			</SafeAreaView>
+			<StatesBridgeManager />
 		</>
 	);
 }
+
+const styles = StyleSheet.create({
+	appWrapper: {
+		width: "100%",
+		height: "100%",
+	},
+});
 
 export default App;

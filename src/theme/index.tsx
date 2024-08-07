@@ -1,113 +1,152 @@
+import React, { createContext, useContext, useMemo, useCallback } from "react";
+import { useColorScheme } from "react-native";
 import {
-  Material3Theme,
-  Material3Scheme,
-  useMaterial3Theme,
-} from '@pchmn/expo-material3-theme';
-import {createContext, useContext} from 'react';
-import {useColorScheme} from 'react-native';
+	Material3Theme,
+	Material3Scheme,
+	useMaterial3Theme,
+} from "@pchmn/expo-material3-theme";
 import {
-  MD3DarkTheme,
-  MD3LightTheme,
-  Provider as PaperProvider,
-  ProviderProps,
-} from 'react-native-paper';
-import merge from 'deepmerge';
+	MD3DarkTheme,
+	MD3LightTheme,
+	Provider as PaperProvider,
+	ProviderProps,
+} from "react-native-paper";
 import {
-  NavigationContainer,
-  DarkTheme as NavigationDarkTheme,
-  DefaultTheme as NavigationDefaultTheme,
-} from '@react-navigation/native';
-import {useSettings} from '../states/persistent/settings';
+	NavigationContainer,
+	DarkTheme as NavigationDarkTheme,
+	DefaultTheme as NavigationDefaultTheme,
+} from "@react-navigation/native";
+import merge from "deepmerge";
+import { useSettings } from "@/states/persistent/settings";
 
-export type ColorSchemeType = 'light' | 'dark';
+export type ColorSchemeType = "light" | "dark";
+export type SavedColorSchemeType = "system" | ColorSchemeType;
 
-export type SavedColorSchemeType = 'system' | ColorSchemeType;
-
-export type useThemeProps = {
-  theme: Material3Theme;
-  colorScheme: 'light' | 'dark';
-  schemedTheme: Material3Scheme;
-  sourceColor: string;
-  setSourceColor: (sourceColor: string) => void;
-  setColorScheme: (colorScheme: SavedColorSchemeType) => void;
-  resetSourceColor: () => void;
-  updateTheme: (sourceColor: string) => void;
-  resetTheme: () => void;
+export type UseThemeProps = {
+	theme: Material3Theme;
+	colorScheme: ColorSchemeType;
+	schemedTheme: Material3Scheme;
+	sourceColor: string;
+	setSourceColor: (sourceColor: string) => void;
+	setColorScheme: (colorScheme: SavedColorSchemeType) => void;
+	resetSourceColor: () => void;
+	updateTheme: (sourceColor: string) => void;
+	resetTheme: () => void;
 };
 
-export const ThemeContext = createContext<useThemeProps>({} as useThemeProps);
+const ThemeContext = createContext<UseThemeProps | undefined>(undefined);
 
-export function ThemeProvider({
-  children,
-  fallbackSourceColor,
-  ...otherProps
-}: ProviderProps & {sourceColor?: string; fallbackSourceColor?: string}) {
-  const systemColorScheme = useColorScheme() === 'dark' ? 'dark' : 'light';
-  const {colorScheme: rawColorScheme, sourceColor} = useSettings(state => ({
-    colorScheme: state.settings.theme.colorScheme,
-    sourceColor: state.settings.theme.sourceColor,
-  }));
-  const {setSetting, resetSetting} = useSettings();
-  const {theme, updateTheme, resetTheme} = useMaterial3Theme({
-    sourceColor: sourceColor ?? undefined,
-    fallbackSourceColor,
-  });
+type ThemeProviderProps = ProviderProps & {
+	sourceColor?: string;
+	fallbackSourceColor?: string;
+};
 
-  const colorScheme =
-    rawColorScheme == 'system' ? systemColorScheme : rawColorScheme;
-  const combinedTheme =
-    colorScheme === 'dark'
-      ? merge(NavigationDarkTheme, {
-          ...MD3DarkTheme,
-          colors: theme.dark,
-        })
-      : merge(NavigationDefaultTheme, {
-          ...MD3LightTheme,
-          colors: theme.light,
-        });
+export const ThemeProvider: React.FC<ThemeProviderProps> = ({
+	children,
+	fallbackSourceColor,
+	...otherProps
+}) => {
+	const systemColorScheme = useColorScheme() === "dark" ? "dark" : "light";
+	const { colorScheme: rawColorScheme, sourceColor } = useSettings(
+		(state) => ({
+			colorScheme: state.settings.theme.colorScheme,
+			sourceColor: state.settings.theme.sourceColor,
+		}),
+	);
+	const { setSetting, resetSetting } = useSettings();
+	const { theme, updateTheme, resetTheme } = useMemo(
+		() =>
+			useMaterial3Theme({
+				sourceColor: sourceColor ?? undefined,
+				fallbackSourceColor,
+			}),
+		[sourceColor, fallbackSourceColor],
+	);
 
-  const setSourceColor = (color: string) => {
-    setSetting('theme', 'sourceColor', color);
-    updateTheme(color);
-  };
+	const colorScheme = useMemo(
+		() =>
+			rawColorScheme === "system" ? systemColorScheme : rawColorScheme,
+		[rawColorScheme, systemColorScheme],
+	);
 
-  const setColorScheme = (colorScheme: SavedColorSchemeType) => {
-    setSetting('theme', 'colorScheme', colorScheme);
-  };
+	const combinedTheme = useMemo(
+		() =>
+			colorScheme === "dark"
+				? merge(NavigationDarkTheme, {
+						...MD3DarkTheme,
+						colors: theme.dark,
+					})
+				: merge(NavigationDefaultTheme, {
+						...MD3LightTheme,
+						colors: theme.light,
+					}),
+		[colorScheme, theme],
+	);
 
-  const schemedTheme = theme[colorScheme];
+	const setSourceColor = useCallback(
+		(color: string) => {
+			setSetting("theme", "sourceColor", color);
+			updateTheme(color);
+		},
+		[setSetting, updateTheme],
+	);
 
-  const resetSourceColor = () => {
-    resetTheme();
-    resetSetting('theme', 'sourceColor');
-  };
+	const setColorScheme = useCallback(
+		(newColorScheme: SavedColorSchemeType) => {
+			setSetting("theme", "colorScheme", newColorScheme);
+		},
+		[setSetting],
+	);
 
-  return (
-    <ThemeContext.Provider
-      value={{
-        theme,
-        colorScheme: colorScheme,
-        schemedTheme,
-        sourceColor: schemedTheme.primary,
-        setSourceColor,
-        setColorScheme,
-        resetSourceColor,
-        updateTheme,
-        resetTheme,
-      }}>
-      <PaperProvider theme={combinedTheme} {...otherProps}>
-        <NavigationContainer theme={combinedTheme}>
-          {children}
-        </NavigationContainer>
-      </PaperProvider>
-    </ThemeContext.Provider>
-  );
-}
+	const resetSourceColor = useCallback(() => {
+		resetTheme();
+		resetSetting("theme", "sourceColor");
+	}, [resetTheme, resetSetting]);
 
-export function useTheme() {
-  const context = useContext(ThemeContext);
-  if (!context) {
-    throw new Error('useTheme must be used within a ThemeProvider');
-  }
-  return context;
-}
+	const schemedTheme = useMemo(
+		() => theme[colorScheme],
+		[theme, colorScheme],
+	);
+
+	const contextValue = useMemo(
+		() => ({
+			theme,
+			colorScheme,
+			schemedTheme,
+			sourceColor: schemedTheme.primary,
+			setSourceColor,
+			setColorScheme,
+			resetSourceColor,
+			updateTheme,
+			resetTheme,
+		}),
+		[
+			theme,
+			colorScheme,
+			schemedTheme,
+			setSourceColor,
+			setColorScheme,
+			resetSourceColor,
+			updateTheme,
+			resetTheme,
+		],
+	);
+
+	return (
+		<ThemeContext.Provider value={contextValue}>
+			<PaperProvider theme={combinedTheme} {...otherProps}>
+				<NavigationContainer theme={combinedTheme}>
+					{children}
+				</NavigationContainer>
+			</PaperProvider>
+		</ThemeContext.Provider>
+	);
+};
+
+export const useTheme = (): UseThemeProps => {
+	const context = useContext(ThemeContext);
+	if (!context) {
+		throw new Error("useTheme must be used within a ThemeProvider");
+	}
+	return context;
+};
