@@ -1,86 +1,85 @@
-import {Button, Dialog, Portal, SegmentedButtons} from 'react-native-paper';
-import {useEffect, useState} from 'react';
-import {useDialogsProps} from '@/states/temporary/dialogs';
-import {SavedColorSchemeType, useTheme} from '@/theme';
-import MultiIcon from '@/components/multiIcon';
-import { useSettings } from '@/states/persistent/settings';
+import React, { useEffect, useState, useCallback } from "react";
+import { Button, Dialog, Portal, SegmentedButtons } from "react-native-paper";
+import { useDialogsProps } from "@/states/temporary/dialogs";
+import { SavedColorSchemeType, useTheme } from "@/theme";
+import MultiIcon from "@/components/multiIcon";
+import { useSettings } from "@/states/persistent/settings";
+import { IconProps } from "react-native-paper/lib/typescript/components/MaterialCommunityIcon";
+import { IconSource } from "react-native-paper/lib/typescript/components/Icon";
+
+const colorSchemeOptions = [
+	{
+		label: "System",
+		value: "system",
+		icon: ((props: IconProps) => (
+			<MultiIcon {...props} type="material-icons" name="memory" />
+		)) as IconSource,
+	},
+	{
+		label: "Light",
+		value: "light",
+		icon: ((props: IconProps) => (
+			<MultiIcon {...props} type="material-icons" name="light-mode" />
+		)) as IconSource,
+	},
+	{
+		label: "Dark",
+		value: "dark",
+		icon: ((props: IconProps) => (
+			<MultiIcon {...props} type="material-icons" name="dark-mode" />
+		)) as IconSource,
+	},
+];
 
 export default function ColorSchemePickerDialog({
-  activeDialog,
-  defaultDialogProps,
-  openDialog,
-  closeDialog,
+	activeDialog,
+	closeDialog,
 }: useDialogsProps) {
-  const [savedColorScheme, setSavedColorScheme] =
-    useState<SavedColorSchemeType>('system');
-  const colorScheme = useSettings(state => state.settings.theme.colorScheme);
-  const theme = useTheme();
+	const colorScheme = useSettings(
+		(state) => state.settings.theme.colorScheme,
+	);
+	const theme = useTheme();
+	const [savedColorScheme, setSavedColorScheme] = useState(colorScheme);
 
-  useEffect(() => {
-    if (activeDialog === 'colorSchemePicker') {
-      setSavedColorScheme(colorScheme);
-    }
-  }, [activeDialog]);
+	useEffect(() => {
+		if (activeDialog === "colorSchemePicker") {
+			setSavedColorScheme(colorScheme);
+		}
+	}, [activeDialog, colorScheme]);
 
-  return (
-    <Portal>
-      <Dialog
-        dismissable={false}
-        dismissableBackButton={false}
-        visible={activeDialog === 'colorSchemePicker'}
-        onDismiss={closeDialog}>
-        <Dialog.Title>Color Scheme</Dialog.Title>
-        <Dialog.Content>
-          <SegmentedButtons
-            style={{marginVertical: 15}}
-            value={colorScheme}
-            onValueChange={value =>
-              theme.setColorScheme(value as SavedColorSchemeType)
-            }
-            buttons={[
-              {
-                label: 'System',
-                value: 'system',
-                icon: props => (
-                  <MultiIcon {...props} type="material-icons" name="memory" />
-                ),
-              },
-              {
-                label: 'Light',
-                value: 'light',
-                icon: props => (
-                  <MultiIcon
-                    {...props}
-                    type="material-icons"
-                    name="light-mode"
-                  />
-                ),
-              },
-              {
-                label: 'Dark',
-                value: 'dark',
-                icon: props => (
-                  <MultiIcon
-                    {...props}
-                    type="material-icons"
-                    name="dark-mode"
-                  />
-                ),
-              },
-            ]}
-          />
-        </Dialog.Content>
-        <Dialog.Actions style={{justifyContent: 'space-between'}}>
-          <Button
-            onPress={() => {
-              theme.setColorScheme(savedColorScheme);
-              closeDialog();
-            }}>
-            Revert
-          </Button>
-          <Button onPress={closeDialog}>Apply</Button>
-        </Dialog.Actions>
-      </Dialog>
-    </Portal>
-  );
+	const handleColorSchemeChange = useCallback(
+		(value: SavedColorSchemeType) => {
+			theme.setColorScheme(value);
+		},
+		[theme],
+	);
+
+	const handleRevert = useCallback(() => {
+		theme.setColorScheme(savedColorScheme);
+		closeDialog();
+	}, [theme, savedColorScheme, closeDialog]);
+
+	if (activeDialog !== "colorSchemePicker") return null;
+
+	return (
+		<Portal>
+			<Dialog visible onDismiss={closeDialog}>
+				<Dialog.Title>Color Scheme</Dialog.Title>
+				<Dialog.Content>
+					<SegmentedButtons
+						style={{ marginVertical: 15 }}
+						value={colorScheme}
+						onValueChange={
+							handleColorSchemeChange as (value: string) => void
+						}
+						buttons={colorSchemeOptions}
+					/>
+				</Dialog.Content>
+				<Dialog.Actions style={{ justifyContent: "space-between" }}>
+					<Button onPress={handleRevert}>Revert</Button>
+					<Button onPress={closeDialog}>Apply</Button>
+				</Dialog.Actions>
+			</Dialog>
+		</Portal>
+	);
 }

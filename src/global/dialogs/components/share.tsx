@@ -1,62 +1,69 @@
-import {Image} from 'react-native';
-import {Button, Dialog, Portal} from 'react-native-paper';
-import {Dimensions} from 'react-native';
-import {Share as RNShare} from 'react-native';
-import {useDialogsProps} from '@/states/temporary/dialogs';
-import {useApp} from '@/states/temporary/app';
+import React, { useCallback, useMemo } from "react";
+import { Image, StyleSheet, Dimensions } from "react-native";
+import { Button, Dialog, Portal } from "react-native-paper";
+import { Share } from "react-native";
+import { useDialogsProps } from "@/states/temporary/dialogs";
+import { useApp } from "@/states/temporary/app";
 
-const qrcode = require('@assets/QRCODE.png');
+const QRCODE_RELEASES = require("@assets/QRCODE.png");
+
+const { width } = Dimensions.get("window");
+const QR_CODE_SIZE = width * 0.55;
 
 export default function ShareDialog({
-  activeDialog,
-  defaultDialogProps,
-  openDialog,
-  closeDialog,
+	activeDialog,
+	closeDialog,
 }: useDialogsProps) {
-  const info = useApp(state => state.info);
-  const share = () => {
-    RNShare.share(
-      {
-        message: info.download,
-        title: 'UpdateMe Download Link',
-      },
-      {
-        dialogTitle: 'UpdateMe Download Link',
-      },
-    );
-  };
-  return (
-    <Portal>
-      <Dialog
-        style={{position: 'relative'}}
-        visible={activeDialog === 'share'}
-        onDismiss={closeDialog}>
-        <Dialog.Title>Share</Dialog.Title>
-        <Dialog.Content
-          style={{
-            alignItems: 'center',
-            justifyContent: 'center',
-            display: 'flex',
-            marginTop: 20,
-            marginBottom: 20,
-            gap: 20,
-          }}>
-          <Image
-            source={qrcode}
-            resizeMode="contain"
-            style={{
-              height: Dimensions.get('window').width * 0.55,
-              width: Dimensions.get('window').width * 0.55,
-            }}
-          />
-          <Button mode="contained-tonal" onPress={share}>
-            Share the download link
-          </Button>
-        </Dialog.Content>
-        <Dialog.Actions>
-          <Button onPress={closeDialog}>Done</Button>
-        </Dialog.Actions>
-      </Dialog>
-    </Portal>
-  );
+	const info = useApp((state) => state.info);
+
+	const handleShare = useCallback(() => {
+		Share.share(
+			{ message: info.download, title: "UpdateMe Download Link" },
+			{ dialogTitle: "UpdateMe Download Link" },
+		);
+	}, [info.download]);
+
+	const isVisible = useMemo(() => activeDialog === "share", [activeDialog]);
+
+	return (
+		<Portal>
+			<Dialog
+				visible={isVisible}
+				onDismiss={closeDialog}
+				style={styles.dialog}
+			>
+				<Dialog.Title>Share</Dialog.Title>
+				<Dialog.Content style={styles.content}>
+					<Image
+						source={QRCODE_RELEASES}
+						resizeMode="contain"
+						style={styles.qrCode}
+					/>
+					<Button mode="contained-tonal" onPress={handleShare}>
+						Share the download link
+					</Button>
+				</Dialog.Content>
+				<Dialog.Actions>
+					<Button onPress={closeDialog}>Done</Button>
+				</Dialog.Actions>
+			</Dialog>
+		</Portal>
+	);
 }
+
+const styles = StyleSheet.create({
+	dialog: {
+		position: "relative",
+	},
+	content: {
+		alignItems: "center",
+		justifyContent: "center",
+		display: "flex",
+		marginVertical: 20,
+		gap: 20,
+	},
+	qrCode: {
+		height: QR_CODE_SIZE,
+		width: QR_CODE_SIZE,
+	},
+});

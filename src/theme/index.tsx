@@ -69,18 +69,21 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
 		[rawColorScheme, systemColorScheme],
 	);
 
-	const combinedTheme = useMemo(
-		() =>
-			colorScheme === "dark"
-				? merge(NavigationDarkTheme, {
-						...MD3DarkTheme,
-						colors: theme.dark,
-					})
-				: merge(NavigationDefaultTheme, {
-						...MD3LightTheme,
-						colors: theme.light,
-					}),
-		[colorScheme, theme],
+	const derivedThemes = useMemo(
+		() => ({
+			combinedTheme:
+				colorScheme === "dark"
+					? merge(NavigationDarkTheme, {
+							...MD3DarkTheme,
+							colors: theme.dark,
+						})
+					: merge(NavigationDefaultTheme, {
+							...MD3LightTheme,
+							colors: theme.light,
+						}),
+			schemedTheme: theme[colorScheme],
+		}),
+		[theme, colorScheme],
 	);
 
 	const setSourceColor = useCallback(
@@ -103,17 +106,12 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
 		resetSetting("theme", "sourceColor");
 	}, [resetTheme, resetSetting]);
 
-	const schemedTheme = useMemo(
-		() => theme[colorScheme],
-		[theme, colorScheme],
-	);
-
 	const contextValue = useMemo(
 		() => ({
 			theme,
 			colorScheme,
-			schemedTheme,
-			sourceColor: schemedTheme.primary,
+			schemedTheme: derivedThemes.schemedTheme,
+			sourceColor: derivedThemes.schemedTheme.primary,
 			setSourceColor,
 			setColorScheme,
 			resetSourceColor,
@@ -123,7 +121,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
 		[
 			theme,
 			colorScheme,
-			schemedTheme,
+			derivedThemes,
 			setSourceColor,
 			setColorScheme,
 			resetSourceColor,
@@ -134,8 +132,8 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
 
 	return (
 		<ThemeContext.Provider value={contextValue}>
-			<PaperProvider theme={combinedTheme} {...otherProps}>
-				<NavigationContainer theme={combinedTheme}>
+			<PaperProvider theme={derivedThemes.combinedTheme} {...otherProps}>
+				<NavigationContainer theme={derivedThemes.combinedTheme}>
 					{children}
 				</NavigationContainer>
 			</PaperProvider>
