@@ -26,28 +26,26 @@ export default function ShareDialog({
 	const isVisible = useMemo(() => activeDialog === "share", [activeDialog]);
 
 	return (
-		<Portal>
-			<Dialog
-				visible={isVisible}
-				onDismiss={closeDialog}
-				style={styles.dialog}
-			>
-				<Dialog.Title>Share</Dialog.Title>
-				<Dialog.Content style={styles.content}>
-					<Image
-						source={QRCODE_RELEASES}
-						resizeMode="contain"
-						style={styles.qrCode}
-					/>
-					<Button mode="contained-tonal" onPress={handleShare}>
-						Share the download link
-					</Button>
-				</Dialog.Content>
-				<Dialog.Actions>
-					<Button onPress={closeDialog}>Done</Button>
-				</Dialog.Actions>
-			</Dialog>
-		</Portal>
+		<Dialog
+			visible={isVisible}
+			onDismiss={closeDialog}
+			style={styles.dialog}
+		>
+			<Dialog.Title>Share</Dialog.Title>
+			<Dialog.Content style={styles.content}>
+				<Image
+					source={QRCODE_RELEASES}
+					resizeMode="contain"
+					style={styles.qrCode}
+				/>
+				<Button mode="contained-tonal" onPress={handleShare}>
+					Share the download link
+				</Button>
+			</Dialog.Content>
+			<Dialog.Actions>
+				<Button onPress={closeDialog}>Done</Button>
+			</Dialog.Actions>
+		</Dialog>
 	);
 }
 

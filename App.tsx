@@ -82,7 +82,6 @@ function App(): React.JSX.Element {
 					</DrawerWrapper>
 				</View>
 			</SafeAreaView>
-			<StatesBridgeManager />
 		</>
 	);
 }
