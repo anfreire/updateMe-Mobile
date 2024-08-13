@@ -17,7 +17,6 @@ import { useTips } from "@/states/temporary/tips";
 import PermissionsModule from "@/lib/permissions";
 import { initBackgroundTasks } from "@/lib/background";
 import { useToken } from "@/states/persistent/token";
-import { StatesBridgeManager } from "@/states/bridge";
 
 function App(): React.JSX.Element {
 	const theme = useTheme();

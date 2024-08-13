@@ -11,6 +11,8 @@ import BackgroundFetch from "react-native-background-fetch";
 import { headlessTask } from "@/lib/background";
 import { Toast } from "@/global/toast";
 import { Dialogs } from "@/global/dialogs";
+import { StatesBridgeManager } from "@/states/bridge";
+import { BackgroundProcessManager } from "@/states/backgroundProcess";
 
 BackgroundFetch.registerHeadlessTask(headlessTask);
 function Root() {
@@ -19,6 +21,8 @@ function Root() {
 			<Toast />
 			<Dialogs />
 			<App />
+			<StatesBridgeManager />
+			<BackgroundProcessManager />
 		</ThemeProvider>
 	);
 }

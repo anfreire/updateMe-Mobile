@@ -1,8 +1,8 @@
 import { useCallback, useEffect } from "react";
-import { useDefaultProviders } from "./persistent/defaultProviders";
-import { useIndex } from "./temporary";
-import { useVersions } from "./computed/versions";
-import { useCurrApp } from "./computed/currApp";
+import { useDefaultProviders } from "@/states/persistent/defaultProviders";
+import { useIndex } from "@/states/temporary";
+import { useVersions } from "@/states/computed/versions";
+import { useCurrApp } from "@/states/computed/currApp";
 
 function useStatesBridge() {
 	const index = useIndex((state) => state.index);
