@@ -15,7 +15,7 @@ import { useDialogs } from "@/states/temporary/dialogs";
 import { useApp } from "@/states/temporary/app";
 import { useTips } from "@/states/temporary/tips";
 import PermissionsModule from "@/lib/permissions";
-import { initBackgroundTasks } from "@/lib/background";
+import BackgroundTasksModule from "@/lib/backgroundTasks";
 import { useToken } from "@/states/persistent/token";
 
 function App(): React.JSX.Element {
@@ -43,7 +43,7 @@ function App(): React.JSX.Element {
 	useEffect(() => {
 		if (releaseNotification || updateNotification) {
 			PermissionsModule.grantPostNotification().then((_) =>
-				initBackgroundTasks(),
+				BackgroundTasksModule.initBackgroundTasks(),
 			);
 		}
 	}, [releaseNotification, updateNotification]);

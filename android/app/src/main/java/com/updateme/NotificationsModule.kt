@@ -41,22 +41,37 @@ class NotificationsModule(reactContext: ReactApplicationContext) : ReactContextB
         }
     }
 
-
     @ReactMethod
     fun sendNotification(channelId: String, title: String, message: String, promise: Promise) {
         try {
-            val notificationBuilder = NotificationCompat.Builder(reactApplicationContext, channelId)
+            val context = reactApplicationContext
+            val packageName = context.packageName
+            val mainIntent = context.packageManager.getLaunchIntentForPackage(packageName)?.apply {
+                addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            }
+
+            val pendingIntent = mainIntent?.let { intent ->
+                android.app.TaskStackBuilder.create(context).run {
+                    addNextIntentWithParentStack(intent)
+                    getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+                }
+            }
+
+            val notificationBuilder = NotificationCompat.Builder(context, channelId)
                 .setContentTitle(title)
                 .setContentText(message)
                 .setSmallIcon(R.mipmap.ic_small_icon)
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setAutoCancel(true)
+                .setContentIntent(pendingIntent)
+                .setDefaults(NotificationCompat.DEFAULT_ALL)
 
-            val notificationManager = reactApplicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             val notificationId = System.currentTimeMillis().toInt()
             notificationManager.notify(notificationId, notificationBuilder.build())
             promise.resolve(notificationId)
         } catch (e: Exception) {
-            promise.reject("NOTIFICATION_ERROR", e.message)
+            promise.reject("NOTIFICATION_ERROR", "Failed to send notification: ${e.message}", e)
         }
     }
 }

@@ -31,10 +31,8 @@ const createCurrApp = (
 		Logger.error(`App "${appName}" not found in index`);
 		return null;
 	}
-
 	const defaultProvider =
 		defaultProviders[appName] || Object.keys(index[appName].providers)[0];
-
 	return {
 		...index[appName],
 		name: appName,
@@ -50,13 +48,11 @@ export const useCurrApp = create<useCurrAppProps>((set, get) => ({
 			set({ currApp: null });
 			return;
 		}
-
 		const newCurrApp = createCurrApp(appName, {
 			index,
 			defaultProviders,
 			versions,
 		});
-
 		if (newCurrApp) {
 			set({ currApp: newCurrApp });
 		}
@@ -64,13 +60,11 @@ export const useCurrApp = create<useCurrAppProps>((set, get) => ({
 	refresh: ({ index, defaultProviders, versions }) => {
 		const currApp = get().currApp;
 		if (currApp === null) return;
-
 		const newCurrApp = createCurrApp(currApp.name, {
 			index,
 			defaultProviders,
 			versions,
 		});
-
 		if (
 			newCurrApp &&
 			JSON.stringify(currApp) !== JSON.stringify(newCurrApp)

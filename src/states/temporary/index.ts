@@ -1,10 +1,10 @@
 import { create } from "zustand";
-import { useVersions } from "../computed/versions";
+import { Logger } from "../persistent/logs";
 
 const INDEX_URL =
-	"https://raw.githubusercontent.com/anfreire/updateMe-Data/main/index.json";
+	"https://raw.githubusercontent.com/anfreire/updateMe-Data/main/index.json" as const;
 const CATEGORIES_URL =
-	"https://raw.githubusercontent.com/anfreire/updateMe-Data/main/categories.json";
+	"https://raw.githubusercontent.com/anfreire/updateMe-Data/main/categories.json" as const;
 
 export interface AppProviderProps {
 	packageName: string;
@@ -59,6 +59,7 @@ export const useIndex = create<useIndexProps>((set, get) => ({
 				set({ index });
 			return index;
 		} catch (error) {
+			Logger.error(`Error fetching index: ${error}`);
 			return null;
 		}
 	},
@@ -70,6 +71,7 @@ export const useIndex = create<useIndexProps>((set, get) => ({
 				set({ categories });
 			return categories;
 		} catch (error) {
+			Logger.error(`Error fetching categories: ${error}`);
 			return null;
 		}
 	},

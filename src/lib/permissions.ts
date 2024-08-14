@@ -1,55 +1,30 @@
-import {PermissionsAndroid, NativeModules} from 'react-native';
+import { PermissionsAndroid, NativeModules, Permission } from "react-native";
 
 namespace PermissionsModule {
-  export async function grantPostNotification(): Promise<boolean> {
-    const granted = await PermissionsAndroid.check(
-      PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS,
-    );
-    if (!granted) {
-      await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS,
-      );
-    }
-    return await PermissionsAndroid.check(
-      PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS,
-    );
-  }
+	async function grantAndroidPermission(
+		permission: Permission,
+	): Promise<boolean> {
+		const granted = await PermissionsAndroid.check(permission);
+		if (!granted) {
+			const result = await PermissionsAndroid.request(permission);
+			return result === PermissionsAndroid.RESULTS.GRANTED;
+		}
+		return granted;
+	}
 
-  export async function grantUnknownSource(): Promise<boolean> {
-    const granted = await NativeModules.AppsModule.checkUnknownSource();
-    if (!granted) {
-      NativeModules.AppsModule.requestUnknownSource();
-    }
-    return await NativeModules.AppsModule.checkUnknownSource();
-  }
+	export const grantPostNotification = () =>
+		grantAndroidPermission(
+			PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS,
+		);
 
-  export async function grantWritePermission(): Promise<boolean> {
-    const granted = await PermissionsAndroid.check(
-      PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-    );
-    if (!granted) {
-      await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-      );
-    }
-    return await PermissionsAndroid.check(
-      PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-    );
-  }
-
-  export async function grantReadPermission(): Promise<boolean> {
-    const granted = await PermissionsAndroid.check(
-      PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
-    );
-    if (!granted) {
-      await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
-      );
-    }
-    return await PermissionsAndroid.check(
-      PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
-    );
-  }
+	export async function grantUnknownSource(): Promise<boolean> {
+		const granted = await NativeModules.AppsModule.checkUnknownSource();
+		if (!granted) {
+			await NativeModules.AppsModule.requestUnknownSource();
+			return await NativeModules.AppsModule.checkUnknownSource();
+		}
+		return granted;
+	}
 }
 
 export default PermissionsModule;

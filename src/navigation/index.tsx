@@ -9,7 +9,7 @@ import ReportScreen from './report';
 import UpdatesScreen from './updates';
 import AppScreen from './app';
 import {useNavigation} from '@react-navigation/native';
-import TipsScreen from './tips';
+import TipsScreen from './tips/stack';
 import SuggestScreen from './suggest';
 import React from 'react';
 import TipScreen from './tips/tip';

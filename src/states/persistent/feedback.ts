@@ -2,21 +2,16 @@ import { StateStorage, createJSONStorage, persist } from "zustand/middleware";
 import { MMKV } from "react-native-mmkv";
 import { create } from "zustand";
 
-const ONE_DAY_MS = 24 * 60 * 60 * 1000;
+const ONE_DAY_MS = 86400000 as const;
 
-interface FeedbackState {
+export interface useFeedbackProps {
 	lastReport: number | null;
 	lastSuggestion: number | null;
-}
-
-interface FeedbackActions {
 	registerReport: () => void;
 	registerSuggestion: () => void;
 	didReport: () => boolean;
 	didSuggest: () => boolean;
 }
-
-type FeedbackStore = FeedbackState & FeedbackActions;
 
 const storage = new MMKV({ id: "feedback" });
 
@@ -31,7 +26,7 @@ const isWithinOneDay = (timestamp: number | null): boolean => {
 	return Date.now() - timestamp < ONE_DAY_MS;
 };
 
-export const useFeedback = create<FeedbackStore>()(
+export const useFeedback = create<useFeedbackProps>()(
 	persist(
 		(set, get) => ({
 			lastReport: null,

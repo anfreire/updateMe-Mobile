@@ -1,92 +1,132 @@
-import FilesModule from '../../lib/files';
-import {create} from 'zustand';
-import {useSettings} from '../persistent/settings';
+import FilesModule from "../../lib/files";
+import { create } from "zustand";
+import { useSettings } from "../persistent/settings";
 import ReactNativeBlobUtil, {
-  FetchBlobResponse,
-  StatefulPromise,
-} from 'react-native-blob-util';
+	FetchBlobResponse,
+	StatefulPromise,
+} from "react-native-blob-util";
+import { Logger } from "../persistent/logs";
 
-export type DownloadsState = Record<
-  string,
-  {
-    task: StatefulPromise<FetchBlobResponse>;
-    progress: number;
-  }
->;
+type DownloadStatus = "pending" | "downloading" | "completed" | "error";
 
-export interface useDownloadsProps {
-  downloads: DownloadsState;
-  addDownload: (
-    fileName: string,
-    url: string,
-    onProgress?: (progress: number) => void,
-    onFinished?: (path: string) => void,
-  ) => Promise<void>;
-  cancelDownload: (fileName: string) => void;
+interface Download {
+	progress: number;
+	status: DownloadStatus;
+	task?: StatefulPromise<FetchBlobResponse>;
 }
 
-export const useDownloads = create<useDownloadsProps>((set, get) => ({
-  downloads: {},
-  addDownload: async (
-    fileName: string,
-    url: string,
-    onProgress = (progress: number) => {},
-    onFinished = (path: string) => {},
-  ) => {
-    const path = FilesModule.correctPath(fileName);
-    try {
-      if (await ReactNativeBlobUtil.fs.exists(path))
-        await ReactNativeBlobUtil.fs.unlink(path);
-    } catch {}
-    const task = ReactNativeBlobUtil.config({
-      addAndroidDownloads: {
-        useDownloadManager: true,
-        notification: true,
-        title: fileName,
-        path,
-        mediaScannable: true,
-      },
-    })
-      .fetch('GET', url, {})
-      .progress((received, total) => {
-        const progress = parseFloat(received) / parseFloat(total);
-        set(prev => ({
-          downloads: {
-            ...prev.downloads,
-            [fileName]: {task, progress},
-          },
-        }));
-        onProgress(progress);
-      });
-    task.then(path => {
-      set(prev => {
-        const {[fileName]: _, ...rest} = prev.downloads;
-        return {downloads: rest};
-      });
-      onFinished(path.path());
-      const installAfter =
-        useSettings.getState().settings.downloads.installAfterDownload;
-      if (installAfter) {
-        FilesModule.installApk(path.path());
-      }
-    });
-    task.catch(_ => {});
-    set(prev => ({
-      downloads: {
-        ...prev.downloads,
-        [fileName]: {task, progress: 0},
-      },
-    }));
-  },
-  cancelDownload: (fileName: string) => {
-    const downloads = get().downloads;
-    if (downloads[fileName]) {
-      try {
-        downloads[fileName].task.cancel();
-      } catch {}
-      FilesModule.deleteFile(fileName);
-      const {[fileName]: _, ...rest} = downloads;
-      set({downloads: rest});
-    }
-  },
+export interface UseDownloadsStore {
+	downloads: Record<string, Download>;
+	addDownload: (
+		fileName: string,
+		url: string,
+		onProgress?: (progress: number) => void,
+		onFinished?: (path: string) => void,
+	) => Promise<void>;
+	removeDownload: (fileName: string) => void;
+	cancelDownload: (fileName: string) => void;
+}
+
+export const useDownloads = create<UseDownloadsStore>((set, get) => ({
+	downloads: {},
+	addDownload: async (
+		fileName: string,
+		url: string,
+		onProgress = (_: number) => {},
+		onFinished = (_: string) => {},
+	) => {
+		const path = FilesModule.correctPath(fileName);
+
+		set((state) => ({
+			downloads: {
+				...state.downloads,
+				[fileName]: { progress: 0, status: "pending" },
+			},
+		}));
+
+		try {
+			await ReactNativeBlobUtil.fs.unlink(path).catch(() => {});
+
+			const task = ReactNativeBlobUtil.config({
+				addAndroidDownloads: {
+					useDownloadManager: true,
+					notification: true,
+					title: fileName,
+					path,
+					mediaScannable: true,
+				},
+			})
+				.fetch("GET", url, {})
+				.progress((received, total) => {
+					const progress = parseFloat(received) / parseFloat(total);
+					set((state) => ({
+						downloads: {
+							...state.downloads,
+							[fileName]: {
+								...state.downloads[fileName],
+								progress,
+								status: "downloading",
+							},
+						},
+					}));
+					onProgress(progress);
+				});
+
+			set((state) => ({
+				downloads: {
+					...state.downloads,
+					[fileName]: { ...state.downloads[fileName], task },
+				},
+			}));
+
+			const result = await task;
+			get().removeDownload(fileName);
+			onFinished(result.path());
+
+			if (
+				useSettings.getState().settings.downloads.installAfterDownload
+			) {
+				await FilesModule.installApk(result.path());
+			}
+
+			set((state) => ({
+				downloads: {
+					...state.downloads,
+					[fileName]: {
+						...state.downloads[fileName],
+						status: "completed",
+					},
+				},
+			}));
+		} catch (error) {
+			Logger.error(`Error downloading file ${fileName}: ${error}`);
+			set((state) => ({
+				downloads: {
+					...state.downloads,
+					[fileName]: {
+						...state.downloads[fileName],
+						status: "error",
+					},
+				},
+			}));
+		}
+	},
+	removeDownload: (fileName: string) => {
+		set((state) => {
+			const { [fileName]: _, ...restDownloads } = state.downloads;
+			return { downloads: restDownloads };
+		});
+	},
+	cancelDownload: (fileName: string) => {
+		const download = get().downloads[fileName];
+		if (download?.task) {
+			try {
+				download.task.cancel();
+			} catch (error) {
+				Logger.error(`Error cancelling download ${fileName}: ${error}`);
+			}
+			get().removeDownload(fileName);
+			FilesModule.deleteFile(fileName);
+		}
+	},
 }));

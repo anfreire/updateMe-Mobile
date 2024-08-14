@@ -12,8 +12,8 @@ const Pages = [
 	"tip",
 	"updates",
 ] as const;
-export type SessionCurrPage = (typeof Pages)[number];
-const INITIAL_PAGE: SessionCurrPage = "loading";
+export type Page = (typeof Pages)[number];
+const INITIAL_PAGE: Page = "loading";
 
 export interface SessionFlags {
 	downloadsOpenedDrawer: boolean;
@@ -32,10 +32,10 @@ const INITIAL_TRACKERS: SessionTrackers = {
 };
 
 export interface useSessionProps {
-	currPage: SessionCurrPage;
+	currPage: Page;
 	flags: SessionFlags;
 	trackers: SessionTrackers;
-	setCurrPage: (page: SessionCurrPage) => void;
+	setCurrPage: (page: Page) => void;
 	activateFlag: (key: SessionFlagsKeys) => void;
 	addTracker: (key: SessionTrackersKeys, value: string) => void;
 }

@@ -14,7 +14,7 @@ export interface useLogsProps {
 	logs: LogEntry[];
 	addLog: (level: LogEntry["level"], message: string) => void;
 	clearLogs: () => void;
-	exportLogs: () => string;
+	exportLogs: () => string[];
 }
 
 const storage = new MMKV({ id: "logs" });
@@ -52,13 +52,10 @@ export const useLogs = create<useLogsProps>()(
 			clearLogs: () => set({ logs: [] }),
 
 			exportLogs: () => {
-				const logs = get().logs;
-				return logs
-					.map(
-						(log) =>
-							`${log.timestamp} [${log.level.toUpperCase()}] ${log.message}`,
-					)
-					.join("\n");
+				return get().logs.map(
+					(log) =>
+						`${log.timestamp} [${log.level.toUpperCase()}] ${log.message}`,
+				);
 			},
 		}),
 		{

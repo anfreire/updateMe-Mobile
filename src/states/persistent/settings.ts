@@ -75,7 +75,14 @@ export interface useSettingsProps {
 	>(
 		key: T,
 		item: K,
-		value?: SettingsSectionItemValueType<T>,
+		value: SettingsSectionItemValueType<T>,
+	) => void;
+	toggleSetting: <
+		T extends SettingsSectionType,
+		K extends SettingsSectionItemType<T>,
+	>(
+		key: T,
+		item: K,
 	) => void;
 	resetSetting: <
 		T extends SettingsSectionType,
@@ -96,15 +103,29 @@ export const useSettings = create<useSettingsProps>()(
 			>(
 				key: T,
 				item: K,
-				value?: SettingsSectionItemValueType<T>,
+				value: SettingsSectionItemValueType<T>,
 			) => {
-				if (value === undefined) {
-					value = !(DEFAULT_SETTINGS[key][item] as boolean) as any;
-				}
 				set({
 					settings: {
 						...get().settings,
 						[key]: { ...get().settings[key], [item]: value },
+					},
+				});
+			},
+			toggleSetting: <
+				T extends SettingsSectionType,
+				K extends SettingsSectionItemType<T>,
+			>(
+				key: T,
+				item: K,
+			) => {
+				set({
+					settings: {
+						...get().settings,
+						[key]: {
+							...get().settings[key],
+							[item]: !get().settings[key][item],
+						},
 					},
 				});
 			},

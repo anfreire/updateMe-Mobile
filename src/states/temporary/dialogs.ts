@@ -23,10 +23,17 @@ export type useDialogsProps = {
 	closeDialog: () => void;
 };
 
-export const useDialogs = create<useDialogsProps>((set) => ({
+export const useDialogs = create<useDialogsProps>((set, get) => ({
 	activeDialog: null,
 	defaultDialogProps: null,
 	openDialog: (key) => {
+		if (
+			(typeof key === "string" && get().activeDialog === key) ||
+			(typeof key !== "string" &&
+				JSON.stringify(get().defaultDialogProps) ===
+					JSON.stringify(key))
+		)
+			return;
 		set(() => {
 			if (typeof key === "string" && DIALOGS.includes(key)) {
 				return {
