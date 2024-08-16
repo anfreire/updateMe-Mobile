@@ -1,12 +1,17 @@
 import { Button, Dialog, Text } from "react-native-paper";
-import { useDialogsProps } from "@/states/temporary/dialogs";
+import { useDialogs } from "@/states/temporary/dialogs";
 import { useCallback } from "react";
+import { useShallow } from "zustand/react/shallow";
 
-export default function DefaultDialog({
-	activeDialog,
-	defaultDialogProps,
-	closeDialog,
-}: useDialogsProps) {
+export default function DefaultDialog() {
+	const [activeDialog, closeDialog, defaultDialogProps] = useDialogs(
+		useShallow((state) => [
+			state.activeDialog,
+			state.closeDialog,
+			state.defaultDialogProps,
+		]),
+	);
+
 	const handleActionPress = useCallback(
 		(action: () => void) => {
 			action();
@@ -20,7 +25,7 @@ export default function DefaultDialog({
 	}
 
 	return (
-		<Dialog visible={activeDialog === "default"} onDismiss={closeDialog}>
+		<Dialog visible onDismiss={closeDialog}>
 			<Dialog.Title>{defaultDialogProps?.title}</Dialog.Title>
 			<Dialog.Content>
 				<Text variant="bodyMedium">{defaultDialogProps?.content}</Text>

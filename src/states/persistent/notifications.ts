@@ -35,7 +35,7 @@ export const useNotifications = create<useNotificationsProps>()(
 			},
 		}),
 		{
-			name: "default-providers",
+			name: "notifications",
 			storage: createJSONStorage(() => zustandStorage),
 		},
 	),

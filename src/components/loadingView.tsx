@@ -3,7 +3,7 @@ import { useTheme } from "@/theme";
 import { ActivityIndicator } from "react-native-paper";
 
 export default function LoadingView() {
-	const sourceColor = useTheme().sourceColor;
+	const { sourceColor } = useTheme();
 	return (
 		<View style={styles.screen}>
 			<ActivityIndicator size="large" color={sourceColor} />

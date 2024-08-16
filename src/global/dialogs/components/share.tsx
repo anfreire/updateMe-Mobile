@@ -23,14 +23,10 @@ export default function ShareDialog({
 		);
 	}, [info.download]);
 
-	const isVisible = useMemo(() => activeDialog === "share", [activeDialog]);
+	if (activeDialog !== "share") return null;
 
 	return (
-		<Dialog
-			visible={isVisible}
-			onDismiss={closeDialog}
-			style={styles.dialog}
-		>
+		<Dialog visible onDismiss={closeDialog} style={styles.dialog}>
 			<Dialog.Title>Share</Dialog.Title>
 			<Dialog.Content style={styles.content}>
 				<Image

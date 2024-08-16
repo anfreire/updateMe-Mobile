@@ -1,18 +1,20 @@
 import { Button, Dialog, SegmentedButtons, Text } from "react-native-paper";
 import { useCallback, useEffect, useState } from "react";
-import { useDialogsProps } from "@/states/temporary/dialogs";
-import { useNavigation } from "@react-navigation/native";
+import { useDialogs } from "@/states/temporary/dialogs";
 import Slider from "@react-native-community/slider";
 import { StyleSheet, View } from "react-native";
-import { useSettings } from "@/states/persistent/settings";
+import { SettingsProps, useSettings } from "@/states/persistent/settings";
 import { useTheme } from "@/theme";
-import MultiIcon from "@/components/multiIcon";
+import MultiIcon, { MultiIconType } from "@/components/multiIcon";
 import { IconProps } from "react-native-paper/lib/typescript/components/MaterialCommunityIcon";
 import { IconSource } from "react-native-paper/lib/typescript/components/Icon";
+import { useShallow } from "zustand/react/shallow";
+import { useSilentNavigate } from "@/hooks/navigation";
+import { useTranslations } from "@/states/persistent/translations";
 
-type HomeLayoutType = "categories" | "list" | "grid";
+type HomeLayoutType = SettingsProps["layout"]["homeStyle"];
 
-const buttons = [
+const Buttons: { value: HomeLayoutType; icon: IconSource }[] = [
 	{
 		value: "categories",
 		icon: ((props: IconProps & { color: string }) => (
@@ -46,21 +48,27 @@ const buttons = [
 			/>
 		)) as IconSource,
 	},
-];
+] as const;
 
-export default function HomeLayoutPickerDialog({
-	activeDialog,
-	closeDialog,
-}: useDialogsProps) {
-	const { layout, setSetting } = useSettings((state) => ({
-		layout: state.settings.layout.homeStyle,
-		setSetting: state.setSetting,
-	}));
+export default function HomeLayoutPickerDialog() {
+	const [activeDialog, closeDialog] = useDialogs(
+		useShallow((state) => [state.activeDialog, state.closeDialog]),
+	);
+	const [layout, setSetting] = useSettings(
+		useShallow((state) => [
+			state.settings.layout.homeStyle,
+			state.setSetting,
+		]),
+	);
+	const translations = useTranslations();
+
+	const { schemedTheme } = useTheme();
+
+	const navigate = useSilentNavigate();
+
 	const [previousLayout, setPreviousLayout] =
 		useState<HomeLayoutType>(layout);
 	const [opacity, setOpacity] = useState(1);
-	const { navigate } = useNavigation();
-	const { schemedTheme } = useTheme();
 
 	useEffect(() => {
 		if (activeDialog === "homeLayoutPicker") {
@@ -78,25 +86,25 @@ export default function HomeLayoutPickerDialog({
 	const handleCancel = useCallback(() => {
 		setSetting("layout", "homeStyle", previousLayout);
 		closeDialog();
-		navigate("Settings" as never);
+		navigate("settings");
 	}, [setSetting, previousLayout, closeDialog, navigate]);
 
 	const handleApply = useCallback(() => {
 		closeDialog();
-		navigate("Settings" as never);
+		navigate("settings");
 	}, [closeDialog, navigate]);
 
 	if (activeDialog !== "homeLayoutPicker") return null;
 
 	return (
-		<Dialog visible={true} onDismiss={closeDialog} style={{ opacity }}>
-			<Dialog.Title>Layout</Dialog.Title>
+		<Dialog visible onDismiss={closeDialog} style={{ opacity }}>
+			<Dialog.Title>{translations["Layout"]}</Dialog.Title>
 			<Dialog.Content style={styles.content}>
 				<SegmentedButtons
 					style={styles.segmentedButtons}
 					value={layout}
 					onValueChange={handleLayoutChange}
-					buttons={buttons}
+					buttons={Buttons}
 				/>
 				<View
 					style={[
@@ -124,13 +132,13 @@ export default function HomeLayoutPickerDialog({
 							{ color: schemedTheme.onSecondaryContainer },
 						]}
 					>
-						Opacity
+						{translations["Opacity"]}
 					</Text>
 				</View>
 			</Dialog.Content>
 			<Dialog.Actions style={styles.actions}>
-				<Button onPress={handleCancel}>Cancel</Button>
-				<Button onPress={handleApply}>Apply</Button>
+				<Button onPress={handleCancel}>{translations["Cancel"]}</Button>
+				<Button onPress={handleApply}>{translations["Save"]}</Button>
 			</Dialog.Actions>
 		</Dialog>
 	);

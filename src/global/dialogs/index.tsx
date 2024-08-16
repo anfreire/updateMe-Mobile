@@ -18,18 +18,7 @@ const DialogComponents = {
 };
 
 export function Dialogs() {
-	const [activeDialog, defaultDialogProps, openDialog, closeDialog] =
-		useDialogs((state) => [
-			state.activeDialog,
-			state.defaultDialogProps,
-			state.openDialog,
-			state.closeDialog,
-		]);
-
-	const dialogProps = useMemo(
-		() => ({ activeDialog, defaultDialogProps, openDialog, closeDialog }),
-		[activeDialog, defaultDialogProps, openDialog, closeDialog],
-	);
+	const activeDialog = useDialogs((state) => state.activeDialog);
 
 	const ActiveDialog = useMemo(() => {
 		return activeDialog ? DialogComponents[activeDialog] : null;
@@ -41,7 +30,7 @@ export function Dialogs() {
 
 	return (
 		<Portal>
-			<ActiveDialog {...dialogProps} />
+			<ActiveDialog />
 		</Portal>
 	);
 }

@@ -28,7 +28,7 @@ export default function FormScreen({
 			]),
 		),
 	);
-	const { openToast } = useToast();
+	const openToast = useToast((state) => state.openToast);
 	const screenHeight = Dimensions.get("screen").height;
 
 	useFocusEffect(

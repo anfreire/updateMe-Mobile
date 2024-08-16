@@ -5,17 +5,21 @@ import { ColorPicker, fromHsv, toHsv } from "react-native-color-picker";
 import { HsvColor } from "react-native-color-picker/dist/typeHelpers";
 import { useTheme } from "@/theme";
 import { useToast } from "@/states/temporary/toast";
-import { useDialogsProps } from "@/states/temporary/dialogs";
+import { useDialogs } from "@/states/temporary/dialogs";
+import { useTranslations } from "@/states/persistent/translations";
+import { useShallow } from "zustand/react/shallow";
 
-export default function SourceColorPickerDialog({
-	activeDialog,
-	closeDialog,
-}: useDialogsProps) {
+export default function SourceColorPickerDialog() {
 	const { sourceColor, setSourceColor, resetSourceColor } = useTheme();
-	const [openToast, closeToast] = useToast((state) => [
-		state.openToast,
-		state.closeToast,
-	]);
+
+	const [activeDialog, closeDialog] = useDialogs(
+		useShallow((state) => [state.activeDialog, state.closeDialog]),
+	);
+	const [openToast, closeToast] = useToast(
+		useShallow((state) => [state.openToast, state.closeToast]),
+	);
+	const translations = useTranslations();
+
 	const [oldColor, setOldColor] = useState("");
 	const [activeColor, setActiveColor] = useState<HsvColor>({
 		h: 0,
@@ -30,8 +34,8 @@ export default function SourceColorPickerDialog({
 	}, [closeDialog, closeToast]);
 
 	const handleInfoPress = useCallback(() => {
-		openToast("Tap on the middle circle to test the color");
-	}, [openToast]);
+		openToast(translations["Tap on the middle circle to test the color"]);
+	}, [openToast, translations]);
 
 	const handleCancel = useCallback(() => {
 		setSourceColor(oldColor);
@@ -58,13 +62,17 @@ export default function SourceColorPickerDialog({
 	if (activeDialog !== "sourceColorPicker") return null;
 
 	return (
-		<Dialog visible={true} onDismiss={handleClose} style={styles.dialog}>
+		<Dialog
+			visible
+			onDismiss={handleClose}
+			style={styles.dialog}
+		>
 			<IconButton
 				icon="information"
 				onPress={handleInfoPress}
 				style={styles.infoButton}
 			/>
-			<Dialog.Title>Source Color</Dialog.Title>
+			<Dialog.Title>{translations["Source Color"]}</Dialog.Title>
 			<Dialog.Content style={styles.content}>
 				<ColorPicker
 					color={activeColor}
@@ -76,9 +84,11 @@ export default function SourceColorPickerDialog({
 				/>
 			</Dialog.Content>
 			<Dialog.Actions style={styles.actions}>
-				<Button onPress={handleCancel}>Cancel</Button>
-				<Button onPress={handleUseSystem}>Use System</Button>
-				<Button onPress={handleSave}>Save</Button>
+				<Button onPress={handleCancel}>{translations["Cancel"]}</Button>
+				<Button onPress={handleUseSystem}>
+					{translations["Use System"]}
+				</Button>
+				<Button onPress={handleSave}>{translations["Save"]}</Button>
 			</Dialog.Actions>
 		</Dialog>
 	);

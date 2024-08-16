@@ -39,7 +39,7 @@ export const useToken = create<useToken>()(
       },
     }),
     {
-      name: 'default-providers',
+      name: 'token',
       storage: createJSONStorage(() => zustandStorage),
     },
   ),

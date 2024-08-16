@@ -12,6 +12,8 @@ import Animated, {
 	withTiming,
 } from "react-native-reanimated";
 import { useTheme } from "@/theme";
+import { useShallow } from "zustand/react/shallow";
+import { useTranslations } from "@/states/persistent/translations";
 
 const renderCarouselItem: CarouselRenderItem<{
 	title: string;
@@ -31,38 +33,33 @@ export default function NewVersionDialog({
 	activeDialog,
 	closeDialog,
 }: useDialogsProps) {
-	const [progress, setProgress] = useState(0);
-	const info = useApp((state) => state.info);
-	const progressHeight = useSharedValue(0);
+	const info = useApp(useShallow((state) => state.info));
+	const translations = useTranslations();
+
 	const { schemedTheme } = useTheme();
 
-	const update = useCallback(async () => {
+	const [progress, setProgress] = useState(0);
+	const progressHeight = useSharedValue(0);
+
+	const handleUpdate = useCallback(async () => {
 		progressHeight.value = withTiming(10, { duration: 500 });
-		const path = FilesModule.correctPath("updateme.apk");
-		try {
-			if (await ReactNativeBlobUtil.fs.exists(path)) {
-				await ReactNativeBlobUtil.fs.unlink(path);
-			}
-		} catch {}
-		ReactNativeBlobUtil.config({
-			fileCache: true,
-			path,
-		})
-			.fetch("GET", info.download, {})
-			.progress((received, total) => {
-				setProgress(parseFloat(received) / parseFloat(total));
-			})
-			.then((res) => {
-				setProgress(1);
-				FilesModule.installApk(res.path());
-				progressHeight.value = withTiming(0, { duration: 500 });
-				setTimeout(() => {
-					setProgress(0);
-				}, 500);
-			});
+		setProgress(0);
+		const fileName = `UpdateMe_v${info.version}.apk`;
+		const path = FilesModule.buildAbsolutePath(fileName);
+		await ReactNativeBlobUtil.fs.unlink(path).catch(() => {});
+		FilesModule.downloadFile(info.download, fileName, path, (progress) => {
+			setProgress(progress);
+		}).then((res) => {
+			setProgress(1);
+			FilesModule.installApk(res.path());
+			progressHeight.value = withTiming(0, { duration: 500 });
+			setTimeout(() => {
+				setProgress(0);
+			}, 500);
+		});
 	}, [info.download, progressHeight]);
 
-	const handleManualDownload = useCallback(() => {
+	const handleManualUpdate = useCallback(() => {
 		Linking.openURL(info.download);
 	}, [info.download]);
 
@@ -73,16 +70,20 @@ export default function NewVersionDialog({
 		overflow: "hidden",
 	}));
 
-	const carouselData = useMemo(
-		() => info.releaseNotes ?? [],
-		[info.releaseNotes],
+	const title = useMemo(
+		() =>
+			translations["Update Me v%s is available!"].replace(
+				"%s",
+				info.version,
+			),
+		[info.version, translations],
 	);
 
 	if (activeDialog !== "newVersion") return null;
 
 	return (
-		<Dialog visible={true} onDismiss={closeDialog} style={styles.dialog}>
-			<Dialog.Title>{`Update Me v${info.version} is available!`}</Dialog.Title>
+		<Dialog visible onDismiss={closeDialog} style={styles.dialog}>
+			<Dialog.Title>{title}</Dialog.Title>
 			<Dialog.Content style={styles.content}>
 				<View style={styles.carouselContainer}>
 					<Carousel
@@ -91,7 +92,7 @@ export default function NewVersionDialog({
 						loop
 						autoPlay={true}
 						autoPlayInterval={4000}
-						data={carouselData}
+						data={info.releaseNotes}
 						renderItem={renderCarouselItem}
 					/>
 					<Animated.View style={progressBarStyle}>
@@ -104,10 +105,10 @@ export default function NewVersionDialog({
 				</View>
 			</Dialog.Content>
 			<Dialog.Actions style={styles.actions}>
-				<Button onPress={handleManualDownload}>
-					Download manually
+				<Button onPress={handleManualUpdate}>
+					{translations["Download manually"]}
 				</Button>
-				<Button onPress={update}>Update</Button>
+				<Button onPress={handleUpdate}>{translations["Update"]}</Button>
 			</Dialog.Actions>
 		</Dialog>
 	);

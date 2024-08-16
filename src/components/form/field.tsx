@@ -1,4 +1,4 @@
-import React, { useCallback, useRef } from "react";
+import React, { useCallback, useMemo, useRef } from "react";
 import { StyleSheet, View } from "react-native";
 import { Chip, TextInput } from "react-native-paper";
 import { ScrollView } from "react-native";
@@ -49,6 +49,15 @@ export default function Field({
 		);
 	}, [scrollTo, scrollViewRef]);
 
+	const multilineProps = useMemo(
+		() => ({
+			multiline: numberOfLines > 1,
+			maxLength: numberOfLines > 1 ? 100 : 100,
+			minHeight: numberOfLines > 1 ? 150 : undefined,
+		}),
+		[numberOfLines],
+	);
+
 	return (
 		<View style={syles.wrapper} ref={viewRef}>
 			<TextInput
@@ -57,15 +66,12 @@ export default function Field({
 				label={label}
 				disabled={disabled}
 				editable={!disabled}
-				multiline={numberOfLines > 1}
+				multiline={multilineProps.multiline}
 				numberOfLines={1}
-				maxLength={numberOfLines > 1 ? 100 : 100}
+				maxLength={multilineProps.maxLength}
 				value={value}
 				onChangeText={(text) => onChange(fieldKey, text)}
-				style={[
-					syles.input,
-					{ minHeight: numberOfLines > 1 ? 150 : undefined },
-				]}
+				style={[syles.input, { minHeight: multilineProps.minHeight }]}
 				error={error}
 			/>
 			{suggestions?.length ? (
