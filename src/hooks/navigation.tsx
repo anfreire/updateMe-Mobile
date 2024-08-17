@@ -1,20 +1,13 @@
+import { MainStackParams } from "@/navigation";
+import { HomeStackParams } from "@/navigation/apps";
+import { TipsStackParams } from "@/navigation/tips";
+import { useCurrApp } from "@/states/computed/currApp";
 import { useSession, Page } from "@/states/temporary/session";
+import { useTips } from "@/states/temporary/tips";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { useCallback } from "react";
-import { useShallow } from "zustand/react/shallow";
 
-interface PageParams {
-  app: undefined;
-  downloads: undefined;
-  home: undefined;
-  loading: undefined;
-  report: undefined;
-  settings: undefined;
-  suggest: undefined;
-  tip: undefined;
-  tips: undefined;
-  updates: undefined;
-}
+type PageParams = HomeStackParams & MainStackParams & TipsStackParams;
 
 const PREVIOUS_ROUTES: Record<Page, Page | null> = {
   app: "home",
@@ -59,10 +52,14 @@ export function useGoBack() {
     state.currPage,
     state.setCurrPage,
   ]);
+  const setCurrTip = useTips((state) => state.setCurrTip);
+  const clearCurrApp = useCurrApp((state) => state.clearCurrApp);
 
   return useCallback(() => {
     const prevPage = PREVIOUS_ROUTES[currPage];
     if (!prevPage) return;
+    if (prevPage === "tips") setCurrTip(null);
+    if (prevPage === "app") clearCurrApp();
     navigation.goBack();
     setCurrPage(prevPage);
   }, [navigation.navigate, currPage]);

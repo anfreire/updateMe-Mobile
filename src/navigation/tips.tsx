@@ -6,59 +6,70 @@ import TipsScreen from "@/pages/tips";
 import TipScreen from "@/pages/tips/tip";
 import { useCallback, useMemo } from "react";
 import { Page, useSession } from "@/states/temporary/session";
+import { useGoBack } from "@/hooks/navigation";
 
-const Stack = createStackNavigator();
+export const TipsStackPages = ["tips", "tip"] as const;
 
-function TipsStack({ navigation }: { navigation: any }) {
-	const theme = useTheme();
-	const currTip = useTips((state) => state.currTip);
-	const setCurrPage = useSession((state) => state.setCurrPage);
+export type TipsStackPage = (typeof TipsStackPages)[number];
 
-	const headerLeft = useCallback(
-		(page: Page) => (
-			<IconButton
-				icon="arrow-left"
-				onPress={() => {
-					setCurrPage(page);
-					navigation.goBack();
-				}}
-			/>
-		),
-		[navigation],
-	);
+export type TipsStackParams = {
+  tips: undefined;
+  tip: undefined;
+};
 
-	const themeOptions = useMemo(
-		() => ({
-			headerStyle: {
-				backgroundColor: theme.schemedTheme.surfaceContainer,
-			},
-			headerTitleStyle: {
-				color: theme.schemedTheme.onSurface,
-			},
-		}),
-		[theme.schemedTheme],
-	);
+const Stack = createStackNavigator<TipsStackParams>();
 
-	return (
-		<Stack.Navigator initialRouteName="tips" id="tips-stack">
-			<Stack.Screen
-				name="tips"
-				options={{
-					headerTitle: "Tips",
-					headerLeft: (_) => headerLeft("home"),
-					...themeOptions,
-				}}
-				component={TipsScreen}
-			/>
-			<Stack.Screen
-				name="tip"
-				options={{
-					headerTitle: currTip ?? "",
-					headerLeft: (_) => headerLeft("tips"),
-					...themeOptions,
-				}}
-				component={TipScreen}
-			/>
-		</Stack.Navigator>
-	);
+export default function TipsStack() {
+  const { schemedTheme } = useTheme();
+  const currTip = useTips((state) => state.currTip);
+  const setCurrPage = useSession((state) => state.setCurrPage);
+  const goBack = useGoBack();
+
+  const headerLeft = useCallback(
+    (page: Page) => (
+      <IconButton
+        icon="arrow-left"
+        onPress={() => {
+          setCurrPage(page);
+          goBack();
+        }}
+      />
+    ),
+    [goBack]
+  );
+
+  const themeOptions = useMemo(
+    () => ({
+      headerStyle: {
+        backgroundColor: schemedTheme.surfaceContainer,
+      },
+      headerTitleStyle: {
+        color: schemedTheme.onSurface,
+      },
+    }),
+    [schemedTheme]
+  );
+
+  return (
+    <Stack.Navigator initialRouteName="tips" id="tips-stack">
+      <Stack.Screen
+        name="tips"
+        options={{
+          headerTitle: "Tips",
+          headerLeft: (_) => headerLeft("home"),
+          ...themeOptions,
+        }}
+        component={TipsScreen}
+      />
+      <Stack.Screen
+        name="tip"
+        options={{
+          headerTitle: currTip ?? "",
+          headerLeft: (_) => headerLeft("tips"),
+          ...themeOptions,
+        }}
+        component={TipScreen}
+      />
+    </Stack.Navigator>
+  );
 }

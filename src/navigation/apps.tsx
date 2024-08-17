@@ -1,46 +1,60 @@
-function HomeStack({navigation}: {navigation: any}) {
-    const theme = useTheme();
-    const openDrawer = useDrawer().openDrawer;
-    const {currApp, setCurrApp} = useCurrApp(state => ({
-      currApp: state.currApp,
-      setCurrApp: state.setCurrApp,
-    }));
-    return (
-      <Stack.Navigator initialRouteName="Home" id="home-tab-navigator">
-        <Stack.Screen
-          name="Home-Home"
-          options={{
-            headerStyle: {
-              backgroundColor: theme.schemedTheme.surfaceContainer,
-            },
-            headerTitle: _ => <HomeLogo />,
-            headerRight: buildDrawerButton(openDrawer),
-          }}
-          component={HomeScreen}
-        />
-        <Stack.Screen
-          name="App-Home"
-          options={{
-            headerStyle: {
-              backgroundColor: theme.schemedTheme.surfaceContainer,
-            },
-            headerTitleStyle: {
-              color: theme.schemedTheme.onSurface,
-            },
-            headerTitle: currApp?.name ?? '',
-            headerLeft: _ => (
-              <IconButton
-                icon="arrow-left"
-                onPress={() => {
-                  setCurrApp(null);
-                  navigation.goBack();
-                }}
-              />
-            ),
-            headerRight: buildDrawerButton(openDrawer),
-          }}
-          component={AppScreen}
-        />
-      </Stack.Navigator>
-    );
-  }
+import { useGoBack } from "@/hooks/navigation";
+import AppScreen from "@/pages/app";
+import HomeScreen from "@/pages/home";
+import HomeLogo from "@/pages/home/components/logo";
+import { useCurrApp } from "@/states/computed/currApp";
+import { useDrawer } from "@/states/temporary/drawer";
+import { useTheme } from "@/theme";
+import { createStackNavigator } from "@react-navigation/stack";
+import { useCallback } from "react";
+import { IconButton } from "react-native-paper";
+
+export const HomeStackPages = ["app", "home"] as const;
+
+export type HomeStackPage = (typeof HomeStackPages)[number];
+
+export type HomeStackParams = {
+  app: undefined;
+  home: undefined;
+};
+
+const Stack = createStackNavigator<HomeStackParams>();
+
+export default function HomeStack() {
+  const { schemedTheme } = useTheme();
+  const openDrawer = useDrawer((state) => state.openDrawer);
+  const currApp = useCurrApp((state) => state.currApp);
+
+  const goBack = useGoBack();
+
+  return (
+    <Stack.Navigator initialRouteName="home" id="home-stack">
+      <Stack.Screen
+        name="home"
+        options={{
+          headerStyle: {
+            backgroundColor: schemedTheme.surfaceContainer,
+          },
+          headerTitle: (_) => <HomeLogo />,
+          headerRight: () => <IconButton icon="menu" onPress={openDrawer} />,
+        }}
+        component={HomeScreen}
+      />
+      <Stack.Screen
+        name="app"
+        options={{
+          headerStyle: {
+            backgroundColor: schemedTheme.surfaceContainer,
+          },
+          headerTitleStyle: {
+            color: schemedTheme.onSurface,
+          },
+          headerTitle: currApp?.name ?? "",
+          headerLeft: (_) => <IconButton icon="arrow-left" onPress={goBack} />,
+          headerRight: () => <IconButton icon="menu" onPress={openDrawer} />,
+        }}
+        component={AppScreen}
+      />
+    </Stack.Navigator>
+  );
+}

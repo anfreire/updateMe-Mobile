@@ -16,10 +16,8 @@ interface StoresProps {
 
 export interface useCurrAppProps {
   currApp: CurrAppProps | null;
-  setCurrApp: (
-    appName: string | null,
-    { index, defaultProviders, versions }: StoresProps
-  ) => void;
+  setCurrApp: (appName: string, storesProps: StoresProps) => void;
+  clearCurrApp: () => void;
   refresh: ({ index, defaultProviders, versions }: StoresProps) => void;
 }
 
@@ -43,19 +41,17 @@ const createCurrApp = (
 
 export const useCurrApp = create<useCurrAppProps>((set, get) => ({
   currApp: null,
-  setCurrApp: (appName, { index, defaultProviders, versions }) => {
-    if (appName === null) {
-      set({ currApp: null });
-      return;
-    }
-    const newCurrApp = createCurrApp(appName, {
-      index,
-      defaultProviders,
-      versions,
-    });
-    if (newCurrApp) {
+  setCurrApp: (appName, storesProps) => {
+    const newCurrApp = createCurrApp(appName, storesProps);
+    if (
+      newCurrApp &&
+      JSON.stringify(get().currApp) !== JSON.stringify(newCurrApp)
+    ) {
       set({ currApp: newCurrApp });
     }
+  },
+  clearCurrApp: () => {
+    set({ currApp: null });
   },
   refresh: ({ index, defaultProviders, versions }) => {
     const currApp = get().currApp;

@@ -46,6 +46,21 @@ const translations = [
   "Notifications for new releases",
   "App Updates",
   "Notifications for app updates",
+  "Suggest an App",
+  "Features",
+  "Potentially unsafe apk",
+  'The VirusTotal analysis of this apk reported potential risks. To install it, enable the "$1" setting in the settings page.',
+  "Risk Taker",
+  "Go to settings",
+  "$1 was added to the downloads",
+  "$1 finished downloading",
+  "Install",
+  "Local Version",
+  "Not installed",
+  "Available Version",
+  "Installed",
+  "Update",
+  "Open",
 ] as const;
 
 export const interpolate = (template: string, ...values: string[]): string =>

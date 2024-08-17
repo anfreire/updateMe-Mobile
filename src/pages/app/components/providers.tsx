@@ -1,117 +1,111 @@
-import {Card, DataTable, Icon, IconButton, Text} from 'react-native-paper';
-import {Linking, View} from 'react-native';
-import {useEffect, useState} from 'react';
-import {ScrollView} from 'react-native-gesture-handler';
-import SHA256 from './SHA256';
-import {useDialogs} from '@/states/temporary/dialogs';
-import {useToast} from '@/states/temporary/toast';
-import {AppScreenChildProps} from '..';
-import ProvidersMenu from './providersMenu';
-import MultiIcon from '@/components/multiIcon';
-import Clipboard from '@react-native-clipboard/clipboard';
+import { Card, DataTable, Icon, IconButton, Text } from "react-native-paper";
+import { Linking, View } from "react-native";
+import { useMemo } from "react";
+import { ScrollView } from "react-native-gesture-handler";
+import SHA256 from "./SHA256";
+import { useDialogs } from "@/states/temporary/dialogs";
+import { useToast } from "@/states/temporary/toast";
+import ProvidersMenu from "./providersMenu";
+import MultiIcon from "@/components/multiIcon";
+import Clipboard from "@react-native-clipboard/clipboard";
+import { CurrAppProps } from "@/states/computed/currApp";
 
-export default function AppProvider(props: AppScreenChildProps) {
-  const [tableSize, setTableSize] = useState({
-    provider: 50,
-    packageName: 50,
-    version: 50,
-  });
-  const showDialog = useDialogs().openDialog;
-  const openToast = useToast().openToast;
+export default function AppProvider({ currApp }: { currApp: CurrAppProps }) {
+  const openDialog = useDialogs((state) => state.openDialog);
+  const openToast = useToast((state) => state.openToast);
 
-  useEffect(() => {
-    if (props.currApp) {
-      let maxProvider = 8;
-      let maxPackageName = 12;
-      let maxVersion = 7;
-      Object.keys(props.currApp.providers).forEach(provider => {
-        if (provider.length > maxProvider) {
-          maxProvider = provider.length;
-        }
-        if (
-          props.currApp.providers[provider].packageName.length > maxPackageName
-        ) {
-          maxPackageName = props.currApp.providers[provider].packageName.length;
-        }
-        if (props.currApp.providers[provider].version.length > maxVersion) {
-          maxVersion = props.currApp.providers[provider].version.length;
-        }
-      });
-      setTableSize({
-        provider: maxProvider * 9 + 4,
-        packageName: maxPackageName * 9 + 4,
-        version: maxVersion * 9 + 4,
-      });
-    }
-  }, [props.currApp]);
+  const tableSize = useMemo(() => {
+    const maxLengths = Object.entries(currApp.providers).reduce(
+      (acc, [provider, { packageName, version }]) => ({
+        provider: Math.max(acc.provider, provider.length),
+        packageName: Math.max(acc.packageName, packageName.length),
+        version: Math.max(acc.version, version.length),
+      }),
+      { provider: 8, packageName: 12, version: 7 }
+    );
+
+    return {
+      provider: maxLengths.provider * 9 + 5,
+      packageName: maxLengths.packageName * 9 + 5,
+      version: maxLengths.version * 9 + 5,
+    };
+  }, [currApp.providers]);
+
   return (
     <Card
       contentStyle={{
-        width: '100%',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        position: 'relative',
-        flexDirection: 'column',
+        width: "100%",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        position: "relative",
+        flexDirection: "column",
         padding: 30,
-        paddingTop: Object.keys(props.currApp.providers).length > 1 ? 30 : 15,
+        paddingTop: Object.keys(currApp.providers).length > 1 ? 30 : 15,
         gap: 30,
-      }}>
-      {Object.keys(props.currApp.providers).length > 1 && (
+      }}
+    >
+      {Object.keys(currApp.providers).length > 1 && (
         <View
           style={{
-            width: '100%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            flexDirection: 'column',
+            width: "100%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flexDirection: "column",
             gap: 7,
-          }}>
+          }}
+        >
           <Text variant="titleMedium">Selected Provider</Text>
-          <ProvidersMenu {...props} />
+          <ProvidersMenu currApp={currApp} />
         </View>
       )}
-      <View style={{flex: 1}}>
+      <View style={{ flex: 1 }}>
         <ScrollView horizontal={true}>
           <DataTable>
             <DataTable.Header>
               <DataTable.Title
                 style={{
-                  justifyContent: 'flex-start',
+                  justifyContent: "flex-start",
                   width: tableSize.provider,
-                }}>
+                }}
+              >
                 Provider
               </DataTable.Title>
               <DataTable.Title
                 style={{
-                  justifyContent: 'center',
+                  justifyContent: "center",
                   width: 70,
-                }}>
+                }}
+              >
                 Secure
               </DataTable.Title>
               <DataTable.Title
                 style={{
-                  justifyContent: 'center',
+                  justifyContent: "center",
                   width: tableSize.packageName,
-                }}>
+                }}
+              >
                 Package Name
               </DataTable.Title>
               <DataTable.Title
                 style={{
-                  justifyContent: 'center',
+                  justifyContent: "center",
                   width: tableSize.version,
-                }}>
+                }}
+              >
                 Version
               </DataTable.Title>
               <DataTable.Title
                 style={{
-                  justifyContent: 'center',
+                  justifyContent: "center",
                   width: 175,
-                }}>
+                }}
+              >
                 SHA256
               </DataTable.Title>
             </DataTable.Header>
-            {Object.keys(props.currApp.providers).map(provider => {
+            {Object.keys(currApp.providers).map((provider) => {
               return (
                 <DataTable.Row key={provider}>
                   <DataTable.Cell
@@ -119,20 +113,22 @@ export default function AppProvider(props: AppScreenChildProps) {
                       openToast(`Long press to open ${provider} website`)
                     }
                     onLongPress={() =>
-                      Linking.openURL(props.currApp!.providers[provider].source)
+                      Linking.openURL(currApp!.providers[provider].source)
                     }
                     style={{
                       width: tableSize.provider,
-                      justifyContent: 'flex-start',
-                    }}>
+                      justifyContent: "flex-start",
+                    }}
+                  >
                     <View
                       style={{
-                        position: 'relative',
-                      }}>
+                        position: "relative",
+                      }}
+                    >
                       <Text>{provider}</Text>
                       <MultiIcon
                         style={{
-                          position: 'absolute',
+                          position: "absolute",
                           top: -8,
                           right: -12,
                         }}
@@ -143,36 +139,36 @@ export default function AppProvider(props: AppScreenChildProps) {
                     </View>
                   </DataTable.Cell>
                   <DataTable.Cell
-                    key={provider + '-secure'}
+                    key={provider + "-secure"}
                     style={{
                       width: 70,
-                      justifyContent: 'center',
+                      justifyContent: "center",
                     }}
                     onLongPress={() =>
                       Linking.openURL(
-                        `https://www.virustotal.com/gui/file/${props.currApp.providers[provider].sha256}`,
+                        `https://www.virustotal.com/gui/file/${currApp.providers[provider].sha256}`
                       )
                     }
                     onPress={() =>
                       openToast(`Long press to open VirusTotal analysis`)
-                    }>
+                    }
+                  >
                     <View
                       style={{
-                        position: 'relative',
+                        position: "relative",
                         width: 18,
                         height: 18,
-                      }}>
+                      }}
+                    >
                       <Icon
                         size={18}
                         source={
-                          props.currApp!.providers[provider].safe
-                            ? 'check'
-                            : 'close'
+                          currApp!.providers[provider].safe ? "check" : "close"
                         }
                       />
                       <MultiIcon
                         style={{
-                          position: 'absolute',
+                          position: "absolute",
                           top: -8,
                           right: -10,
                         }}
@@ -183,54 +179,55 @@ export default function AppProvider(props: AppScreenChildProps) {
                     </View>
                   </DataTable.Cell>
                   <DataTable.Cell
-                    key={provider + '-package'}
+                    key={provider + "-package"}
                     style={{
                       width: tableSize.packageName,
-                      justifyContent: 'center',
+                      justifyContent: "center",
                     }}
                     onLongPress={() => {
                       Clipboard.setString(
-                        props.currApp!.providers[provider].packageName,
+                        currApp!.providers[provider].packageName
                       );
                       openToast(
-                        `${provider}'s package name copied to clipboard`,
+                        `${provider}'s package name copied to clipboard`
                       );
                     }}
                     onPress={() =>
                       openToast(`Package names are unique app identifiers`)
-                    }>
-                    {props.currApp!.providers[provider].packageName}
+                    }
+                  >
+                    {currApp!.providers[provider].packageName}
                   </DataTable.Cell>
                   <DataTable.Cell
-                    key={provider + '-version'}
+                    key={provider + "-version"}
                     style={{
                       width: tableSize.version,
-                      justifyContent: 'center',
+                      justifyContent: "center",
                     }}
                     onPress={() =>
                       openToast(`Versions are different app releases`)
                     }
                     onLongPress={() => {
-                      Clipboard.setString(
-                        props.currApp!.providers[provider].version,
-                      );
+                      Clipboard.setString(currApp!.providers[provider].version);
                       openToast(`${provider}'s version copied to clipboard`);
-                    }}>
-                    {props.currApp!.providers[provider].version}
+                    }}
+                  >
+                    {currApp!.providers[provider].version}
                   </DataTable.Cell>
                   <DataTable.Cell
-                    key={provider + '-sha256'}
+                    key={provider + "-sha256"}
                     style={{
                       width: 175,
-                      justifyContent: 'flex-end',
+                      justifyContent: "flex-end",
                     }}
                     onPress={() =>
                       openToast(`SHA256 is a unique file identifier`)
-                    }>
+                    }
+                  >
                     <SHA256
-                      appName={props.currApp!.name}
+                      appName={currApp!.name}
                       provider={provider}
-                      sha256={props.currApp!.providers[provider].sha256}
+                      sha256={currApp!.providers[provider].sha256}
                     />
                   </DataTable.Cell>
                 </DataTable.Row>
@@ -239,22 +236,22 @@ export default function AppProvider(props: AppScreenChildProps) {
           </DataTable>
         </ScrollView>
       </View>
-      {Object.keys(props.currApp!.providers).length > 1 && (
+      {Object.keys(currApp!.providers).length > 1 && (
         <IconButton
           icon="information"
           style={{
-            position: 'absolute',
+            position: "absolute",
             top: 5,
             right: 5,
           }}
           onPress={() =>
-            showDialog({
-              title: 'Providers',
+            openDialog({
+              title: "Providers",
               content:
-                'Providers are different sources for the same app. Because they were made by different developers, they may have different versions, features or bugs.',
+                "Providers are different sources for the same app. Because they were made by different developers, they may have different versions, features or bugs.",
               actions: [
                 {
-                  title: 'Ok',
+                  title: "Ok",
                   action: () => {},
                 },
               ],

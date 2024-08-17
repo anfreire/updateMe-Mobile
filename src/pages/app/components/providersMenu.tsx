@@ -1,12 +1,13 @@
-import {useState} from 'react';
-import {Menu, TextInput} from 'react-native-paper';
-import {Linking} from 'react-native';
-import {AppScreenChildProps} from '..';
-import {useDefaultProviders} from '@/states/persistent/defaultProviders';
-import {useTheme} from '@/theme';
-import {useDialogs} from '@/states/temporary/dialogs';
+import { useState } from "react";
+import { Menu, TextInput } from "react-native-paper";
+import { Linking } from "react-native";
+import { AppScreenChildProps } from "..";
+import { useDefaultProviders } from "@/states/persistent/defaultProviders";
+import { useTheme } from "@/theme";
+import { useDialogs } from "@/states/temporary/dialogs";
+import { CurrAppProps } from "@/states/computed/currApp";
 
-export default function ProvidersMenu(props: AppScreenChildProps) {
+export default function ProvidersMenu({ currApp }: { currApp: CurrAppProps }) {
   const [providersMenuVisible, setProvidersMenuVisible] = useState(false);
   const theme = useTheme();
   const _setDefaultProvider = useDefaultProviders().setDefaultProvider;
@@ -32,7 +33,7 @@ export default function ProvidersMenu(props: AppScreenChildProps) {
           editable={false}
           mode="outlined"
           placeholder={props.currApp.defaultProvider}
-          style={{width: 200}}
+          style={{ width: 200 }}
           dense
           contentStyle={{
             fontSize: 14,
@@ -45,8 +46,9 @@ export default function ProvidersMenu(props: AppScreenChildProps) {
             />
           }
         />
-      }>
-      {Object.keys(props.currApp.providers).map(provider => (
+      }
+    >
+      {Object.keys(props.currApp.providers).map((provider) => (
         <Menu.Item
           key={provider}
           style={{
@@ -59,29 +61,29 @@ export default function ProvidersMenu(props: AppScreenChildProps) {
             fontSize: 14,
           }}
           trailingIcon={
-            props.currApp.defaultProvider === provider ? 'star' : ''
+            props.currApp.defaultProvider === provider ? "star" : ""
           }
           onPress={() => {
             if (props.currApp.defaultProvider === provider) return;
             if (!props.currApp.providers[provider].safe) {
               showDialog({
-                title: 'Warning',
+                title: "Warning",
                 content:
                   "The provider's apk is potentially unsafe. Are you sure you want to continue?",
                 actions: [
                   {
-                    title: 'Cancel',
+                    title: "Cancel",
                     action: () => {},
                   },
                   {
-                    title: 'See analysis',
+                    title: "See analysis",
                     action: () =>
                       Linking.openURL(
-                        `https://www.virustotal.com/gui/file/${props.currApp.providers[provider].sha256}`,
+                        `https://www.virustotal.com/gui/file/${props.currApp.providers[provider].sha256}`
                       ),
                   },
                   {
-                    title: 'Continue',
+                    title: "Continue",
                     action: () =>
                       setDefaultProvider(props.currApp.name, provider),
                   },
@@ -96,16 +98,16 @@ export default function ProvidersMenu(props: AppScreenChildProps) {
               setDefaultProvider(props.currApp.name, provider);
             } else {
               showDialog({
-                title: 'Warning',
+                title: "Warning",
                 content:
-                  'Changing the provider will likely require uninstalling and reinstalling the app in order to install updates. Are you sure you want to continue?',
+                  "Changing the provider will likely require uninstalling and reinstalling the app in order to install updates. Are you sure you want to continue?",
                 actions: [
                   {
-                    title: 'Cancel',
+                    title: "Cancel",
                     action: () => {},
                   },
                   {
-                    title: 'Continue',
+                    title: "Continue",
                     action: () =>
                       setDefaultProvider(props.currApp.name, provider),
                   },

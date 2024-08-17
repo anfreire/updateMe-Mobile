@@ -1,42 +1,57 @@
-import {Card, Text} from 'react-native-paper';
-import {useEffect, useState} from 'react';
-import {Image} from 'react-native';
-import {AppScreenChildProps} from '..';
+import React, { useEffect, useState, useMemo, memo } from "react";
+import { Card, Text } from "react-native-paper";
+import { Image, StyleSheet } from "react-native";
+import { CurrAppProps } from "@/states/computed/currApp";
 
-export default function AppLogo(props: AppScreenChildProps) {
-  const [imageSize, setImageSize] = useState({width: 100, height: 100});
+const MAX_IMAGE_SIZE = 100;
+
+const calculateImageSize = (width: number, height: number) => ({
+  width: MAX_IMAGE_SIZE * (width / height),
+  height: MAX_IMAGE_SIZE,
+});
+
+function AppLogo({ currApp }: { currApp: CurrAppProps }) {
+  const [imageSize, setImageSize] = useState({
+    width: MAX_IMAGE_SIZE,
+    height: MAX_IMAGE_SIZE,
+  });
 
   useEffect(() => {
-    if (props.currApp) {
-      Image.getSize(props.currApp.icon, (width, height) => {
-        const ratio = width / height;
-        setImageSize({width: 100 * ratio, height: 100});
-      });
-    }
-  }, [props.currApp]);
+    Image.getSize(currApp.icon, (width, height) =>
+      setImageSize(calculateImageSize(width, height))
+    );
+  }, [currApp.icon]);
+
+  const paddingHorizontal = useMemo(
+    () => (currApp.name.length > 15 ? 40 : 50),
+    [currApp.name]
+  );
 
   return (
-    <Card
-      contentStyle={{
-        width: '100%',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        flexDirection: 'column',
-        padding: 30,
-        paddingBottom: 20,
-        paddingHorizontal: props.currApp.name.length > 15 ? 40 : 50,
-        gap: 20,
-      }}>
+    <Card contentStyle={[styles.card, { paddingHorizontal }]}>
       <Card.Cover
         resizeMode="contain"
-        style={{
-          width: imageSize.width,
-          height: imageSize.height,
-          backgroundColor: 'transparent',
-        }}
-        source={{uri: props.currApp.icon}}></Card.Cover>
-      <Text variant="headlineLarge">{props.currApp.name}</Text>
+        style={[styles.cardCover, imageSize]}
+        source={{ uri: currApp.icon }}
+      />
+      <Text variant="headlineLarge">{currApp.name}</Text>
     </Card>
   );
 }
+
+const styles = StyleSheet.create({
+  card: {
+    width: "100%",
+    alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "column",
+    padding: 30,
+    paddingBottom: 20,
+    gap: 20,
+  },
+  cardCover: {
+    backgroundColor: "transparent",
+  },
+});
+
+export default memo(AppLogo);
