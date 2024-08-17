@@ -1,57 +1,53 @@
-import { useColorScheme } from "react-native";
 import { Portal, Snackbar } from "react-native-paper";
 import React, { useMemo } from "react";
 import { useToast } from "@/states/temporary/toast";
-import { useSettings } from "@/states/persistent/settings";
 import { useTheme } from "@/theme";
 
 const TOAST_COLORS = {
-	success: {
-		light: "#2E7D32",
-		dark: "#81C784",
-	},
-	error: {
-		light: "#D50000",
-		dark: "#E57373",
-	},
-	warning: {
-		light: "#CC8A00",
-		dark: "#FFD54F",
-	},
+  success: {
+    light: "#2E7D32",
+    dark: "#81C784",
+  },
+  error: {
+    light: "#D50000",
+    dark: "#E57373",
+  },
+  warning: {
+    light: "#CC8A00",
+    dark: "#FFD54F",
+  },
 } as const;
 
 type ToastType = keyof typeof TOAST_COLORS;
 
 export function Toast() {
-	const [activeToast, closeToast] = useToast((state) => [
-		state.activeToast,
-		state.closeToast,
-	]);
-	const colorScheme = useTheme().colorScheme;
+  const [activeToast, closeToast] = useToast((state) => [
+    state.activeToast,
+    state.closeToast,
+  ]);
+  const { colorScheme } = useTheme();
 
-	const snackbarStyle = useMemo(() => {
-		const baseStyle = { zIndex: 10000000 };
-		if (activeToast?.type) {
-			return {
-				...baseStyle,
-				backgroundColor:
-					TOAST_COLORS[activeToast.type as ToastType][colorScheme],
-			};
-		}
-		return baseStyle;
-	}, [activeToast, colorScheme]);
+  const snackbarStyle = useMemo(() => {
+    return {
+      zIndex: 10000000,
+      ...(activeToast?.type && {
+        backgroundColor:
+          TOAST_COLORS[activeToast.type as ToastType][colorScheme],
+      }),
+    };
+  }, [activeToast, colorScheme]);
 
-	return (
-		<Portal>
-			<Snackbar
-				style={snackbarStyle}
-				action={activeToast?.action}
-				visible={activeToast !== null}
-				onDismiss={closeToast}
-				duration={3000}
-			>
-				{activeToast?.message}
-			</Snackbar>
-		</Portal>
-	);
+  return (
+    <Portal>
+      <Snackbar
+        style={snackbarStyle}
+        action={activeToast?.action}
+        visible={activeToast !== null}
+        onDismiss={closeToast}
+        duration={3000}
+      >
+        {activeToast?.message}
+      </Snackbar>
+    </Portal>
+  );
 }

@@ -3,180 +3,180 @@ import { Drawer } from "react-native-drawer-layout";
 import { useTheme } from "@/theme";
 import { useNavigation } from "@react-navigation/native";
 import Animated, {
-	Easing,
-	useAnimatedStyle,
-	useSharedValue,
-	withRepeat,
-	withTiming,
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withRepeat,
+  withTiming,
 } from "react-native-reanimated";
 import { useDrawer } from "@/states/temporary/drawer";
 import { CustomDialogsType, useDialogs } from "@/states/temporary/dialogs";
 import { useDownloads } from "@/states/temporary/downloads";
 import { useCallback, useEffect, useMemo } from "react";
+import { useNavigate } from "@/hooks/navigation";
+import { Page } from "@/states/temporary/session";
+import { useTranslations } from "@/states/persistent/translations";
 
 const AnimatedListItem = Animated.createAnimatedComponent(List.Item);
 
 interface DrawerItem {
-	title: string;
-	description: string;
-	icon: string;
-	onClick: () => void;
+  title: string;
+  description: string;
+  icon: string;
+  onClick: () => void;
 }
 
 export default function DrawerWrapper({
-	children,
+  children,
 }: {
-	children: React.ReactNode;
+  children: React.ReactNode;
 }) {
-	const theme = useTheme();
-	const navigation = useNavigation();
-	const [isDrawerOpen, closeDrawer] = useDrawer((state) => [
-		state.isDrawerOpen,
-		state.closeDrawer,
-	]);
-	const downloads = useDownloads((state) => state.downloads);
-	const openDialog = useDialogs((state) => state.openDialog);
+  const theme = useTheme();
+  const navigate = useNavigate();
+  const [isDrawerOpen, closeDrawer] = useDrawer((state) => [
+    state.isDrawerOpen,
+    state.closeDrawer,
+  ]);
+  const downloads = useDownloads((state) => state.downloads);
+  const openDialog = useDialogs((state) => state.openDialog);
+  const translations = useTranslations();
 
-	const opacity = useSharedValue(1);
+  const opacity = useSharedValue(1);
 
-	const animationStyle = useAnimatedStyle(() => ({
-		opacity: opacity.value,
-	}));
+  const animationStyle = useAnimatedStyle(() => ({
+    opacity: opacity.value,
+  }));
 
-	const pulse = useCallback(() => {
-		opacity.value = withRepeat(
-			withTiming(0.5, {
-				duration: 600,
-				easing: Easing.inOut(Easing.quad),
-			}),
-			-1,
-			true,
-		);
-	}, [opacity]);
+  const pulse = useCallback(() => {
+    opacity.value = withRepeat(
+      withTiming(0.5, {
+        duration: 600,
+        easing: Easing.inOut(Easing.quad),
+      }),
+      -1,
+      true
+    );
+  }, []);
 
-	const stopPulsing = useCallback(() => {
-		opacity.value = withTiming(1, { duration: 300 });
-	}, [opacity]);
+  const stopPulsing = useCallback(() => {
+    opacity.value = withTiming(1, { duration: 300 });
+  }, []);
 
-	const navigateTo = useCallback(
-		(route: string) => {
-			closeDrawer();
-			navigation.navigate(route as never);
-		},
-		[closeDrawer, navigation],
-	);
+  const navigateTo = useCallback(
+    (route: Page) => {
+      closeDrawer();
+      navigate(route);
+    },
+    [navigate]
+  );
 
-	const handleOpenDialog = useCallback(
-		(key: CustomDialogsType) => {
-			closeDrawer();
-			openDialog(key);
-		},
-		[closeDrawer, openDialog],
-	);
+  const handleOpenDialog = useCallback(
+    (key: CustomDialogsType) => {
+      closeDrawer();
+      openDialog(key);
+    },
+    [openDialog]
+  );
 
-	useEffect(() => {
-		if (isDrawerOpen && Object.keys(downloads).length > 0) {
-			pulse();
-			const timer = setTimeout(stopPulsing, 2500);
-			return () => clearTimeout(timer);
-		} else {
-			stopPulsing();
-		}
-	}, [isDrawerOpen, downloads, pulse, stopPulsing]);
+  useEffect(() => {
+    if (isDrawerOpen && Object.keys(downloads).length > 0) {
+      pulse();
+      const timer = setTimeout(stopPulsing, 2500);
+      return () => clearTimeout(timer);
+    } else {
+      stopPulsing();
+    }
+  }, [isDrawerOpen, downloads, pulse, stopPulsing]);
 
-	const items: Record<string, DrawerItem> = useMemo(
-		() => ({
-			downloads: {
-				title: "Downloads",
-				description: "View your downloads",
-				icon: "download",
-				onClick: () => navigateTo("Downloads"),
-			},
-			updates: {
-				title: "Updates",
-				description: "Check for updates",
-				icon: "update",
-				onClick: () => navigateTo("Updates"),
-			},
-			tips: {
-				title: "Tips",
-				description: "Maximize your experience",
-				icon: "star-four-points",
-				onClick: () => navigateTo("Tips"),
-			},
-			settings: {
-				title: "Settings",
-				description: "Change the app settings",
-				icon: "cog",
-				onClick: () => navigateTo("Settings"),
-			},
-			suggest: {
-				title: "Suggest",
-				description: "Suggest a new app",
-				icon: "lightbulb-on",
-				onClick: () => navigateTo("Suggest"),
-			},
-			share: {
-				title: "Share",
-				description: "Share the app with friends",
-				icon: "share-variant",
-				onClick: () => handleOpenDialog("share"),
-			},
-			report: {
-				title: "Report",
-				description: "Report a problem with the app",
-				icon: "bug",
-				onClick: () => navigateTo("Report"),
-			},
-		}),
-		[navigateTo, handleOpenDialog],
-	);
+  const items: Record<string, DrawerItem> = useMemo(
+    () => ({
+      downloads: {
+        title: translations["Downloads"],
+        description: translations["View your downloads"],
+        icon: "download",
+        onClick: () => navigateTo("downloads"),
+      },
+      updates: {
+        title: translations["Updates"],
+        description: translations["Check for updates"],
+        icon: "update",
+        onClick: () => navigateTo("updates"),
+      },
+      tips: {
+        title: translations["Tips"],
+        description: translations["Maximize your experience"],
+        icon: "star-four-points",
+        onClick: () => navigateTo("tips"),
+      },
+      settings: {
+        title: translations["Settings"],
+        description: translations["Change the app settings"],
+        icon: "cog",
+        onClick: () => navigateTo("settings"),
+      },
+      suggest: {
+        title: translations["Suggest"],
+        description: translations["Suggest a new app"],
+        icon: "lightbulb-on",
+        onClick: () => navigateTo("suggest"),
+      },
+      share: {
+        title: translations["Share"],
+        description: translations["Share the app with friends"],
+        icon: "share-variant",
+        onClick: () => handleOpenDialog("share"),
+      },
+      report: {
+        title: translations["Report"],
+        description: translations["Report a problem with the app"],
+        icon: "bug",
+        onClick: () => navigateTo("report"),
+      },
+    }),
+    [navigateTo, handleOpenDialog, translations]
+  );
 
-	const renderDrawerContent = useCallback(
-		() => (
-			<List.Section>
-				{Object.entries(items).map(([key, item]) =>
-					key === "downloads" ? (
-						<AnimatedListItem
-							key={key}
-							title={item.title}
-							description={item.description}
-							style={animationStyle}
-							left={(props) => (
-								<List.Icon {...props} icon={item.icon} />
-							)}
-							onPress={item.onClick}
-						/>
-					) : (
-						<List.Item
-							key={key}
-							title={item.title}
-							description={item.description}
-							left={(props) => (
-								<List.Icon {...props} icon={item.icon} />
-							)}
-							onPress={item.onClick}
-						/>
-					),
-				)}
-			</List.Section>
-		),
-		[items, animationStyle],
-	);
+  const renderDrawerContent = useCallback(
+    () => (
+      <List.Section>
+        {Object.entries(items).map(([key, item]) =>
+          key === "downloads" ? (
+            <AnimatedListItem
+              key={key}
+              title={item.title}
+              description={item.description}
+              style={animationStyle}
+              left={(props) => <List.Icon {...props} icon={item.icon} />}
+              onPress={item.onClick}
+            />
+          ) : (
+            <List.Item
+              key={key}
+              title={item.title}
+              description={item.description}
+              left={(props) => <List.Icon {...props} icon={item.icon} />}
+              onPress={item.onClick}
+            />
+          )
+        )}
+      </List.Section>
+    ),
+    [items, animationStyle]
+  );
 
-	return (
-		<Drawer
-			open={isDrawerOpen}
-			onOpen={() => {}}
-			onClose={closeDrawer}
-			drawerPosition="right"
-			swipeEnabled={false}
-			drawerStyle={{
-				backgroundColor: theme.schemedTheme.surfaceContainer,
-			}}
-			renderDrawerContent={renderDrawerContent}
-		>
-			{children}
-		</Drawer>
-	);
+  return (
+    <Drawer
+      open={isDrawerOpen}
+      onOpen={() => {}}
+      onClose={closeDrawer}
+      drawerPosition="right"
+      swipeEnabled={false}
+      drawerStyle={{
+        backgroundColor: theme.schemedTheme.surfaceContainer,
+      }}
+      renderDrawerContent={renderDrawerContent}
+    >
+      {children}
+    </Drawer>
+  );
 }

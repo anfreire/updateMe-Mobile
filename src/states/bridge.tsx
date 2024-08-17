@@ -5,39 +5,43 @@ import { useVersions } from "@/states/computed/versions";
 import { useCurrApp } from "@/states/computed/currApp";
 
 function useStatesBridge() {
-	const index = useIndex((state) => state.index);
-	const defaultProviders = useDefaultProviders(
-		(state) => state.defaultProviders,
-	);
-	const versions = useVersions((state) => state.versions);
+  const index = useIndex((state) => state.index);
+  const [defaultProviders, sanitizeDefaultProviders] = useDefaultProviders(
+    (state) => [state.defaultProviders, state.sanitize]
+  );
+  const [versions, refreshVersions] = useVersions((state) => [
+    state.versions,
+    state.refresh,
+  ]);
+  const refreshCurrApp = useCurrApp((state) => state.refresh);
 
-	const sanitizeDefaultProviders = useCallback(() => {
-		useDefaultProviders.getState().sanitize(index);
-	}, [index]);
+  const handleSanitizeDefaultProviders = useCallback(() => {
+    useDefaultProviders.getState().sanitize(index);
+  }, [index]);
 
-	const refreshVersions = useCallback(() => {
-		useVersions.getState().refresh({ index, defaultProviders });
-	}, [index, defaultProviders]);
+  const handleRefreshVersions = useCallback(() => {
+    useVersions.getState().refresh({ index, defaultProviders });
+  }, [index, defaultProviders]);
 
-	const refreshCurrApp = useCallback(() => {
-		useCurrApp.getState().refresh({ index, versions, defaultProviders });
-	}, [index, versions, defaultProviders]);
+  const handleRefreshCurrApp = useCallback(() => {
+    useCurrApp.getState().refresh({ index, versions, defaultProviders });
+  }, [index, versions, defaultProviders]);
 
-	useEffect(() => {
-		sanitizeDefaultProviders();
-	}, [sanitizeDefaultProviders]);
+  useEffect(() => {
+    handleSanitizeDefaultProviders();
+  }, [sanitizeDefaultProviders]);
 
-	useEffect(() => {
-		refreshVersions();
-	}, [refreshVersions]);
+  useEffect(() => {
+    handleRefreshVersions();
+  }, [refreshVersions]);
 
-	useEffect(() => {
-		refreshCurrApp();
-	}, [refreshCurrApp]);
+  useEffect(() => {
+    handleRefreshCurrApp();
+  }, [refreshCurrApp]);
 }
 
 export function StatesBridgeManager() {
-	useStatesBridge();
+  useStatesBridge();
 
-	return null;
+  return null;
 }

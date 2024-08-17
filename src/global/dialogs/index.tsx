@@ -9,28 +9,28 @@ import { Portal } from "react-native-paper";
 import { useMemo } from "react";
 
 const DialogComponents = {
-	default: DefaultDialog,
-	sourceColorPicker: SourceColorPickerDialog,
-	colorSchemePicker: ColorSchemePickerDialog,
-	homeLayoutPicker: HomeLayoutPickerDialog,
-	share: ShareDialog,
-	newVersion: NewVersionDialog,
+  default: DefaultDialog,
+  sourceColorPicker: SourceColorPickerDialog,
+  colorSchemePicker: ColorSchemePickerDialog,
+  homeLayoutPicker: HomeLayoutPickerDialog,
+  share: ShareDialog,
+  newVersion: NewVersionDialog,
 };
 
 export function Dialogs() {
-	const activeDialog = useDialogs((state) => state.activeDialog);
+  const activeDialog = useDialogs((state) => state.activeDialog);
 
-	const ActiveDialog = useMemo(() => {
-		return activeDialog ? DialogComponents[activeDialog] : null;
-	}, [activeDialog]);
+  const ActiveDialog = useMemo(() => {
+    return activeDialog ? DialogComponents[activeDialog] : null;
+  }, [activeDialog]);
 
-	if (!ActiveDialog) {
-		return null;
-	}
+  if (!ActiveDialog) {
+    return null;
+  }
 
-	return (
-		<Portal>
-			<ActiveDialog />
-		</Portal>
-	);
+  return (
+    <Portal>
+      <ActiveDialog activeDialog={activeDialog} />
+    </Portal>
+  );
 }

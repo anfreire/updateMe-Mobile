@@ -4,65 +4,66 @@ import { useCallback } from "react";
 import { useShallow } from "zustand/react/shallow";
 
 interface PageParams {
-	app: undefined;
-	downloads: undefined;
-	home: undefined;
-	loading: undefined;
-	report: undefined;
-	settings: undefined;
-	suggest: undefined;
-	tip: undefined;
-	tips: undefined;
-	updates: undefined;
+  app: undefined;
+  downloads: undefined;
+  home: undefined;
+  loading: undefined;
+  report: undefined;
+  settings: undefined;
+  suggest: undefined;
+  tip: undefined;
+  tips: undefined;
+  updates: undefined;
 }
 
 const PREVIOUS_ROUTES: Record<Page, Page | null> = {
-	app: "home",
-	downloads: "home",
-	home: null,
-	loading: null,
-	report: "home",
-	settings: "home",
-	suggest: "home",
-	tip: "tips",
-	tips: "home",
-	updates: "home",
+  app: "home",
+  downloads: "home",
+  home: null,
+  loading: null,
+  report: "home",
+  settings: "home",
+  suggest: "home",
+  tip: "tips",
+  tips: "home",
+  updates: "home",
 } as const;
 
 export function useNavigate() {
-	const navigation = useNavigation<NavigationProp<PageParams>>();
-	const setCurrPage = useSession(useShallow((state) => state.setCurrPage));
+  const navigation = useNavigation<NavigationProp<PageParams>>();
+  const setCurrPage = useSession((state) => state.setCurrPage);
 
-	return useCallback(
-		<T extends Page>(page: T, params?: PageParams[T]) => {
-			navigation.navigate(page as Page, params);
-			setCurrPage(page);
-		},
-		[navigation.navigate, setCurrPage],
-	);
+  return useCallback(
+    <T extends Page>(page: T, params?: PageParams[T]) => {
+      navigation.navigate(page as Page, params);
+      setCurrPage(page);
+    },
+    [navigation.navigate]
+  );
 }
 
 export function useSilentNavigate() {
-	const navigation = useNavigation<NavigationProp<PageParams>>();
+  const navigation = useNavigation<NavigationProp<PageParams>>();
 
-	return useCallback(
-		<T extends Page>(page: T, params?: PageParams[T]) => {
-			navigation.navigate(page as Page, params);
-		},
-		[navigation.navigate],
-	);
+  return useCallback(
+    <T extends Page>(page: T, params?: PageParams[T]) => {
+      navigation.navigate(page as Page, params);
+    },
+    [navigation.navigate]
+  );
 }
 
 export function useGoBack() {
-	const navigation = useNavigation<NavigationProp<PageParams>>();
-	const [currPage, setCurrPage] = useSession(
-		useShallow((state) => [state.currPage, state.setCurrPage]),
-	);
+  const navigation = useNavigation<NavigationProp<PageParams>>();
+  const [currPage, setCurrPage] = useSession((state) => [
+    state.currPage,
+    state.setCurrPage,
+  ]);
 
-	return useCallback(() => {
-		const prevPage = PREVIOUS_ROUTES[currPage];
-		if (!prevPage) return;
-		navigation.goBack();
-		setCurrPage(prevPage);
-	}, [navigation.navigate, setCurrPage, currPage]);
+  return useCallback(() => {
+    const prevPage = PREVIOUS_ROUTES[currPage];
+    if (!prevPage) return;
+    navigation.goBack();
+    setCurrPage(prevPage);
+  }, [navigation.navigate, currPage]);
 }
