@@ -1,29 +1,29 @@
-import FormScreen from '@/components/form';
-import {useFeedback} from '@/states/persistent/feedback';
-import {useToken} from '@/states/persistent/token';
-import {useToast} from '@/states/temporary/toast';
-import {useEffect, useState} from 'react';
-import SuggestionsStats from './stats';
-import {useFocusEffect} from '@react-navigation/native';
+import FormScreen from "@/components/form";
+import { useFeedback } from "@/states/persistent/feedback";
+import { useToken } from "@/states/persistent/token";
+import { useToast } from "@/states/temporary/toast";
+import { useEffect, useState } from "react";
+import SuggestionsStats from "./stats";
+import { useFocusEffect } from "@react-navigation/native";
 
-const FieldsData: Record<string, {label: string; errorMessage: string}> = {
+const FieldsData: Record<string, { label: string; errorMessage: string }> = {
   name: {
     label: "What's your name?",
-    errorMessage: 'Name is required',
+    errorMessage: "Name is required",
   },
   app: {
-    label: 'Which app do you want to suggest?',
-    errorMessage: 'App name is required',
+    label: "Which app do you want to suggest?",
+    errorMessage: "App name is required",
   },
   description: {
-    label: 'Are you looking for a specific feature?',
-    errorMessage: '',
+    label: "Are you looking for a specific feature?",
+    errorMessage: "",
   },
 };
 
 export default function SuggestScreen() {
   const openToast = useToast().openToast;
-  const {didSuggest, registerSuggestion} = useFeedback();
+  const { didSuggest, registerSuggestion } = useFeedback();
   const [appsSuggestions, setAppsSuggestions] = useState<string[]>([]);
   const [suggested, setSuggested] = useState(false);
 
@@ -32,43 +32,43 @@ export default function SuggestScreen() {
     setAppsSuggestions([]);
     if (didSuggest()) {
       setSuggested(true);
-      openToast('You can only suggest one app per day');
+      openToast("You can only suggest one app per day");
     }
   };
 
   const submit = (
     data: Record<string, string>,
-    setDisabled: (value: boolean) => void,
+    setDisabled: (value: boolean) => void
   ) => {
     setAppsSuggestions([]);
     setDisabled(true);
-    fetch('https://updateme.fortunacasino.store/suggestions', {
-      method: 'POST',
+    fetch("https://updateme.fortunacasino.store/suggestions", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
         ...data,
         token: useToken.getState().token,
       }),
     })
-      .then(response => {
+      .then((response) => {
         if (response.status === 201) {
           registerSuggestion();
           setSuggested(true);
-          openToast('Report submitted successfully', 'success');
+          openToast("Report submitted successfully", "success");
           return;
         }
-        response.json().then(data => {
+        response.json().then((data) => {
           if (data.apps) {
             setAppsSuggestions(data.apps);
           }
-          openToast(data.message ?? 'Failed to submit report', 'error');
+          openToast(data.message ?? "Failed to submit report", "error");
           setDisabled(false);
         });
       })
       .catch(() => {
-        openToast('Failed to submit suggestion', 'error');
+        openToast("Failed to submit suggestion", "error");
         setDisabled(false);
       });
   };
@@ -79,7 +79,7 @@ export default function SuggestScreen() {
     <FormScreen
       fieldsData={{
         ...FieldsData,
-        app: {...FieldsData.app, suggestions: appsSuggestions},
+        app: { ...FieldsData.app, suggestions: appsSuggestions },
       }}
       init={init}
       submit={submit}

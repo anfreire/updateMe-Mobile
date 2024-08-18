@@ -1,108 +1,140 @@
-import {Banner} from 'react-native-paper';
-import {useEffect, useState} from 'react';
-import {AppScreenChildProps} from '..';
-import {useSession} from '@/states/temporary/session';
+import { Banner } from "react-native-paper";
+import { useCallback, useEffect, useMemo } from "react";
+import { useSession } from "@/states/temporary/session";
+import { CurrAppProps, useCurrApp } from "@/states/computed/currApp";
+import {
+  Translation,
+  interpolate,
+  useTranslations,
+} from "@/states/persistent/translations";
+import { useVersions } from "@/states/computed/versions";
+import { useIndex } from "@/states/temporary";
+import { useDefaultProviders } from "@/states/persistent/defaultProviders";
+import { useNavigate } from "@/hooks/navigation";
 
-interface bannerData {
-  'Missing dependencies': string[];
-  'Outdated dependencies': string[];
-  'Outdated complementary apps': string[];
-}
+const BannerAppsKeys = [
+  "missingDependencies",
+  "outdatedDependencies",
+  "outdatedComplementaryApps",
+] as const;
 
-const clearedBannerData: bannerData = {
-  'Missing dependencies': [],
-  'Outdated dependencies': [],
-  'Outdated complementary apps': [],
+const Messages: Record<
+  (typeof BannerAppsKeys)[number],
+  Record<"singular" | "plural", Translation>
+> = {
+  missingDependencies: {
+    singular: "This app is missing the dependency $1",
+    plural: "This app is missing the dependencies $1 and $2",
+  },
+  outdatedDependencies: {
+    singular: "This app has an outdated dependency $1",
+    plural: "This app has outdated dependencies $1 and $2",
+  },
+  outdatedComplementaryApps: {
+    singular: "This app has an outdated complementary app $1",
+    plural: "This app has outdated complementary apps $1 and $2",
+  },
 };
 
-const makeAppBannerMessage = (data: bannerData) => {
-  let dependencies: string[] = [];
-  for (const key in data) {
-    let prefix = '';
-    dependencies = data[key as keyof bannerData];
-    if (dependencies.length === 0) continue;
-    switch (key) {
-      case 'Missing dependencies':
-        prefix =
-          data[key].length === 1
-            ? 'This app is missing the dependency'
-            : 'This app is missing the dependencies';
-        break;
-      case 'Outdated dependencies':
-        prefix =
-          data[key].length === 1
-            ? 'This app has an outdated dependency'
-            : 'This app has outdated dependencies';
-        break;
-      case 'Outdated complementary apps':
-        prefix =
-          data[key].length === 1
-            ? 'This app has an outdated complementary app'
-            : 'This app has outdated complementary apps';
-        break;
+export default function RelatedAppsBanner({
+  currApp,
+}: {
+  currApp: CurrAppProps;
+}) {
+  const [appsDismissed, addSessionProp] = useSession((state) => [
+    state.trackers.updatesBannerDismissed,
+    state.addTracker,
+  ]);
+  const translations = useTranslations();
+  const [versions, updates] = useVersions((state) => [
+    state.versions,
+    state.updates,
+  ]);
+  const setCurrApp = useCurrApp((state) => state.setCurrApp);
+  const index = useIndex((state) => state.index);
+  const defaultProviders = useDefaultProviders(
+    (state) => state.defaultProviders
+  );
+  const navigate = useNavigate();
+
+  const data = useMemo(
+    () => ({
+      missingDependencies: currApp.depends.filter(
+        (dep) => versions[dep] === null
+      ),
+      outdatedDependencies: currApp.depends.filter((dep) =>
+        updates.includes(dep)
+      ),
+      outdatedComplementaryApps: currApp.complements.filter((complement) =>
+        updates.includes(complement)
+      ),
+    }),
+    [currApp.depends, currApp.complements, versions, updates]
+  );
+
+  const message = useMemo(() => {
+    if (appsDismissed.includes(currApp.name)) return null;
+    for (const key of BannerAppsKeys) {
+      if (data[key].length === 0) continue;
+      const apps = data[key].filter((app) => !appsDismissed.includes(app));
+      if (apps.length === 0) continue;
+      return apps.length === 1
+        ? interpolate(translations[Messages[key].singular], apps[0])
+        : interpolate(
+            translations[Messages[key].plural],
+            apps.slice(0, -1).join(", "),
+            apps.slice(-1)[0]
+          );
     }
-    return (
-      prefix +
-      ((data as any)[key].length === 1
-        ? ` ${dependencies[0]}`
-        : ` ${dependencies.splice(0, dependencies.length - 1).join(', ')} and ${
-            dependencies[0]
-          }`)
-    );
-  }
-  return null;
-};
+    return null;
+  }, [data, appsDismissed, currApp.name, translations]);
 
-export default function RelatedAppsBanner(props: AppScreenChildProps) {
-  const [data, setData] = useState<bannerData>(clearedBannerData);
-  const [appsDismissed, addSessionProp] = useSession(state => [
-    state.updatesBannerDismissed,
-    state.add
+  const handleUpdate = useCallback(() => {
+    if (data.missingDependencies.length > 0) {
+      setCurrApp(data.missingDependencies[0], {
+        index,
+        versions,
+        defaultProviders,
+      });
+    } else {
+      navigate("updates");
+    }
+  }, [
+    data.missingDependencies,
+    setCurrApp,
+    index,
+    versions,
+    defaultProviders,
+    navigate,
   ]);
 
-  useEffect(() => {
-    setData(clearedBannerData);
-    if (appsDismissed.includes(props.currApp.name) || !props.currApp || !props.currApp.version) return;
-    setData(_ => {
-      const newData = {
-        'Missing dependencies': props.currApp.depends.filter(
-          dep => !props.versions[dep],
-        ),
-        'Outdated dependencies': props.currApp.depends.filter(dep =>
-          props.updates.includes(dep),
-        ),
-        'Outdated complementary apps': props.currApp.complements.filter(
-          complement => props.updates.includes(complement),
-        ),
-      };
-      return newData;
-    });
-  }, [props.currApp]);
+  const updateLabel = useMemo(
+    () =>
+      data.missingDependencies.length
+        ? translations["View dependency"]
+        : translations["View updates"],
+    [data.missingDependencies.length, translations]
+  );
 
-  const navigateToUpdates = () => {
-    if (data['Missing dependencies'].length > 0) {
-      props.setCurrApp(data['Missing dependencies'][0]);
-    } else {
-      props.navigation.navigate('Updates' as never);
-    }
-  };
+  const handleDismiss = useCallback(() => {
+    addSessionProp("updatesBannerDismissed", currApp.name);
+  }, [addSessionProp, currApp.name]);
+
   return (
     <Banner
-      visible={Object.values(data).some(arr => arr.length > 0) && !appsDismissed.includes(props.currApp.name)}
+      visible={message !== null}
       actions={[
         {
-          label: 'Dismiss',
-          onPress: () => addSessionProp('updatesBannerDismissed',props.currApp.name),
+          label: translations["Dismiss"],
+          onPress: handleDismiss,
         },
         {
-          label:
-            data['Missing dependencies'].length > 0
-              ? 'View dependency'
-              : 'View updates',
-          onPress: navigateToUpdates,
+          label: updateLabel,
+          onPress: handleUpdate,
         },
-      ]}>
-      {makeAppBannerMessage(data)}
+      ]}
+    >
+      {message}
     </Banner>
   );
 }

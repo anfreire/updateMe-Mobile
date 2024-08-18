@@ -61,12 +61,41 @@ const translations = [
   "Installed",
   "Update",
   "Open",
+  "Selected Provider",
+  "Warning",
+  "The provider's apk is potentially unsafe. Are you sure you want to continue?",
+  "See analysis",
+  "Continue",
+  "Changing the provider will likely require uninstalling and reinstalling the app in order to install updates. Are you sure you want to continue?",
+  "Providers",
+  "Providers are different sources for the same app. Because they were made by different developers, they may have different versions, features or bugs.",
+  "Provider",
+  "Secure",
+  "Package Name",
+  "Version",
+  "Long press to open $1 website",
+  "Long press to open VirusTotal analysis",
+  "Long press to copy $1 package name",
+  "Long press to copy $1 version",
+  "Long press to copy $1 SHA-256",
+  "$1's package name copied to clipboard",
+  "$1's version copied to clipboard",
+  "$1's SHA-256 copied to clipboard",
+  "This app is missing the dependency $1",
+  "This app is missing the dependencies $1 and $2",
+  "This app has an outdated dependency $1",
+  "This app has outdated dependencies $1 and $2",
+  "This app has an outdated complementary app $1",
+  "This app has outdated complementary apps $1 and $2",
+  "View dependency",
+  "View updates",
+  "Dismiss",
 ] as const;
 
 export const interpolate = (template: string, ...values: string[]): string =>
   template.replace(/\$(\d+)/g, (match, index) => values[+index - 1] ?? match);
 
-type Translation = (typeof translations)[number];
+export type Translation = (typeof translations)[number];
 
 const defaultTranslations = Object.fromEntries(
   translations.map((translation) => [translation, translation])
@@ -79,7 +108,7 @@ const zustandStorage: StateStorage = {
   getItem: (name) => storage.getString(name) ?? name,
   removeItem: (name) => storage.delete(name),
 };
-type useTranslationsProps = Record<keyof typeof defaultTranslations, string>;
+export type useTranslationsProps = Record<Translation, string>;
 
 export const useTranslations = create<useTranslationsProps>()(
   persist(

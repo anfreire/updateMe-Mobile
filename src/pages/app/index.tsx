@@ -14,22 +14,16 @@ import { useCurrApp } from "@/states/computed/currApp";
 import { useVersions } from "@/states/computed/versions";
 import { useFocusEffect } from "@react-navigation/native";
 import { useDefaultProviders } from "@/states/persistent/defaultProviders";
-import { useShallow } from "zustand/react/shallow";
 
-export default function AppScreen({ navigation, route }: any) {
-  const [currApp, setCurrApp] = useCurrApp((state) => [
-    state.currApp,
-    state.setCurrApp,
-  ]);
+export default function AppScreen() {
+  const currApp = useCurrApp((state) => state.currApp);
   const theme = useTheme();
 
   const index = useIndex((state) => state.index);
   const defaultProviders = useDefaultProviders(
     (state) => state.defaultProviders
   );
-  const [versions, updates, refreshVersions] = useVersions(
-    useShallow((state) => [state.versions, state.updates, state.refresh])
-  );
+  const refreshVersions = useVersions((state) => state.refresh);
 
   const refresh = useCallback(() => {
     refreshVersions({ index, defaultProviders });
@@ -55,15 +49,7 @@ export default function AppScreen({ navigation, route }: any) {
 
   return (
     <>
-      <RelatedAppsBanner
-        navigation={navigation}
-        route={route}
-        index={index}
-        versions={versions}
-        updates={updates}
-        currApp={currApp}
-        setCurrApp={setCurrApp}
-      />
+      <RelatedAppsBanner currApp={currApp} />
       <ScrollView
         refreshControl={ThemedRefreshControl(theme, {
           refreshing: false,
