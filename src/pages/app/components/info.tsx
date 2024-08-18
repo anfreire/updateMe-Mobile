@@ -37,8 +37,11 @@ const DataRow = ({
 
 export default function AppInfo({ currApp }: { currApp: CurrAppProps }) {
   const theme = useTheme();
-  const installUnsafe = useSettings(
-    (state) => state.settings.security.installUnsafeApps
+  const [installUnsafe, installAfterDownload] = useSettings(
+    useShallow((state) => [
+      state.settings.security.installUnsafeApps,
+      state.settings.downloads.installAfterDownload,
+    ])
   );
   const openDialog = useDialogs((state) => state.openDialog);
   const addDownload = useDownloads((state) => state.addDownload);
@@ -81,18 +84,25 @@ export default function AppInfo({ currApp }: { currApp: CurrAppProps }) {
   }, [installUnsafe, providerInfo.safe, translations, navigate]);
 
   const handleSafeInstall = useCallback(() => {
-    const fileName = `${currApp.name} ${providerInfo.version}.apk`;
-
-    addDownload(fileName, providerInfo.download, undefined, (path) =>
-      openToast(
-        interpolate(translations["$1 finished downloading"], currApp.name),
-        undefined,
-        {
-          label: translations["Install"],
-          onPress: () => FilesModule.installApk(path),
-        }
-      )
+    const fileName = FilesModule.buildFileName(
+      currApp.name,
+      providerInfo.version
     );
+
+    addDownload(fileName, providerInfo.download, undefined, (path) => {
+      if (installAfterDownload) {
+        FilesModule.installApk(path);
+      } else {
+        openToast(
+          interpolate(translations["$1 finished downloading"], currApp.name),
+          undefined,
+          {
+            label: translations["Install"],
+            onPress: () => FilesModule.installApk(path),
+          }
+        );
+      }
+    });
 
     if (!drawerWasOpenedInThisSession) {
       openDrawer();
@@ -115,6 +125,7 @@ export default function AppInfo({ currApp }: { currApp: CurrAppProps }) {
     providerInfo,
     translations,
     drawerWasOpenedInThisSession,
+    installAfterDownload,
     navigate,
   ]);
 

@@ -1,71 +1,119 @@
-import {IconButton, List, Text, TouchableRipple} from 'react-native-paper';
-import {View} from 'react-native';
-import {DownloadsScreenChildProps} from '..';
-import { useDialogs } from '@/states/temporary/dialogs';
-import { useTheme } from '@/theme';
+import React, { useCallback, useMemo } from "react";
+import { StyleSheet, View } from "react-native";
+import { IconButton, List, Text, TouchableRipple } from "react-native-paper";
+import { useDialogs } from "@/states/temporary/dialogs";
+import { useTheme } from "@/theme";
+import { ReactNativeBlobUtilStat } from "react-native-blob-util";
+import { useDownloads } from "@/states/temporary/downloads";
+import { useTranslations, interpolate } from "@/states/persistent/translations";
 
-export default function Downloading(props: DownloadsScreenChildProps) {
+const DownloadItem = ({
+  download,
+  progress,
+  onCancel,
+}: {
+  download: string;
+  progress: number;
+  onCancel: (download: string) => void;
+}) => {
   const theme = useTheme();
-  const openDialog = useDialogs().openDialog;
 
-  return Object.keys(props.downloads).length > 0 ? (
-    <List.Section title="Downloading">
-      {Object.keys(props.downloads).map((download, index) => (
-        <List.Item
-          onPress={() =>
-            openDialog({
-              title: 'Cancel download',
-              content: `Are you sure you want to cancel the download of ${download}?`,
-              actions: [
-                {
-                  title: 'Keep downloading',
-                  action: () => {},
-                },
-                {
-                  title: 'Cancel',
-                  action: () => props.cancelDownload(download),
-                },
-              ],
-            })
-          }
-          key={index}
-          title={download}
-          right={_ => (
-            <View
-              style={{
-                justifyContent: 'center',
-                alignItems: 'center',
-                marginRight: 0,
-                width: 100,
-                minHeight: 40,
-              }}>
-              <Text
-                style={{
-                  fontSize: 16,
-                  fontWeight: 'bold',
-                  color: theme.schemedTheme.secondary,
-                }}>{`${(props.downloads[download].progress * 100).toFixed(
-                0,
-              )}%`}</Text>
-            </View>
-          )}
-          left={props => (
-            <TouchableRipple
-              style={{
-                position: 'relative',
-                width: 20,
-                height: 20,
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                ...props.style,
-              }}>
-              <IconButton icon="cancel" size={25} />
-            </TouchableRipple>
-          )}></List.Item>
-      ))}
-    </List.Section>
-  ) : (
-    <></>
+  return (
+    <List.Item
+      onPress={() => onCancel(download)}
+      title={download}
+      left={(props) => (
+        <TouchableRipple style={[styles.cancelButton, props.style]}>
+          <IconButton icon="cancel" size={25} />
+        </TouchableRipple>
+      )}
+      right={() => (
+        <View style={styles.progressContainer}>
+          <Text
+            style={[
+              styles.progressText,
+              { color: theme.schemedTheme.secondary },
+            ]}
+          >
+            {`${(progress * 100).toFixed(0)}%`}
+          </Text>
+        </View>
+      )}
+    />
   );
+};
+
+export default function Downloading({
+  files,
+}: {
+  files: Record<string, ReactNativeBlobUtilStat>;
+}) {
+  const openDialog = useDialogs((state) => state.openDialog);
+  const [downloads, cancelDownload] = useDownloads((state) => [
+    state.downloads,
+    state.cancelDownload,
+  ]);
+  const translations = useTranslations();
+
+  const handleCancelDownload = useCallback(
+    (download: string) => {
+      openDialog({
+        title: translations["Cancel download"],
+        content: interpolate(
+          translations["Are you sure you want to cancel the download of $1?"],
+          download
+        ),
+        actions: [
+          {
+            title: translations["Keep downloading"],
+            action: () => {},
+          },
+          {
+            title: translations["Cancel"],
+            action: () => cancelDownload(download),
+          },
+        ],
+      });
+    },
+    [translations]
+  );
+
+  const downloadItems = useMemo(() => {
+    return Object.keys(files).map((download) => (
+      <DownloadItem
+        key={download}
+        download={download}
+        progress={downloads[download].progress}
+        onCancel={handleCancelDownload}
+      />
+    ));
+  }, [files, downloads, handleCancelDownload]);
+
+  if (Object.keys(files).length === 0) {
+    return null;
+  }
+
+  return <List.Section title="Downloading">{downloadItems}</List.Section>;
 }
+
+const styles = StyleSheet.create({
+  progressContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 0,
+    width: 100,
+    minHeight: 40,
+  },
+  progressText: {
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  cancelButton: {
+    position: "relative",
+    width: 20,
+    height: 20,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+});

@@ -7,7 +7,9 @@ import { useTips } from "@/states/temporary/tips";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { useCallback } from "react";
 
-type PageParams = HomeStackParams & MainStackParams & TipsStackParams;
+export type PageParams = HomeStackParams & MainStackParams & TipsStackParams;
+
+export type NavigationProps = NavigationProp<PageParams>;
 
 const PREVIOUS_ROUTES: Record<Page, Page | null> = {
   app: "home",
@@ -23,12 +25,12 @@ const PREVIOUS_ROUTES: Record<Page, Page | null> = {
 } as const;
 
 export function useNavigate() {
-  const navigation = useNavigation<NavigationProp<PageParams>>();
+  const navigation = useNavigation<NavigationProps>();
   const setCurrPage = useSession((state) => state.setCurrPage);
 
   return useCallback(
     <T extends Page>(page: T, params?: PageParams[T]) => {
-      navigation.navigate(page as Page, params);
+      navigation.navigate(page as any, params);
       setCurrPage(page);
     },
     [navigation.navigate]
@@ -36,18 +38,18 @@ export function useNavigate() {
 }
 
 export function useSilentNavigate() {
-  const navigation = useNavigation<NavigationProp<PageParams>>();
+  const navigation = useNavigation<NavigationProps>();
 
   return useCallback(
     <T extends Page>(page: T, params?: PageParams[T]) => {
-      navigation.navigate(page as Page, params);
+      navigation.navigate(page as any, params);
     },
     [navigation.navigate]
   );
 }
 
 export function useGoBack() {
-  const navigation = useNavigation<NavigationProp<PageParams>>();
+  const navigation = useNavigation<NavigationProps>();
   const [currPage, setCurrPage] = useSession((state) => [
     state.currPage,
     state.setCurrPage,

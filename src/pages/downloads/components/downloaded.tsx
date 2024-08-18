@@ -1,109 +1,103 @@
-import {useEffect, useState} from 'react';
-import {Checkbox, IconButton, List} from 'react-native-paper';
-import {View} from 'react-native';
-import Share from 'react-native-share';
-import {DownloadsScreenChildProps} from '..';
-import {useTheme} from '@/theme';
-import FilesModule from '@/lib/files';
-import MultiIcon from '@/components/multiIcon';
+import React, { useCallback, useEffect, useMemo } from "react";
+import { View } from "react-native";
+import { Checkbox, IconButton, List } from "react-native-paper";
+import Share from "react-native-share";
+import { useTheme } from "@/theme";
+import FilesModule from "@/lib/files";
+import MultiIcon from "@/components/multiIcon";
+import { ReactNativeBlobUtilStat } from "react-native-blob-util";
+import { NavigationProps } from "@/hooks/navigation";
 
-export default function Downloaded(
-  props: DownloadsScreenChildProps & {updateFiles: () => void},
-) {
-  const [selectedFiles, setSelectedFiles] = useState<string[]>([]);
+export default function Downloaded({
+  files,
+  updateFiles,
+  navigation,
+}: {
+  files: Record<string, ReactNativeBlobUtilStat>;
+  updateFiles: () => void;
+  navigation: NavigationProps;
+}) {
   const theme = useTheme();
+  const [selectedFiles, setSelectedFiles] = React.useState<string[]>([]);
 
-  const deleteSelectedFiles = () => {
-    setSelectedFiles(prev => {
-      Promise.all(prev.map(file => FilesModule.deleteFile(file))).then(() => {
-        props.updateFiles();
-        setSelectedFiles([]);
-      });
-      return [];
-    });
-  };
+  const selectFile = useCallback((file: string) => {
+    setSelectedFiles((prev) =>
+      prev.includes(file) ? prev.filter((f) => f !== file) : [...prev, file]
+    );
+  }, []);
 
-  const updateHeader = (newSelectedFiles: string[]) => {
-    const allFilesSelected =
-      newSelectedFiles.length === Object.keys(props.files).length;
-    props.navigation.setOptions({
-      headerRight: () => (
-        <View style={{flexDirection: 'row'}}>
-          {newSelectedFiles.length == 0 ? (
-            <>
-              <IconButton icon="refresh" onPress={props.updateFiles} />
-            </>
-          ) : (
-            <>
-              <IconButton
-                icon="share"
-                onPress={() => {
-                  Share.open({
-                    ...(newSelectedFiles.length === 1
-                      ? {
-                          url: 'file://' + props.files[newSelectedFiles[0]].path,
-                        }
-                      : {
-                          urls: newSelectedFiles.map(
-                            file => 'file://' + props.files[file].path,
-                          ),
-                        }),
-                  }).catch(_ => {});
-                }}
-              />
-              <IconButton
-                icon={
-                  allFilesSelected
-                    ? 'checkbox-multiple-blank-outline'
-                    : 'checkbox-multiple-marked'
-                }
-                onPress={() =>
-                  setSelectedFiles(_ =>
-                    allFilesSelected ? [] : Object.keys(props.files),
-                  )
-                }
-              />
-              <IconButton icon="trash-can" onPress={deleteSelectedFiles} />
-            </>
-          )}
-        </View>
-      ),
-    });
-  };
+  const handleShare = useCallback(() => {
+    Share.open({
+      urls: selectedFiles.map((file) => "file://" + files[file].path),
+    }).catch(() => {});
+  }, [selectedFiles, files]);
 
-  const selectFile = (file: string) => {
-    setSelectedFiles(prev => {
-      const newPrev = prev.includes(file)
-        ? prev.filter(f => f !== file)
-        : [...prev, file];
-      return newPrev;
-    });
-  };
+  const handleSelectAll = useCallback(() => {
+    setSelectedFiles((prev) =>
+      prev.length === Object.keys(files).length ? [] : Object.keys(files)
+    );
+  }, [files]);
+
+  const handleDelete = useCallback(() => {
+    Promise.all(selectedFiles.map((file) => FilesModule.deleteFile(file)))
+      .then(updateFiles)
+      .then(() => setSelectedFiles([]));
+  }, [selectedFiles, updateFiles]);
+
+  const headerRight = useMemo(() => {
+    if (selectedFiles.length === 0) {
+      return () => <IconButton icon="refresh" onPress={updateFiles} />;
+    }
+    return () => (
+      <View style={{ flexDirection: "row" }}>
+        <IconButton icon="share" onPress={handleShare} />
+        <IconButton
+          icon={
+            Object.keys(files).length === selectedFiles.length
+              ? "checkbox-multiple-blank-outline"
+              : "checkbox-multiple-marked"
+          }
+          onPress={handleSelectAll}
+        />
+        <IconButton icon="trash-can" onPress={handleDelete} />
+      </View>
+    );
+  }, [
+    selectedFiles,
+    files,
+    updateFiles,
+    handleShare,
+    handleSelectAll,
+    handleDelete,
+  ]);
 
   useEffect(() => {
-    updateHeader(selectedFiles);
-  }, [selectedFiles]);
+    navigation.setOptions({ headerRight });
+  }, [navigation, headerRight]);
 
-  return true ? (
+  if (Object.keys(files).length === 0) {
+    return null;
+  }
+
+  return (
     <List.Section title="Downloaded">
-      {Object.keys(props.files).map((file, i) => (
+      {Object.entries(files).map(([file, fileStats]) => (
         <List.Item
-          android_ripple={null}
+          key={file}
+          title={file}
+          description={`${(fileStats.size / 1024 / 1024).toFixed(2)} MB`}
           onPress={() => {
             selectedFiles.length === 0
               ? FilesModule.installApk(file)
               : selectFile(file);
           }}
           onLongPress={() => selectFile(file)}
-          key={i}
-          title={file}
           style={{
             backgroundColor: selectedFiles.includes(file)
               ? theme.schemedTheme.surfaceBright
               : theme.schemedTheme.surface,
           }}
-          description={`${(props.files[file].size / 1024 / 1024).toFixed(2)} MB`}
-          left={props => (
+          left={(props) => (
             <MultiIcon
               {...props}
               size={25}
@@ -111,17 +105,16 @@ export default function Downloaded(
               name="android"
             />
           )}
-          right={props =>
+          right={(props) =>
             selectedFiles.length > 0 && (
               <Checkbox
                 {...props}
-                status={selectedFiles.includes(file) ? 'checked' : 'unchecked'}
+                status={selectedFiles.includes(file) ? "checked" : "unchecked"}
               />
             )
-          }></List.Item>
+          }
+        />
       ))}
     </List.Section>
-  ) : (
-    <></>
   );
 }

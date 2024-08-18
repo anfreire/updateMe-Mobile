@@ -15,7 +15,6 @@ import { useApp } from "@/states/temporary/app";
 import { useTips } from "@/states/temporary/tips";
 import PermissionsModule from "@/lib/permissions";
 import BackgroundTasksModule from "@/lib/backgroundTasks";
-import { useToken } from "@/states/persistent/token";
 import MainStack from "@/navigation";
 
 function App(): React.JSX.Element {
@@ -23,9 +22,8 @@ function App(): React.JSX.Element {
   const deleteOnLeave = useSettings(
     (state) => state.settings.downloads.deleteOnLeave
   );
-  const openDialog = useDialogs().openDialog;
-  const fetchTips = useTips().fetchTips;
-  const initToken = useToken().init;
+  const openDialog = useDialogs((state) => state.openDialog);
+  const fetchTips = useTips((state) => state.fetchTips);
   const [info, localVersion] = useApp((state) => [
     state.info,
     state.localVersion,
@@ -49,7 +47,6 @@ function App(): React.JSX.Element {
   }, [releaseNotification, updateNotification]);
 
   useEffect(() => {
-    initToken(); // Check if the user token exists, if not, it will be initialized
     fetchTips(); // Fetch tips from the server
 
     if (deleteOnLeave) FilesModule.deleteAllFiles(); // Clean up files on app enter (In case it didn't clean up on exit)

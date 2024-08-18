@@ -1,13 +1,9 @@
 import FilesModule from "../../lib/files";
 import { create } from "zustand";
-import { useSettings } from "../persistent/settings";
-import ReactNativeBlobUtil, {
-  FetchBlobResponse,
-  StatefulPromise,
-} from "react-native-blob-util";
+import { FetchBlobResponse, StatefulPromise } from "react-native-blob-util";
 import { Logger } from "../persistent/logs";
 
-interface Download {
+export interface Download {
   progress: number;
   task?: StatefulPromise<FetchBlobResponse>;
 }

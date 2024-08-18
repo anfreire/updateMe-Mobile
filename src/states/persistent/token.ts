@@ -10,26 +10,29 @@ const zustandStorage: StateStorage = {
   removeItem: (name) => storage.delete(name),
 };
 
-export interface useToken {
-  token: string | null;
-  init: () => void;
+export interface useTokenProps {
+  _token: string | null;
+  getToken: () => string;
 }
 
-export const useToken = create<useToken>()(
+function generateToken() {
+  const timestamp = Date.now().toString(36);
+  const randomString = Math.random().toString(36).substring(2, 15);
+  return `${timestamp}-${randomString}`;
+}
+
+export const useToken = create<useTokenProps>()(
   persist(
     (set, get) => ({
-      token: null,
-      init: () => {
-        if (!get().token) {
-          const token = storage.getString("token");
-          if (token) {
-            set({ token });
-          } else {
-            const timestamp = Date.now().toString(36);
-            const randomString = Math.random().toString(36).substring(2, 15);
-            set({ token: `${timestamp}-${randomString}` });
-          }
+      _token: null,
+      getToken: () => {
+        const token = get()._token;
+        if (token) {
+          return token;
         }
+        const newToken = generateToken();
+        set({ _token: newToken });
+        return newToken;
       },
     }),
     {
