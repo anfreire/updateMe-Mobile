@@ -1,4 +1,4 @@
-import React, { memo, useMemo } from "react";
+import React, { memo } from "react";
 import { DataTable } from "react-native-paper";
 import { CurrAppProps } from "@/states/computed/currApp";
 import { interpolate, useTranslations } from "@/states/persistent/translations";
@@ -16,47 +16,44 @@ const ProvidersDataTableRow = memo(
   }) => {
     const translations = useTranslations();
 
-    const copiableCellProps = useMemo(
-      () => [
-        {
-          onPressMessage: interpolate(
-            translations["Long press to copy $1 package name"],
-            provider
-          ),
-          onLongPressMessage: interpolate(
-            translations["$1's package name copied to clipboard"],
-            provider
-          ),
-          toCopy: currApp.providers[provider].packageName,
-          width: tableSize.packageName,
-        },
-        {
-          onPressMessage: interpolate(
-            translations["Long press to copy $1 version"],
-            provider
-          ),
-          onLongPressMessage: interpolate(
-            translations["$1's version copied to clipboard"],
-            provider
-          ),
-          toCopy: currApp.providers[provider].version,
-          width: tableSize.version,
-        },
-        {
-          onPressMessage: interpolate(
-            translations["Long press to copy $1 SHA-256"],
-            provider
-          ),
-          onLongPressMessage: interpolate(
-            translations["$1's SHA-256 copied to clipboard"],
-            provider
-          ),
-          toCopy: currApp.providers[provider].sha256,
-          width: 175,
-        },
-      ],
-      [currApp.providers, provider, translations, tableSize]
-    );
+    const copiableCellProps = [
+      {
+        onPressMessage: interpolate(
+          translations["Long press to copy $1 package name"],
+          provider
+        ),
+        onLongPressMessage: interpolate(
+          translations["$1's package name copied to clipboard"],
+          provider
+        ),
+        toCopy: currApp.providers[provider].packageName,
+        width: tableSize.packageName,
+      },
+      {
+        onPressMessage: interpolate(
+          translations["Long press to copy $1 version"],
+          provider
+        ),
+        onLongPressMessage: interpolate(
+          translations["$1's version copied to clipboard"],
+          provider
+        ),
+        toCopy: currApp.providers[provider].version,
+        width: tableSize.version,
+      },
+      {
+        onPressMessage: interpolate(
+          translations["Long press to copy $1 SHA-256"],
+          provider
+        ),
+        onLongPressMessage: interpolate(
+          translations["$1's SHA-256 copied to clipboard"],
+          provider
+        ),
+        toCopy: currApp.providers[provider].sha256,
+        width: 175,
+      },
+    ];
 
     return (
       <DataTable.Row>
