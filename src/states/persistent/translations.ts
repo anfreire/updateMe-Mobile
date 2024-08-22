@@ -131,6 +131,14 @@ const translations = [
 	"Security",
 	"Risk Taker",
 	"Install potentially unsafe apps",
+	"Appearance",
+	"Chromatic Shift",
+	"Change the source color of the app",
+	"Dusk till Dawn",
+	"Change the color scheme of the app",
+	"Layout",
+	"Feels like home",
+	"Change the layout of the home screen",
 ] as const;
 
 export const interpolate = (template: string, ...values: string[]): string =>

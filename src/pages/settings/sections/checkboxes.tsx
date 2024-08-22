@@ -1,39 +1,35 @@
+import { useMemo, useCallback, memo } from "react";
+import { FlatList } from "react-native";
+import { Checkbox, List } from "react-native-paper";
+import Animated from "react-native-reanimated";
 import MultiIcon, { MultiIconType } from "@/components/multiIcon";
 import {
 	SettingsSectionItemType,
 	SettingsSectionType,
 	useSettings,
 } from "@/states/persistent/settings";
-import { useTranslations } from "@/states/persistent/translations";
-import { useEffect, useMemo } from "react";
-import { FlatList } from "react-native";
-import { Checkbox, List } from "react-native-paper";
-import Animated, {
-	Easing,
-	useAnimatedStyle,
-	useSharedValue,
-	withRepeat,
-	withTiming,
-} from "react-native-reanimated";
-
-export type CheckboxTitle =
-	| "Install Express"
-	| "Fresh Start"
-	| "Risk Taker"
-	| "Update Junkie"
-	| "Frontline Fan";
+import {
+	Translation,
+	useTranslations,
+	useTranslationsProps,
+} from "@/states/persistent/translations";
+import { usePulsing } from "@/hooks/usePulsing";
+import { RouteProp, useRoute } from "@react-navigation/native";
+import { AppsStackParams } from "@/navigation/apps";
+import { MainStackParams } from "@/navigation";
+import { TipsStackParams } from "@/navigation/tips";
 
 const AnimatedListItem = Animated.createAnimatedComponent(List.Item);
 
-export interface CheckboxItem<
-	T extends SettingsSectionType,
-	K extends SettingsSectionItemType<T>,
+interface CheckboxItem<
+	S extends SettingsSectionType,
+	I extends SettingsSectionItemType<S>,
 > {
-	title: string;
-	description: string;
+	title: Translation;
+	description: Translation;
 	setting: {
-		section: T;
-		item: K;
+		section: S;
+		item: I;
 	};
 	icon: {
 		name: string;
@@ -41,168 +37,126 @@ export interface CheckboxItem<
 	};
 }
 
-export default function SettingsCheckboxes({
-	pulsingSetting,
-}: {
-	pulsingSetting: string | undefined;
-}) {
+interface SettingsGroup<S extends SettingsSectionType> {
+	title: Translation;
+	items: CheckboxItem<S, SettingsSectionItemType<S>>[];
+}
+
+const SettingsData = [
+	{
+		title: "Downloads",
+		items: [
+			{
+				title: "Install Express",
+				description: "Install the app after downloading",
+				setting: { section: "downloads", item: "installAfterDownload" },
+				icon: { name: "install-mobile", type: "material-icons" },
+			},
+			{
+				title: "Fresh Start",
+				description: "Delete all downloads when leaving the app",
+				setting: { section: "downloads", item: "deleteOnLeave" },
+				icon: { name: "delete-sweep", type: "material-icons" },
+			},
+		],
+	} as SettingsGroup<"downloads">,
+	{
+		title: "Notifications",
+		items: [
+			{
+				title: "Update Junkie",
+				description:
+					"Get notified when there are installed apps updates",
+				setting: {
+					section: "notifications",
+					item: "updatesNotification",
+				},
+				icon: { name: "update", type: "material-icons" },
+			},
+			{
+				title: "Frontline Fan",
+				description:
+					"Get notified when there is a new UpdateMe release",
+				setting: {
+					section: "notifications",
+					item: "newReleaseNotification",
+				},
+				icon: { name: "new-releases", type: "material-icons" },
+			},
+		],
+	} as SettingsGroup<"notifications">,
+	{
+		title: "Security",
+		items: [
+			{
+				title: "Risk Taker",
+				description: "Install potentially unsafe apps",
+				setting: { section: "security", item: "installUnsafeApps" },
+				icon: { name: "shield-off", type: "material-community" },
+			},
+		],
+	} as SettingsGroup<"security">,
+];
+
+const SettingsCheckboxes = () => {
 	const translations = useTranslations();
 	const [settings, toggleSetting] = useSettings((state) => [
 		state.settings,
 		state.toggleSetting,
 	]);
+	const route =
+		useRoute<
+			RouteProp<AppsStackParams & MainStackParams & TipsStackParams>
+		>();
+	const pulsingStyle = usePulsing(!!route.params?.setting);
 
-	const opacity = useSharedValue(1);
-
-	const pulsingStyle = useAnimatedStyle(() => {
-		return {
-			opacity: opacity.value,
-		};
-	});
-
-	useEffect(() => {
-		if (!pulsingSetting) return;
-
-		opacity.value = withRepeat(
-			withTiming(0.5, {
-				duration: 600,
-				easing: Easing.inOut(Easing.quad),
-			}),
-			-1,
-			true,
-		);
-
-		setTimeout(() => {
-			opacity.value = 1;
-		}, 2500);
-	}, [pulsingSetting]);
-
-	const settingsValues = useMemo(
-		() => [
-			{
-				title: translations["Downloads"],
-				items: [
-					{
-						title: translations["Install Express"],
-						description:
-							translations["Install the app after downloading"],
-						setting: {
-							section: "downloads",
-							item: "installAfterDownload",
-						},
-						icon: {
-							name: "install-mobile",
-							type: "material-icons",
-						},
-					} as CheckboxItem<"downloads", "installAfterDownload">,
-					{
-						title: translations["Fresh Start"],
-						description:
-							translations[
-								"Delete all downloads when leaving the app"
-							],
-						setting: {
-							section: "downloads",
-							item: "deleteOnLeave",
-						},
-						icon: {
-							name: "delete-sweep",
-							type: "material-icons",
-						},
-					} as CheckboxItem<"downloads", "deleteOnLeave">,
-				],
-			},
-			{
-				title: translations["Notifications"],
-				items: [
-					{
-						title: translations["Update Junkie"],
-						description:
-							translations[
-								"Get notified when there are installed apps updates"
-							],
-						setting: {
-							section: "notifications",
-							item: "updatesNotification",
-						},
-						icon: {
-							name: "update",
-							type: "material-icons",
-						},
-					} as CheckboxItem<"notifications", "updatesNotification">,
-					{
-						title: translations["Frontline Fan"],
-						description:
-							translations[
-								"Get notified when there is a new UpdateMe release"
-							],
-						setting: {
-							section: "notifications",
-							item: "newReleaseNotification",
-						},
-						icon: {
-							name: "new-releases",
-							type: "material-icons",
-						},
-					} as CheckboxItem<
-						"notifications",
-						"newReleaseNotification"
-					>,
-				],
-			},
-			{
-				title: translations["Security"],
-				items: [
-					{
-						title: translations["Risk Taker"],
-						description:
-							translations["Install potentially unsafe apps"],
-						setting: {
-							section: "security",
-							item: "installUnsafeApps",
-						},
-						icon: {
-							name: "shield-off",
-							type: "material-community",
-						},
-					} as CheckboxItem<"security", "installUnsafeApps">,
-				],
-			},
-		],
+	const translatedSettingsData = useMemo(
+		() =>
+			SettingsData.map((group) => ({
+				...group,
+				title: translations[group.title],
+				items: group.items.map((item) => ({
+					...item,
+					title: translations[item.title],
+					description: translations[item.description],
+				})),
+			})),
 		[translations],
 	);
+
 	return (
 		<FlatList
-			data={settingsValues}
+			data={translatedSettingsData}
+			keyExtractor={(item) => item.title}
 			renderItem={({ item }) => (
-				<List.Section key={item.title} title={item.title}>
-					{item.items.map((item) => (
+				<List.Section title={item.title}>
+					{item.items.map((settingItem) => (
 						<AnimatedListItem
-							key={item.title}
-							title={item.title}
-							description={item.description}
+							key={settingItem.title}
+							title={settingItem.title}
+							description={settingItem.description}
 							style={
-								item.title === pulsingSetting
+								settingItem.title === route.params?.setting
 									? pulsingStyle
-									: {}
+									: undefined
 							}
-							left={(props: any) => (
+							left={(props) => (
 								<MultiIcon
 									{...props}
 									size={20}
-									type={item.icon.type}
-									name={item.icon.name}
+									type={settingItem.icon.type}
+									name={settingItem.icon.name}
 								/>
 							)}
-							right={(props: any) => (
+							right={(props) => (
 								<Checkbox
 									{...props}
 									status={
 										settings[
-											item.setting
+											settingItem.setting
 												.section as SettingsSectionType
 										][
-											item.setting
+											settingItem.setting
 												.item as SettingsSectionItemType<SettingsSectionType>
 										]
 											? "checked"
@@ -212,8 +166,9 @@ export default function SettingsCheckboxes({
 							)}
 							onPress={() =>
 								toggleSetting(
-									item.setting.section as SettingsSectionType,
-									item.setting
+									settingItem.setting
+										.section as SettingsSectionType,
+									settingItem.setting
 										.item as SettingsSectionItemType<SettingsSectionType>,
 								)
 							}
@@ -221,7 +176,10 @@ export default function SettingsCheckboxes({
 					))}
 				</List.Section>
 			)}
-			keyExtractor={(item) => item.title}
 		/>
 	);
-}
+};
+
+SettingsCheckboxes.displayName = "SettingsCheckboxes";
+
+export default SettingsCheckboxes;

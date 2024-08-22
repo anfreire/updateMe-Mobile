@@ -9,16 +9,16 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { useCallback } from "react";
 import { IconButton } from "react-native-paper";
 
-export const HomeStackPages = ["app", "home"] as const;
+export const AppsStackPages = ["app", "home"] as const;
 
-export type HomeStackPage = (typeof HomeStackPages)[number];
+export type AppsStackPage = (typeof AppsStackPages)[number];
 
-export type HomeStackParams = {
+export type AppsStackParams = {
   app: undefined;
   home: undefined;
 };
 
-const Stack = createStackNavigator<HomeStackParams>();
+const Stack = createStackNavigator<AppsStackParams>();
 
 export default function HomeStack() {
   const { schemedTheme } = useTheme();
