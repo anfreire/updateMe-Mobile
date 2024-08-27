@@ -1,3 +1,4 @@
+import * as React from "react";
 import { useTranslations } from "@/states/persistent/translations";
 import { memo } from "react";
 import { DataTable } from "react-native-paper";

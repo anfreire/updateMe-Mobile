@@ -1,3 +1,4 @@
+import * as React from "react";
 import ThemedRefreshControl from "@/components/refreshControl";
 import { useNavigate } from "@/hooks/navigation";
 import { useTips } from "@/states/temporary/tips";

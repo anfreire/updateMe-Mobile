@@ -1,3 +1,4 @@
+import * as React from "react";
 import React, { useCallback, useMemo, useRef, useState } from "react";
 import { Dimensions, StyleSheet, View } from "react-native";
 import { Button } from "react-native-paper";

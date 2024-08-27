@@ -1,3 +1,4 @@
+import * as React from "react";
 import { useTips } from "@/states/temporary/tips";
 import { useTheme } from "@/theme";
 import { createStackNavigator } from "@react-navigation/stack";

@@ -1,3 +1,4 @@
+import * as React from "react";
 import MultiIcon from "@/components/multiIcon";
 import { useNavigate } from "@/hooks/useNavigate";
 import { useDialogs } from "@/states/temporary/dialogs";

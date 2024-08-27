@@ -1,3 +1,4 @@
+import * as React from "react";
 import { Card } from "react-native-paper";
 import { StyleSheet, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";

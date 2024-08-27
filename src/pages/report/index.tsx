@@ -1,3 +1,4 @@
+import * as React from "react";
 import FormScreen from "@/components/form";
 import { useFeedback } from "@/states/persistent/feedback";
 import { Logger } from "@/states/persistent/logs";

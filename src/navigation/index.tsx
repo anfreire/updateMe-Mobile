@@ -1,3 +1,4 @@
+import * as React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import { useTheme } from "@/theme";
 import { IconButton } from "react-native-paper";

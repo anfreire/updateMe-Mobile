@@ -1,3 +1,4 @@
+import * as React from "react";
 import React, { createContext, useContext, useMemo, useCallback } from "react";
 import { useColorScheme } from "react-native";
 import {

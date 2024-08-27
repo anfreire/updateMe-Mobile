@@ -1,3 +1,4 @@
+import * as React from "react";
 import { useTheme } from "@/theme";
 import { useFocusEffect } from "@react-navigation/native";
 import React, { useCallback } from "react";

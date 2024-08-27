@@ -1,3 +1,4 @@
+import * as React from "react";
 import React, { memo } from "react";
 import { DataTable } from "react-native-paper";
 import { CurrAppProps } from "@/states/computed/currApp";

@@ -1,3 +1,4 @@
+import * as React from "react";
 import { Linking, StyleSheet, View } from "react-native";
 import { Button, Dialog, ProgressBar, Text } from "react-native-paper";
 import {

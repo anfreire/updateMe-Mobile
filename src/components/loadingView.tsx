@@ -1,3 +1,4 @@
+import * as React from "react";
 import { StyleSheet, View } from "react-native";
 import { useTheme } from "@/theme";
 import { ActivityIndicator } from "react-native-paper";

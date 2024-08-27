@@ -1,3 +1,4 @@
+import * as React from "react";
 import { useGoBack } from "@/hooks/navigation";
 import AppScreen from "@/pages/app";
 import HomeScreen from "@/pages/home";

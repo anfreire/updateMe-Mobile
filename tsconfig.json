@@ -1,11 +1,11 @@
 {
   "extends": "@react-native/typescript-config/tsconfig.json",
   "compilerOptions": {
-    "moduleResolution": "NodeNext",
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
       "@assets/*": ["./assets/*"],
-    }
+    },
+    "jsx": "react",
   }
 }

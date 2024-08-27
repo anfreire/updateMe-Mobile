@@ -1,3 +1,4 @@
+import * as React from "react";
 import React, { useMemo } from "react";
 import { IconProps } from "react-native-vector-icons/Icon";
 

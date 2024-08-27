@@ -1,3 +1,4 @@
+import * as React from "react";
 import LoadingView from "@/components/loadingView";
 import { useTips } from "@/states/temporary/tips";
 import { useTheme } from "@/theme";

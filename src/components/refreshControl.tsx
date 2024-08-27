@@ -1,3 +1,4 @@
+import * as React from "react";
 import { RefreshControl } from "react-native";
 import { UseThemeProps } from "@/theme";
 

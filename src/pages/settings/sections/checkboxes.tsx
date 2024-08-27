@@ -1,5 +1,6 @@
-import { useMemo, useCallback, memo } from "react";
-import { FlatList } from "react-native";
+import * as React from "react";
+import { useMemo } from "react";
+import { FlatList, ListRenderItem } from "react-native";
 import { Checkbox, List } from "react-native-paper";
 import Animated from "react-native-reanimated";
 import MultiIcon, { MultiIconType } from "@/components/multiIcon";
@@ -8,11 +9,7 @@ import {
 	SettingsSectionType,
 	useSettings,
 } from "@/states/persistent/settings";
-import {
-	Translation,
-	useTranslations,
-	useTranslationsProps,
-} from "@/states/persistent/translations";
+import { Translation, useTranslations } from "@/states/persistent/translations";
 import { usePulsing } from "@/hooks/usePulsing";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { AppsStackParams } from "@/navigation/apps";
@@ -21,28 +18,34 @@ import { TipsStackParams } from "@/navigation/tips";
 
 const AnimatedListItem = Animated.createAnimatedComponent(List.Item);
 
-interface CheckboxItem<
-	S extends SettingsSectionType,
-	I extends SettingsSectionItemType<S>,
-> {
-	title: Translation;
-	description: Translation;
+type PossibleSection = "downloads" | "notifications" | "security";
+type PossibleText = string | Translation;
+
+type CheckboxItem<T extends PossibleText, S extends PossibleSection> = {
+	title: T;
+	description: T;
 	setting: {
 		section: S;
-		item: I;
+		item: SettingsSectionItemType<S>;
 	};
 	icon: {
 		name: string;
 		type: MultiIconType;
 	};
-}
+};
 
-interface SettingsGroup<S extends SettingsSectionType> {
-	title: Translation;
-	items: CheckboxItem<S, SettingsSectionItemType<S>>[];
-}
+type SectionItem<T extends PossibleText, S extends PossibleSection> = {
+	title: T;
+	items: Array<CheckboxItem<T, S>>;
+};
 
-const SettingsData = [
+type SectionItems<T extends PossibleText> = Array<
+	| SectionItem<T, "downloads">
+	| SectionItem<T, "security">
+	| SectionItem<T, "notifications">
+>;
+
+const SettingsData: SectionItems<Translation> = [
 	{
 		title: "Downloads",
 		items: [
@@ -59,7 +62,7 @@ const SettingsData = [
 				icon: { name: "delete-sweep", type: "material-icons" },
 			},
 		],
-	} as SettingsGroup<"downloads">,
+	},
 	{
 		title: "Notifications",
 		items: [
@@ -84,7 +87,7 @@ const SettingsData = [
 				icon: { name: "new-releases", type: "material-icons" },
 			},
 		],
-	} as SettingsGroup<"notifications">,
+	},
 	{
 		title: "Security",
 		items: [
@@ -95,7 +98,7 @@ const SettingsData = [
 				icon: { name: "shield-off", type: "material-community" },
 			},
 		],
-	} as SettingsGroup<"security">,
+	},
 ];
 
 const SettingsCheckboxes = () => {
@@ -124,58 +127,60 @@ const SettingsCheckboxes = () => {
 		[translations],
 	);
 
+	const renderItem: ListRenderItem<CheckboxItem<string, PossibleSection>> =
+		React.useCallback(
+			({ item }) => (
+				<AnimatedListItem
+					title={item.title}
+					description={item.description}
+					style={
+						item.title === route.params?.setting
+							? pulsingStyle
+							: undefined
+					}
+					left={(props) => (
+						<MultiIcon
+							{...props}
+							size={20}
+							type={item.icon.type}
+							name={item.icon.name}
+						/>
+					)}
+					right={(props) => (
+						<Checkbox
+							{...props}
+							status={
+								settings[item.setting.section][
+									item.setting.item
+								]
+									? "checked"
+									: "unchecked"
+							}
+						/>
+					)}
+					onPress={() =>
+						toggleSetting(item.setting.section, item.setting.item)
+					}
+				/>
+			),
+			[route.params?.setting, pulsingStyle, settings],
+		);
+
+	const renderSection: ListRenderItem<SectionItem<string, PossibleSection>> =
+		React.useCallback(
+			({ item }) => (
+				<List.Section title={item.title}>
+					<FlatList data={item.items} renderItem={renderItem} />
+				</List.Section>
+			),
+			[],
+		);
+
 	return (
 		<FlatList
 			data={translatedSettingsData}
 			keyExtractor={(item) => item.title}
-			renderItem={({ item }) => (
-				<List.Section title={item.title}>
-					{item.items.map((settingItem) => (
-						<AnimatedListItem
-							key={settingItem.title}
-							title={settingItem.title}
-							description={settingItem.description}
-							style={
-								settingItem.title === route.params?.setting
-									? pulsingStyle
-									: undefined
-							}
-							left={(props) => (
-								<MultiIcon
-									{...props}
-									size={20}
-									type={settingItem.icon.type}
-									name={settingItem.icon.name}
-								/>
-							)}
-							right={(props) => (
-								<Checkbox
-									{...props}
-									status={
-										settings[
-											settingItem.setting
-												.section as SettingsSectionType
-										][
-											settingItem.setting
-												.item as SettingsSectionItemType<SettingsSectionType>
-										]
-											? "checked"
-											: "unchecked"
-									}
-								/>
-							)}
-							onPress={() =>
-								toggleSetting(
-									settingItem.setting
-										.section as SettingsSectionType,
-									settingItem.setting
-										.item as SettingsSectionItemType<SettingsSectionType>,
-								)
-							}
-						/>
-					))}
-				</List.Section>
-			)}
+			renderItem={renderSection}
 		/>
 	);
 };

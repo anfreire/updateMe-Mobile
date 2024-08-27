@@ -1,3 +1,4 @@
+import * as React from "react";
 import { List } from "react-native-paper";
 import { Drawer } from "react-native-drawer-layout";
 import { useTheme } from "@/theme";

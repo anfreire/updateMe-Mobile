@@ -1,3 +1,4 @@
+import * as React from "react";
 import {Banner} from 'react-native-paper';
 import {useState} from 'react';
 import {HomeScreenChildProps} from '..';

@@ -1,3 +1,4 @@
+import * as React from "react";
 import { useTranslations } from "@/states/persistent/translations";
 import { useDialogs } from "@/states/temporary/dialogs";
 import { useToast } from "@/states/temporary/toast";

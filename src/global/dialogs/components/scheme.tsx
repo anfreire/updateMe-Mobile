@@ -1,3 +1,4 @@
+import * as React from "react";
 import React, { useEffect, useState, useCallback, useMemo } from "react";
 import { Button, Dialog, SegmentedButtons } from "react-native-paper";
 import { ActiveDialogType, useDialogs } from "@/states/temporary/dialogs";

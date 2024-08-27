@@ -1,3 +1,4 @@
+import * as React from "react";
 import { Banner } from "react-native-paper";
 import { useCallback, useEffect, useMemo } from "react";
 import { useSession } from "@/states/temporary/session";

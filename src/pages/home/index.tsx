@@ -1,3 +1,4 @@
+import * as React from "react";
 import {TextInput as RNTextInput, View} from 'react-native';
 import {IconButton} from 'react-native-paper';
 import {ScrollView} from 'react-native-gesture-handler';

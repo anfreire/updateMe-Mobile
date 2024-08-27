@@ -1,3 +1,4 @@
+import * as React from "react";
 import React, { useCallback, useEffect } from "react";
 import { View, StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/native";

@@ -1,3 +1,4 @@
+import * as React from "react";
 import { useDialogs } from "@/states/temporary/dialogs";
 import DefaultDialog from "./components/default";
 import SourceColorPickerDialog from "./components/appearance";

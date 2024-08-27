@@ -1,3 +1,4 @@
+import * as React from "react";
 import { MainStackParams } from "@/navigation";
 import { AppsStackParams } from "@/navigation/apps";
 import { TipsStackParams } from "@/navigation/tips";

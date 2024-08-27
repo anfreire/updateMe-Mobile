@@ -1,3 +1,4 @@
+import * as React from "react";
 import {List, Text, TouchableRipple} from 'react-native-paper';
 import {Dimensions, Image, View} from 'react-native';
 import {useEffect, useState} from 'react';

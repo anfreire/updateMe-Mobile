@@ -1,3 +1,4 @@
+import * as React from "react";
 import {List} from 'react-native-paper';
 import {Image, View} from 'react-native';
 import {HomeScreenChildProps} from '..';

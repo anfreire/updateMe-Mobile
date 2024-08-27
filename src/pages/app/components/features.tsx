@@ -1,3 +1,4 @@
+import * as React from "react";
 import { Card, Text } from "react-native-paper";
 import Carousel from "react-native-reanimated-carousel";
 import { StyleSheet, View } from "react-native";

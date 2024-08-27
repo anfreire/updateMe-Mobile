@@ -1,3 +1,4 @@
+import * as React from "react";
 import React, { memo, useCallback, useMemo } from "react";
 import { CurrAppProps } from "@/states/computed/currApp";
 import { useTranslations } from "@/states/persistent/translations";

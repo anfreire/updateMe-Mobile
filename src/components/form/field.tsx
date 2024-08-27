@@ -1,3 +1,4 @@
+import * as React from "react";
 import React, { useCallback, useMemo, useRef } from "react";
 import { StyleSheet, View } from "react-native";
 import { Chip, TextInput } from "react-native-paper";
