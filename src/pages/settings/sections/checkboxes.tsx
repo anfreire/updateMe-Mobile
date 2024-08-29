@@ -5,8 +5,8 @@ import { Checkbox, List } from "react-native-paper";
 import Animated from "react-native-reanimated";
 import MultiIcon, { MultiIconType } from "@/components/multiIcon";
 import {
-	SettingsSectionItemType,
 	SettingsSectionType,
+	SettingsSectionItemType,
 	useSettings,
 } from "@/states/persistent/settings";
 import { Translation, useTranslations } from "@/states/persistent/translations";
@@ -18,14 +18,13 @@ import { TipsStackParams } from "@/navigation/tips";
 
 const AnimatedListItem = Animated.createAnimatedComponent(List.Item);
 
-type PossibleSection = "downloads" | "notifications" | "security";
 type PossibleText = string | Translation;
 
-type CheckboxItem<T extends PossibleText, S extends PossibleSection> = {
+type CheckboxItem<T extends PossibleText, S extends SettingsSectionType> = {
 	title: T;
 	description: T;
 	setting: {
-		section: S;
+		section: SettingsSectionType;
 		item: SettingsSectionItemType<S>;
 	};
 	icon: {
@@ -34,16 +33,14 @@ type CheckboxItem<T extends PossibleText, S extends PossibleSection> = {
 	};
 };
 
-type SectionItem<T extends PossibleText, S extends PossibleSection> = {
+type SectionItem<T extends PossibleText, S extends SettingsSectionType> = {
 	title: T;
-	items: Array<CheckboxItem<T, S>>;
+	items: CheckboxItem<T, S>[];
 };
 
-type SectionItems<T extends PossibleText> = Array<
-	| SectionItem<T, "downloads">
-	| SectionItem<T, "security">
-	| SectionItem<T, "notifications">
->;
+type SectionItems<T extends PossibleText> = {
+	[I in SettingsSectionType]: SectionItem<T, I>;
+}[SettingsSectionType][];
 
 const SettingsData: SectionItems<Translation> = [
 	{
@@ -123,58 +120,58 @@ const SettingsCheckboxes = () => {
 					title: translations[item.title],
 					description: translations[item.description],
 				})),
-			})),
+			})) as SectionItem<string, SettingsSectionType>[],
 		[translations],
 	);
 
-	const renderItem: ListRenderItem<CheckboxItem<string, PossibleSection>> =
-		React.useCallback(
-			({ item }) => (
-				<AnimatedListItem
-					title={item.title}
-					description={item.description}
-					style={
-						item.title === route.params?.setting
-							? pulsingStyle
-							: undefined
-					}
-					left={(props) => (
-						<MultiIcon
-							{...props}
-							size={20}
-							type={item.icon.type}
-							name={item.icon.name}
-						/>
-					)}
-					right={(props) => (
-						<Checkbox
-							{...props}
-							status={
-								settings[item.setting.section][
-									item.setting.item
-								]
-									? "checked"
-									: "unchecked"
-							}
-						/>
-					)}
-					onPress={() =>
-						toggleSetting(item.setting.section, item.setting.item)
-					}
-				/>
-			),
-			[route.params?.setting, pulsingStyle, settings],
-		);
+	const renderItem: ListRenderItem<
+		CheckboxItem<string, SettingsSectionType>
+	> = React.useCallback(
+		({ item }) => (
+			<AnimatedListItem
+				title={item.title}
+				description={item.description}
+				style={
+					item.title === route.params?.setting
+						? pulsingStyle
+						: undefined
+				}
+				left={(props) => (
+					<MultiIcon
+						{...props}
+						size={20}
+						type={item.icon.type}
+						name={item.icon.name}
+					/>
+				)}
+				right={(props) => (
+					<Checkbox
+						{...props}
+						status={
+							settings[item.setting.section][item.setting.item]
+								? "checked"
+								: "unchecked"
+						}
+					/>
+				)}
+				onPress={() =>
+					toggleSetting(item.setting.section, item.setting.item)
+				}
+			/>
+		),
+		[route.params?.setting, pulsingStyle, settings],
+	);
 
-	const renderSection: ListRenderItem<SectionItem<string, PossibleSection>> =
-		React.useCallback(
-			({ item }) => (
-				<List.Section title={item.title}>
-					<FlatList data={item.items} renderItem={renderItem} />
-				</List.Section>
-			),
-			[],
-		);
+	const renderSection: ListRenderItem<
+		SectionItem<string, SettingsSectionType>
+	> = React.useCallback(
+		({ item }) => (
+			<List.Section title={item.title}>
+				<FlatList data={item.items} renderItem={renderItem} />
+			</List.Section>
+		),
+		[],
+	);
 
 	return (
 		<FlatList
