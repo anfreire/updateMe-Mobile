@@ -36,20 +36,20 @@ export default function HomeSearchFAB({
 		});
 	}, []);
 
-	const smartClose = () => {
+	const smartClose = useCallback(() => {
 		if (search.trim() == "") {
 			close();
 		}
-	};
+	}, []);
 
-	const smartToggle = () => {
+	const smartToggle = useCallback(() => {
 		if (width.value === 56) {
 			open();
 		} else {
 			setSearch("");
 			close();
 		}
-	};
+	}, []);
 
 	useFocusEffect(
 		useCallback(() => {

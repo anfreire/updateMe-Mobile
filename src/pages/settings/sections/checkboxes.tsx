@@ -124,60 +124,54 @@ const SettingsCheckboxes = () => {
 		[translations],
 	);
 
-	const renderItem: ListRenderItem<
-		CheckboxItem<string, SettingsSectionType>
-	> = React.useCallback(
-		({ item }) => (
-			<AnimatedListItem
-				title={item.title}
-				description={item.description}
-				style={
-					item.title === route.params?.setting
-						? pulsingStyle
-						: undefined
-				}
-				left={(props) => (
-					<MultiIcon
-						{...props}
-						size={20}
-						type={item.icon.type}
-						name={item.icon.name}
-					/>
-				)}
-				right={(props) => (
-					<Checkbox
-						{...props}
-						status={
-							settings[item.setting.section][item.setting.item]
-								? "checked"
-								: "unchecked"
-						}
-					/>
-				)}
-				onPress={() =>
-					toggleSetting(item.setting.section, item.setting.item)
-				}
-			/>
-		),
-		[route.params?.setting, pulsingStyle, settings],
-	);
-
-	const renderSection: ListRenderItem<
-		SectionItem<string, SettingsSectionType>
-	> = React.useCallback(
-		({ item }) => (
-			<List.Section title={item.title}>
-				<FlatList data={item.items} renderItem={renderItem} />
-			</List.Section>
-		),
-		[],
-	);
-
 	return (
 		<FlatList
 			data={translatedSettingsData}
 			keyExtractor={(item) => item.title}
-			renderItem={renderSection}
+			renderItem={({ item }) => (
+				<List.Section title={item.title}>
+					<FlatList
+						data={item.items}
+						renderItem={({ item }) => (
+							<AnimatedListItem
+								title={item.title}
+								description={item.description}
+								style={
+									item.title === route.params?.setting
+										? pulsingStyle
+										: undefined
+								}
+								left={(props) => (
+									<MultiIcon
+										{...props}
+										size={20}
+										type={item.icon.type}
+										name={item.icon.name}
+									/>
+								)}
+								right={(props) => (
+									<Checkbox
+										{...props}
+										status={
+											settings[item.setting.section][
+												item.setting.item
+											]
+												? "checked"
+												: "unchecked"
+										}
+									/>
+								)}
+								onPress={() =>
+									toggleSetting(
+										item.setting.section,
+										item.setting.item,
+									)
+								}
+							/>
+						)}
+					/>
+				</List.Section>
+			)}
 		/>
 	);
 };
