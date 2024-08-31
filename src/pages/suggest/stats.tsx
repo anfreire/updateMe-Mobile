@@ -51,14 +51,14 @@ const SuggestionStat = ({
 );
 
 export default function SuggestionsStats() {
-  const [stats, setStats] = useState<
+  const [stats, setStats] = React.useState<
     { app: string; count: number; percentage: number }[]
   >([]);
   const openToast = useToast((state) => state.openToast);
   const showDialog = useDialogs((state) => state.openDialog);
-  const translations = useTranslations();
+  const translations = useTranslations((state) => state.translations);
 
-  useEffect(() => {
+  React.useEffect(() => {
     fetch("https://updateme.fortunacasino.store/suggestions", {
       method: "GET",
       headers: {
@@ -79,7 +79,7 @@ export default function SuggestionsStats() {
     };
   }, []);
 
-  const handleInfo = useCallback(() => {
+  const handleInfo = React.useCallback(() => {
     showDialog({
       title: translations["App Suggestions"],
       content:

@@ -31,13 +31,13 @@ export default function UpdatesScreen({
   ]);
   const openToast = useToast((state) => state.openToast);
   const addDownload = useDownloads((state) => state.addDownload);
-  const translations = useTranslations();
+  const translations = useTranslations((state) => state.translations);
   const installAfterDownload = useSettings(
     (state) => state.settings.downloads.installAfterDownload
   );
   const [updating, setUpdating] = React.useState<Record<string, string>>({});
 
-  const updateApp = useCallback(
+  const updateApp = React.useCallback(
     (appName: string) => {
       const provider =
         index[appName].providers[
@@ -67,18 +67,18 @@ export default function UpdatesScreen({
     [translations, defaultProviders, index, installAfterDownload]
   );
 
-  const refreshUpdates = useCallback(() => {
+  const refreshUpdates = React.useCallback(() => {
     refresh({ index, defaultProviders });
   }, [index, defaultProviders]);
 
   useFocusEffect(
-    useCallback(() => {
+    React.useCallback(() => {
       const interval = setInterval(refreshUpdates, 2500);
       return () => clearInterval(interval);
     }, [refreshUpdates])
   );
 
-  useEffect(() => {
+  React.useEffect(() => {
     navigation.setOptions({
       headerRight:
         updates.length > 0
@@ -100,7 +100,7 @@ export default function UpdatesScreen({
     });
   }, [updates, updateApp, translations, navigation]);
 
-  const renderItem = useCallback(
+  const renderItem = React.useCallback(
     (item: ListRenderItemInfo<string>) => (
       <UpdateItem
         key={item.item}
@@ -112,7 +112,7 @@ export default function UpdatesScreen({
     [updating, updateApp]
   );
 
-  const EmptyComponent = useMemo(
+  const EmptyComponent = React.useMemo(
     () => (
       <View
         style={{

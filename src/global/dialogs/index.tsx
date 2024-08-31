@@ -20,7 +20,7 @@ const DialogComponents = {
 export function Dialogs() {
   const activeDialog = useDialogs((state) => state.activeDialog);
 
-  const ActiveDialog = useMemo(() => {
+  const ActiveDialog = React.useMemo(() => {
     return activeDialog ? DialogComponents[activeDialog] : null;
   }, [activeDialog]);
 
@@ -30,7 +30,7 @@ export function Dialogs() {
 
   return (
     <Portal>
-      <ActiveDialog activeDialog={activeDialog} />
+      <ActiveDialog />
     </Portal>
   );
 }

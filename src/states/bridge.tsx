@@ -3,7 +3,7 @@ import { useDefaultProviders } from "@/states/persistent/defaultProviders";
 import { useIndex } from "@/states/temporary";
 import { useVersions } from "@/states/computed/versions";
 
-function useStatesBridge() {
+function React.useStatesBridge() {
   const index = useIndex((state) => state.index);
   const [defaultProviders, sanitizeDefaultProviders] = useDefaultProviders(
     (state) => [state.defaultProviders, state.sanitize]
@@ -20,7 +20,7 @@ function useStatesBridge() {
 }
 
 const StatesBridgeManager = () => {
-  useStatesBridge();
+  React.useStatesBridge();
 
   return null;
 };

@@ -3,14 +3,14 @@ import { StyleSheet, View } from "react-native";
 import { useTheme } from "@/theme";
 import { ActivityIndicator } from "react-native-paper";
 
-export default function LoadingView() {
+const LoadingView = () => {
   const { sourceColor } = useTheme();
   return (
     <View style={styles.screen}>
       <ActivityIndicator size="large" color={sourceColor} />
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   screen: {
@@ -22,3 +22,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
 });
+
+LoadingView.displayName = "LoadingView";
+
+export default React.memo(LoadingView);

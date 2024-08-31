@@ -42,7 +42,7 @@ const Stack = createStackNavigator<MainStackParams>();
 export default function MainStack() {
   const { schemedTheme } = useTheme();
   const goBack = useGoBack();
-  const translations = useTranslations();
+  const translations = useTranslations((state) => state.translations);
   return (
     <Stack.Navigator id="main-stack" initialRouteName="loading">
       <Stack.Screen

@@ -12,10 +12,10 @@ export default function ReportScreen() {
     state.registerReport,
   ]);
   const getToken = useToken((state) => state.getToken);
-  const translations = useTranslations();
+  const translations = useTranslations((state) => state.translations);
 
   const FieldsData: Record<string, { label: string; errorMessage: string }> =
-    useMemo(
+    React.useMemo(
       () => ({
         name: {
           label: translations["What's your name?"],
@@ -33,7 +33,7 @@ export default function ReportScreen() {
       [translations]
     );
 
-  const onMount = useCallback(
+  const onMount = React.useCallback(
     (setDisabled: (value: boolean) => void) => {
       if (didReport()) {
         setDisabled(true);
@@ -46,7 +46,7 @@ export default function ReportScreen() {
     [translations]
   );
 
-  const onSubmit = useCallback(
+  const onSubmit = React.useCallback(
     (data: Record<string, string>, setDisabled: (value: boolean) => void) => {
       setDisabled(true);
       fetch("https://updateme.fortunacasino.store/reports", {

@@ -60,32 +60,33 @@ export default function HomeLayoutPickerDialog({
     state.settings.layout.homeStyle,
     state.setSetting,
   ]);
-  const translations = useTranslations();
+  const translations = useTranslations((state) => state.translations);
 
   const { schemedTheme } = useTheme();
 
   const navigate = useSilentNavigate();
 
-  const [previousLayout, setPreviousLayout] = useState<HomeLayoutType>(layout);
-  const [opacity, setOpacity] = useState(1);
+  const [previousLayout, setPreviousLayout] =
+    React.useState<HomeLayoutType>(layout);
+  const [opacity, setOpacity] = React.useState(1);
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (activeDialog === "homeLayoutPicker") {
       setPreviousLayout(layout);
     }
   }, [activeDialog, layout]);
 
-  const handleLayoutChange = useCallback((value: string) => {
+  const handleLayoutChange = React.useCallback((value: string) => {
     setSetting("layout", "homeStyle", value as HomeLayoutType);
   }, []);
 
-  const handleCancel = useCallback(() => {
+  const handleCancel = React.useCallback(() => {
     setSetting("layout", "homeStyle", previousLayout);
     closeDialog();
     navigate("settings");
   }, [previousLayout, navigate]);
 
-  const handleApply = useCallback(() => {
+  const handleApply = React.useCallback(() => {
     closeDialog();
     navigate("settings");
   }, [navigate]);

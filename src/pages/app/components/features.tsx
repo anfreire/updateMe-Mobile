@@ -14,7 +14,7 @@ const renderItem = ({ item }: { item: string }) => (
 );
 
 function AppFeatures({ currApp }: { currApp: CurrAppProps }) {
-  const translations = useTranslations();
+  const translations = useTranslations((state) => state.translations);
 
   return (
     <Card contentStyle={styles.card}>

@@ -7,9 +7,9 @@ import { StyleSheet } from "react-native";
 
 const ProvidersInfo = ({ currApp }: { currApp: CurrAppProps }) => {
   const openDialog = useDialogs((state) => state.openDialog);
-  const translations = useTranslations();
+  const translations = useTranslations((state) => state.translations);
 
-  const handlePress = useCallback(() => {
+  const handlePress = React.useCallback(() => {
     openDialog({
       title: "Providers",
       content:

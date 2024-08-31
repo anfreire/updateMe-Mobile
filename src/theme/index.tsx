@@ -52,7 +52,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
     sourceColor: state.settings.theme.sourceColor,
   }));
   const { setSetting, resetSetting } = useSettings();
-  const { theme, updateTheme, resetTheme } = useMemo(
+  const { theme, updateTheme, resetTheme } = React.useMemo(
     () =>
       useMaterial3Theme({
         sourceColor: sourceColor ?? undefined,
@@ -61,12 +61,12 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
     [sourceColor, fallbackSourceColor]
   );
 
-  const colorScheme = useMemo(
+  const colorScheme = React.useMemo(
     () => (rawColorScheme === "system" ? systemColorScheme : rawColorScheme),
     [rawColorScheme, systemColorScheme]
   );
 
-  const derivedThemes = useMemo(
+  const derivedThemes = React.useMemo(
     () => ({
       combinedTheme:
         colorScheme === "dark"
@@ -83,7 +83,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
     [theme, colorScheme]
   );
 
-  const setSourceColor = useCallback(
+  const setSourceColor = React.useCallback(
     (color: string) => {
       setSetting("theme", "sourceColor", color);
       updateTheme(color);
@@ -91,19 +91,19 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
     [setSetting, updateTheme]
   );
 
-  const setColorScheme = useCallback(
+  const setColorScheme = React.useCallback(
     (newColorScheme: SavedColorSchemeType) => {
       setSetting("theme", "colorScheme", newColorScheme);
     },
     [setSetting]
   );
 
-  const resetSourceColor = useCallback(() => {
+  const resetSourceColor = React.useCallback(() => {
     resetTheme();
     resetSetting("theme", "sourceColor");
   }, [resetTheme, resetSetting]);
 
-  const contextValue = useMemo(
+  const contextValue = React.useMemo(
     () => ({
       theme,
       colorScheme,

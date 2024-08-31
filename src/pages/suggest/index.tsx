@@ -13,13 +13,13 @@ export default function SuggestScreen() {
     state.didSuggest,
     state.registerSuggestion,
   ]);
-  const [appsSuggestions, setAppsSuggestions] = useState<string[]>([]);
-  const [suggested, setSuggested] = useState(false);
-  const translations = useTranslations();
+  const [appsSuggestions, setAppsSuggestions] = React.useState<string[]>([]);
+  const [suggested, setSuggested] = React.useState(false);
+  const translations = useTranslations((state) => state.translations);
   const getToken = useToken((state) => state.getToken);
 
   const FieldsData: Record<string, { label: string; errorMessage: string }> =
-    useMemo(
+    React.useMemo(
       () => ({
         name: {
           label: translations["What's your name?"],
@@ -37,7 +37,7 @@ export default function SuggestScreen() {
       [translations]
     );
 
-  const onMount = useCallback(
+  const onMount = React.useCallback(
     (setDisabled: (value: boolean) => void) => {
       setAppsSuggestions([]);
       if (didSuggest()) {
@@ -51,7 +51,7 @@ export default function SuggestScreen() {
     [translations]
   );
 
-  const onSubmit = useCallback(
+  const onSubmit = React.useCallback(
     (data: Record<string, string>, setDisabled: (value: boolean) => void) => {
       setAppsSuggestions([]);
       setDisabled(true);

@@ -53,9 +53,9 @@ export default function Downloading({
     state.downloads,
     state.cancelDownload,
   ]);
-  const translations = useTranslations();
+  const translations = useTranslations((state) => state.translations);
 
-  const handleCancelDownload = useCallback(
+  const handleCancelDownload = React.useCallback(
     (download: string) => {
       openDialog({
         title: translations["Cancel download"],
@@ -78,7 +78,7 @@ export default function Downloading({
     [translations]
   );
 
-  const downloadItems = useMemo(() => {
+  const downloadItems = React.useMemo(() => {
     return Object.keys(files).map((download) => (
       <DownloadItem
         key={download}

@@ -17,10 +17,10 @@ export default function ShareDialog({
   activeDialog: ActiveDialogType;
 }) {
   const info = useApp((state) => state.info);
-  const translations = useTranslations();
+  const translations = useTranslations((state) => state.translations);
   const closeDialog = useDialogs((state) => state.closeDialog);
 
-  const handleShare = useCallback(() => {
+  const handleShare = React.useCallback(() => {
     Share.share(
       { message: info.download, title: translations["UpdateMe Download Link"] },
       { dialogTitle: translations["UpdateMe Download Link"] }

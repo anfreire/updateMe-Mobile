@@ -5,7 +5,7 @@ import ProvidersDataTableRow from "./row";
 import ProvidersDataTableHeader from "./header";
 
 const ProvidersDataTable = memo(({ currApp }: { currApp: CurrAppProps }) => {
-  const tableSize = useMemo(() => {
+  const tableSize = React.useMemo(() => {
     const maxLengths = Object.entries(currApp.providers).reduce(
       (acc, [provider, { packageName, version }]) => ({
         provider: Math.max(acc.provider, provider.length),

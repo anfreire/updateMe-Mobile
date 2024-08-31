@@ -80,4 +80,6 @@ const MultiIcon = React.forwardRef<any, MultiIconProps>((props, ref) => {
   );
 });
 
-export default MultiIcon;
+MultiIcon.displayName = "MultiIcon";
+
+export default React.memo(MultiIcon);

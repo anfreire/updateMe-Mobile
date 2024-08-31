@@ -13,17 +13,19 @@ export default function HomeCategories({ apps }: { apps: string[] }) {
     state.fetch,
   ]);
   const [filteredCategories, setFilteredCategories] =
-    useState<CategoriesProps>(categories);
-  const [openCategories, setOpenCategories] = useState<Set<string>>(new Set());
+    React.useState<CategoriesProps>(categories);
+  const [openCategories, setOpenCategories] = React.useState<Set<string>>(
+    new Set()
+  );
   const setCurrApp = useSetCurrApp();
 
-  const isCategoryOpen = useCallback(
+  const isCategoryOpen = React.useCallback(
     (category: string) =>
       openCategories.has(category) || apps.length === Object.keys(index).length,
     [openCategories, apps, index]
   );
 
-  const toggleCategory = useCallback((category: string) => {
+  const toggleCategory = React.useCallback((category: string) => {
     setOpenCategories((prev) => {
       const newSet = new Set(prev);
       newSet.has(category) ? newSet.delete(category) : newSet.add(category);
@@ -31,7 +33,7 @@ export default function HomeCategories({ apps }: { apps: string[] }) {
     });
   }, []);
 
-  const handleAppsChange = useCallback(() => {
+  const handleAppsChange = React.useCallback(() => {
     if (apps.length === Object.keys(index).length) {
       setFilteredCategories((prev) =>
         JSON.stringify(prev) === JSON.stringify(categories) ? prev : categories
@@ -60,11 +62,11 @@ export default function HomeCategories({ apps }: { apps: string[] }) {
     );
   }, [apps, categories, index]);
 
-  useEffect(() => {
+  React.useEffect(() => {
     handleAppsChange();
   }, [handleAppsChange]);
 
-  const renderApp: ListRenderItem<string> = useCallback(
+  const renderApp: ListRenderItem<string> = React.useCallback(
     ({ item: app }) => (
       <List.Item
         onPress={() => setCurrApp(app)}
@@ -82,7 +84,7 @@ export default function HomeCategories({ apps }: { apps: string[] }) {
     [index, setCurrApp]
   );
 
-  const categoryData = useMemo(
+  const categoryData = React.useMemo(
     () => Object.keys(filteredCategories),
     [filteredCategories]
   );

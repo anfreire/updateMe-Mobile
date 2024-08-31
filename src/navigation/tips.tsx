@@ -25,7 +25,7 @@ export default function TipsStack() {
   const setCurrPage = useSession((state) => state.setCurrPage);
   const goBack = useGoBack();
 
-  const headerLeft = useCallback(
+  const headerLeft = React.useCallback(
     (page: Page) => (
       <IconButton
         icon="arrow-left"
@@ -38,7 +38,7 @@ export default function TipsStack() {
     [goBack]
   );
 
-  const themeOptions = useMemo(
+  const themeOptions = React.useMemo(
     () => ({
       headerStyle: {
         backgroundColor: schemedTheme.surfaceContainer,

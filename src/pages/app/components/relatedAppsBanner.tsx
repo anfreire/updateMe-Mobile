@@ -45,7 +45,7 @@ export default function RelatedAppsBanner({
     state.trackers.updatesBannerDismissed,
     state.addTracker,
   ]);
-  const translations = useTranslations();
+  const translations = useTranslations((state) => state.translations);
   const [versions, updates] = useVersions((state) => [
     state.versions,
     state.updates,
@@ -57,7 +57,7 @@ export default function RelatedAppsBanner({
   );
   const navigate = useNavigate();
 
-  const data = useMemo(
+  const data = React.useMemo(
     () => ({
       missingDependencies: currApp.depends.filter(
         (dep) => versions[dep] === null
@@ -72,7 +72,7 @@ export default function RelatedAppsBanner({
     [currApp.depends, currApp.complements, versions, updates]
   );
 
-  const message = useMemo(() => {
+  const message = React.useMemo(() => {
     if (appsDismissed.includes(currApp.name)) return null;
     for (const key of BannerAppsKeys) {
       if (data[key].length === 0) continue;
@@ -89,7 +89,7 @@ export default function RelatedAppsBanner({
     return null;
   }, [data, appsDismissed, currApp.name, translations]);
 
-  const handleUpdate = useCallback(() => {
+  const handleUpdate = React.useCallback(() => {
     if (data.missingDependencies.length > 0) {
       setCurrApp(data.missingDependencies[0], {
         index,
@@ -108,7 +108,7 @@ export default function RelatedAppsBanner({
     navigate,
   ]);
 
-  const updateLabel = useMemo(
+  const updateLabel = React.useMemo(
     () =>
       data.missingDependencies.length
         ? translations["View dependency"]
@@ -116,7 +116,7 @@ export default function RelatedAppsBanner({
     [data.missingDependencies.length, translations]
   );
 
-  const handleDismiss = useCallback(() => {
+  const handleDismiss = React.useCallback(() => {
     addSessionProp("updatesBannerDismissed", currApp.name);
   }, [addSessionProp, currApp.name]);
 

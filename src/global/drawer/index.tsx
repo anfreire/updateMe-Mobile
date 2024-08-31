@@ -39,7 +39,7 @@ export default function DrawerWrapper({
   ]);
   const downloads = useDownloads((state) => state.downloads);
   const openDialog = useDialogs((state) => state.openDialog);
-  const translations = useTranslations();
+  const translations = useTranslations((state) => state.translations);
 
   const opacity = useSharedValue(1);
 
@@ -47,7 +47,7 @@ export default function DrawerWrapper({
     opacity: opacity.value,
   }));
 
-  const pulse = useCallback(() => {
+  const pulse = React.useCallback(() => {
     opacity.value = withRepeat(
       withTiming(0.5, {
         duration: 600,
@@ -58,11 +58,11 @@ export default function DrawerWrapper({
     );
   }, []);
 
-  const stopPulsing = useCallback(() => {
+  const stopPulsing = React.useCallback(() => {
     opacity.value = withTiming(1, { duration: 300 });
   }, []);
 
-  const navigateTo = useCallback(
+  const navigateTo = React.useCallback(
     (route: Page) => {
       closeDrawer();
       navigate(route);
@@ -70,7 +70,7 @@ export default function DrawerWrapper({
     [navigate]
   );
 
-  const handleOpenDialog = useCallback(
+  const handleOpenDialog = React.useCallback(
     (key: CustomDialogsType) => {
       closeDrawer();
       openDialog(key);
@@ -78,7 +78,7 @@ export default function DrawerWrapper({
     [openDialog]
   );
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (isDrawerOpen && Object.keys(downloads).length > 0) {
       pulse();
       const timer = setTimeout(stopPulsing, 2500);
@@ -88,7 +88,7 @@ export default function DrawerWrapper({
     }
   }, [isDrawerOpen, downloads, pulse, stopPulsing]);
 
-  const items: Record<string, DrawerItem> = useMemo(
+  const items: Record<string, DrawerItem> = React.useMemo(
     () => ({
       downloads: {
         title: translations["Downloads"],
@@ -136,7 +136,7 @@ export default function DrawerWrapper({
     [navigateTo, handleOpenDialog, translations]
   );
 
-  const renderDrawerContent = useCallback(
+  const renderDrawerContent = React.useCallback(
     () => (
       <List.Section>
         {Object.entries(items).map(([key, item]) =>

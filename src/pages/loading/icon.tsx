@@ -22,7 +22,7 @@ export default function Icon() {
     };
   });
 
-  useEffect(() => {
+  React.useEffect(() => {
     animation.value = withRepeat(
       withTiming(360, {
         duration: 2000,

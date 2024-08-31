@@ -11,18 +11,18 @@ const calculateImageSize = (width: number, height: number) => ({
 });
 
 function AppLogo({ currApp }: { currApp: CurrAppProps }) {
-  const [imageSize, setImageSize] = useState({
+  const [imageSize, setImageSize] = React.useState({
     width: MAX_IMAGE_SIZE,
     height: MAX_IMAGE_SIZE,
   });
 
-  useEffect(() => {
+  React.useEffect(() => {
     Image.getSize(currApp.icon, (width, height) =>
       setImageSize(calculateImageSize(width, height))
     );
   }, [currApp.icon]);
 
-  const paddingHorizontal = useMemo(
+  const paddingHorizontal = React.useMemo(
     () => (currApp.name.length > 15 ? 40 : 50),
     [currApp.name]
   );

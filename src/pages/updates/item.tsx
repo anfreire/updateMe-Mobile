@@ -20,7 +20,7 @@ export default function UpdateItem({
   fileName: string | null;
   updateApp: (appName: string) => void;
 }) {
-  const translations = useTranslations();
+  const translations = useTranslations((state) => state.translations);
   const index = useIndex((state) => state.index);
   const downloads = useDownloads((state) => state.downloads);
   const theme = useTheme();
@@ -32,13 +32,13 @@ export default function UpdateItem({
   );
   const versions = useVersions((state) => state.versions);
 
-  const handlePress = useCallback(() => {
+  const handlePress = React.useCallback(() => {
     openToast(
       interpolate(translations["Long press to enter $1 page"], appName)
     );
   }, [openToast, translations, appName]);
 
-  const handleLongPress = useCallback(() => {
+  const handleLongPress = React.useCallback(() => {
     setCurrApp(appName, { index, defaultProviders, versions });
     navigate("app");
   }, [appName, index, defaultProviders, versions, navigate]);

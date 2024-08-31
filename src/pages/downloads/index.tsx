@@ -22,12 +22,12 @@ export default function DownloadsScreen({
 }) {
   const theme = useTheme();
   const downloads = useDownloads((state) => state.downloads);
-  const [files, setFiles] = useState<Record<string, ReactNativeBlobUtilStat>>(
-    {}
-  );
-  const translations = useTranslations();
+  const [files, setFiles] = React.useState<
+    Record<string, ReactNativeBlobUtilStat>
+  >({});
+  const translations = useTranslations((state) => state.translations);
 
-  const updateFiles = useCallback(() => {
+  const updateFiles = React.useCallback(() => {
     FilesModule.getAllFilesInfo().then((newFiles) => {
       setFiles((prevFiles) =>
         JSON.stringify(prevFiles) === JSON.stringify(newFiles)
@@ -38,7 +38,7 @@ export default function DownloadsScreen({
   }, []);
 
   useFocusEffect(
-    useCallback(() => {
+    React.useCallback(() => {
       const interval = setInterval(updateFiles, REFRESH_INTERVAL);
       return () => clearInterval(interval);
     }, [updateFiles])

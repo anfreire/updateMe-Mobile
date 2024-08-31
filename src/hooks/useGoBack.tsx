@@ -32,7 +32,7 @@ export function useGoBack() {
   const setCurrTip = useTips((state) => state.setCurrTip);
   const clearCurrApp = useCurrApp((state) => state.clearCurrApp);
 
-  return useCallback(() => {
+  return React.useCallback(() => {
     const prevPage = PREVIOUS_ROUTES[currPage];
     if (!prevPage) return;
     if (prevPage === "tips") setCurrTip(null);

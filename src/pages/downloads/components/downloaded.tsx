@@ -20,31 +20,31 @@ export default function Downloaded({
   const theme = useTheme();
   const [selectedFiles, setSelectedFiles] = React.useState<string[]>([]);
 
-  const selectFile = useCallback((file: string) => {
+  const selectFile = React.useCallback((file: string) => {
     setSelectedFiles((prev) =>
       prev.includes(file) ? prev.filter((f) => f !== file) : [...prev, file]
     );
   }, []);
 
-  const handleShare = useCallback(() => {
+  const handleShare = React.useCallback(() => {
     Share.open({
       urls: selectedFiles.map((file) => "file://" + files[file].path),
     }).catch(() => {});
   }, [selectedFiles, files]);
 
-  const handleSelectAll = useCallback(() => {
+  const handleSelectAll = React.useCallback(() => {
     setSelectedFiles((prev) =>
       prev.length === Object.keys(files).length ? [] : Object.keys(files)
     );
   }, [files]);
 
-  const handleDelete = useCallback(() => {
+  const handleDelete = React.useCallback(() => {
     Promise.all(selectedFiles.map((file) => FilesModule.deleteFile(file)))
       .then(updateFiles)
       .then(() => setSelectedFiles([]));
   }, [selectedFiles, updateFiles]);
 
-  const headerRight = useMemo(() => {
+  const headerRight = React.useMemo(() => {
     if (selectedFiles.length === 0) {
       return () => <IconButton icon="refresh" onPress={updateFiles} />;
     }
@@ -71,7 +71,7 @@ export default function Downloaded({
     handleDelete,
   ]);
 
-  useEffect(() => {
+  React.useEffect(() => {
     navigation.setOptions({ headerRight });
   }, [navigation, headerRight]);
 

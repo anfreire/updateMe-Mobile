@@ -96,7 +96,7 @@ const SettingsData: SectionItems<Translation> = [
 ];
 
 const SettingsCheckboxes = () => {
-  const translations = useTranslations();
+  const translations = useTranslations((state) => state.translations);
   const [settings, toggleSetting] = useSettings((state) => [
     state.settings,
     state.toggleSetting,
@@ -105,7 +105,7 @@ const SettingsCheckboxes = () => {
     useRoute<RouteProp<AppsStackParams & MainStackParams & TipsStackParams>>();
   const pulsingStyle = usePulsing(!!route.params?.setting);
 
-  const translatedSettingsData = useMemo(
+  const translatedSettingsData = React.useMemo(
     () =>
       SettingsData.map((group) => ({
         ...group,

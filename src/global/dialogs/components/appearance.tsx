@@ -5,56 +5,53 @@ import { ColorPicker, fromHsv, toHsv } from "react-native-color-picker";
 import { HsvColor } from "react-native-color-picker/dist/typeHelpers";
 import { useTheme } from "@/theme";
 import { useToast } from "@/states/temporary/toast";
-import { ActiveDialogType, useDialogs } from "@/states/temporary/dialogs";
+import { useDialogs } from "@/states/temporary/dialogs";
 import { useTranslations } from "@/states/persistent/translations";
 import { useShallow } from "zustand/react/shallow";
 
-export default function SourceColorPickerDialog({
-  activeDialog,
-}: {
-  activeDialog: ActiveDialogType;
-}) {
+const SourceColorPickerDialog = () => {
   const { sourceColor, setSourceColor, resetSourceColor } = useTheme();
-
-  const closeDialog = useDialogs((state) => state.closeDialog);
+  const [activeDialog, closeDialog] = useDialogs((state) => [
+    state.activeDialog,
+    state.closeDialog,
+  ]);
   const [openToast, closeToast] = useToast(
     useShallow((state) => [state.openToast, state.closeToast])
   );
-  const translations = useTranslations();
-
-  const [oldColor, setOldColor] = useState("");
-  const [activeColor, setActiveColor] = useState<HsvColor>({
+  const translations = useTranslations((state) => state.translations);
+  const [oldColor, setOldColor] = React.useState("");
+  const [activeColor, setActiveColor] = React.useState<HsvColor>({
     h: 0,
     s: 0,
     v: 0,
   });
 
-  const handleClose = useCallback(() => {
+  const handleClose = React.useCallback(() => {
     closeDialog();
     setOldColor("");
     closeToast();
   }, []);
 
-  const handleInfoPress = useCallback(() => {
+  const handleInfoPress = React.useCallback(() => {
     openToast(translations["Tap on the middle circle to test the color"]);
   }, [translations]);
 
-  const handleCancel = useCallback(() => {
+  const handleCancel = React.useCallback(() => {
     setSourceColor(oldColor);
     handleClose();
   }, [oldColor, handleClose]);
 
-  const handleUseSystem = useCallback(() => {
+  const handleUseSystem = React.useCallback(() => {
     resetSourceColor();
     handleClose();
   }, [handleClose]);
 
-  const handleSave = useCallback(() => {
+  const handleSave = React.useCallback(() => {
     setSourceColor(fromHsv(activeColor));
     handleClose();
   }, [activeColor, handleClose]);
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (activeDialog === "sourceColorPicker") {
       setOldColor(sourceColor);
       setActiveColor(toHsv(sourceColor));
@@ -88,7 +85,7 @@ export default function SourceColorPickerDialog({
       </Dialog.Actions>
     </Dialog>
   );
-}
+};
 
 const styles = StyleSheet.create({
   dialog: {
@@ -113,3 +110,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-around",
   },
 });
+
+SourceColorPickerDialog.displayName = "SourceColorPickerDialog";
+
+export default SourceColorPickerDialog;

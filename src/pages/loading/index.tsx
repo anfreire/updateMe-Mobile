@@ -15,7 +15,7 @@ export default function LoadingScreen() {
     state.getVersion,
   ]);
 
-  const fetchData = useCallback(
+  const fetchData = React.useCallback(
     async (indexFetched = false) => {
       if (!indexFetched && (await fetchIndex()) === null) {
         Logger.error("Failed to fetch index");
@@ -35,7 +35,7 @@ export default function LoadingScreen() {
     [navigation]
   );
 
-  useEffect(() => {
+  React.useEffect(() => {
     getVersion().then(() => fetchData());
   }, []);
 

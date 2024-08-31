@@ -15,12 +15,12 @@ export default function ColorSchemePickerDialog({
   activeDialog: ActiveDialogType;
 }) {
   const colorScheme = useSettings((state) => state.settings.theme.colorScheme);
-  const [savedColorScheme, setSavedColorScheme] = useState(colorScheme);
+  const [savedColorScheme, setSavedColorScheme] = React.useState(colorScheme);
   const { setColorScheme } = useTheme();
-  const translations = useTranslations();
+  const translations = useTranslations((state) => state.translations);
   const closeDialog = useDialogs((state) => state.closeDialog);
 
-  const colorSchemeOptions = useMemo(
+  const colorSchemeOptions = React.useMemo(
     () => [
       {
         label: translations["System"],
@@ -47,17 +47,20 @@ export default function ColorSchemePickerDialog({
     [translations]
   );
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (activeDialog === "colorSchemePicker") {
       setSavedColorScheme(colorScheme);
     }
   }, [activeDialog, colorScheme]);
 
-  const handleColorSchemeChange = useCallback((value: SavedColorSchemeType) => {
-    setColorScheme(value);
-  }, []);
+  const handleColorSchemeChange = React.useCallback(
+    (value: SavedColorSchemeType) => {
+      setColorScheme(value);
+    },
+    []
+  );
 
-  const handleRevert = useCallback(() => {
+  const handleRevert = React.useCallback(() => {
     setColorScheme(savedColorScheme);
     closeDialog();
   }, [savedColorScheme]);

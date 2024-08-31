@@ -27,7 +27,7 @@ export function Toast() {
   ]);
   const { colorScheme } = useTheme();
 
-  const snackbarStyle = useMemo(() => {
+  const snackbarStyle = React.useMemo(() => {
     return {
       zIndex: 10000000,
       ...(activeToast?.type && {

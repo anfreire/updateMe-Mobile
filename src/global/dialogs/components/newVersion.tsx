@@ -38,15 +38,15 @@ export default function NewVersionDialog({
   activeDialog: ActiveDialogType;
 }) {
   const appInfo = useApp((state) => state.info);
-  const translations = useTranslations();
+  const translations = useTranslations((state) => state.translations);
   const closeDialog = useDialogs((state) => state.closeDialog);
 
   const { schemedTheme } = useTheme();
 
-  const [progress, setProgress] = useState(0);
+  const [progress, setProgress] = React.useState(0);
   const progressHeight = useSharedValue(0);
 
-  const handleUpdate = useCallback(async () => {
+  const handleUpdate = React.useCallback(async () => {
     progressHeight.value = withTiming(10, { duration: 500 });
     setProgress(0);
     const fileName = `UpdateMe_v${appInfo.version}.apk`;
@@ -64,7 +64,7 @@ export default function NewVersionDialog({
     });
   }, [appInfo.download, appInfo.version]);
 
-  const handleManualUpdate = useCallback(() => {
+  const handleManualUpdate = React.useCallback(() => {
     Linking.openURL(appInfo.download);
   }, [appInfo.download]);
 
@@ -75,7 +75,7 @@ export default function NewVersionDialog({
     overflow: "hidden",
   }));
 
-  const title = useMemo(
+  const title = React.useMemo(
     () =>
       interpolate(translations["Update Me v$1 is available!"], appInfo.version),
     [appInfo.version, translations]

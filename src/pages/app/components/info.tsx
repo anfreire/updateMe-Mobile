@@ -53,15 +53,15 @@ export default function AppInfo({ currApp }: { currApp: CurrAppProps }) {
   );
   const openDrawer = useDrawer((state) => state.openDrawer);
   const openToast = useToast((state) => state.openToast);
-  const translations = useTranslations();
+  const translations = useTranslations((state) => state.translations);
   const navigate = useNavigate();
 
-  const providerInfo = useMemo(
+  const providerInfo = React.useMemo(
     () => currApp.providers[currApp.defaultProvider],
     [currApp.providers, currApp.defaultProvider]
   );
 
-  const handleUnsafeInstall = useCallback(() => {
+  const handleUnsafeInstall = React.useCallback(() => {
     if (installUnsafe || providerInfo.safe) return;
 
     openDialog({
@@ -83,7 +83,7 @@ export default function AppInfo({ currApp }: { currApp: CurrAppProps }) {
     });
   }, [installUnsafe, providerInfo.safe, translations, navigate]);
 
-  const handleSafeInstall = useCallback(() => {
+  const handleSafeInstall = React.useCallback(() => {
     const fileName = FilesModule.buildFileName(
       currApp.name,
       providerInfo.version
@@ -129,7 +129,7 @@ export default function AppInfo({ currApp }: { currApp: CurrAppProps }) {
     navigate,
   ]);
 
-  const handleInstall = useCallback(() => {
+  const handleInstall = React.useCallback(() => {
     installUnsafe || providerInfo.safe
       ? handleSafeInstall()
       : handleUnsafeInstall();
@@ -140,7 +140,7 @@ export default function AppInfo({ currApp }: { currApp: CurrAppProps }) {
     handleUnsafeInstall,
   ]);
 
-  const localVersionProps = useMemo(
+  const localVersionProps = React.useMemo(
     () => ({
       color: currApp.version === null ? theme.schemedTheme.error : undefined,
       version:
@@ -151,7 +151,7 @@ export default function AppInfo({ currApp }: { currApp: CurrAppProps }) {
     [currApp.version, theme.schemedTheme.error, translations]
   );
 
-  const buttonProps = useMemo(() => {
+  const buttonProps = React.useMemo(() => {
     if (currApp.version == null) {
       return {
         icon: "install-mobile",

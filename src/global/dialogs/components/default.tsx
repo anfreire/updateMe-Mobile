@@ -1,17 +1,13 @@
 import * as React from "react";
 import { Button, Dialog, Text } from "react-native-paper";
-import { ActiveDialogType, useDialogs } from "@/states/temporary/dialogs";
-export default function DefaultDialog({
-  activeDialog,
-}: {
-  activeDialog: ActiveDialogType;
-}) {
-  const [closeDialog, defaultDialogProps] = useDialogs((state) => [
-    state.closeDialog,
-    state.defaultDialogProps,
-  ]);
+import { useDialogs } from "@/states/temporary/dialogs";
 
-  const handleActionPress = useCallback((action: () => void) => {
+const DefaultDialog = () => {
+  const [activeDialog, closeDialog, defaultDialogProps] = useDialogs(
+    (state) => [state.activeDialog, state.closeDialog, state.defaultDialogProps]
+  );
+
+  const handleActionPress = React.useCallback((action: () => void) => {
     action();
     closeDialog();
   }, []);
@@ -35,4 +31,8 @@ export default function DefaultDialog({
       </Dialog.Actions>
     </Dialog>
   );
-}
+};
+
+DefaultDialog.displayName = "DefaultDialog";
+
+export default DefaultDialog;

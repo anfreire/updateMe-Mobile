@@ -33,12 +33,12 @@ function App(): React.JSX.Element {
     state.settings.notifications.updatesNotification,
   ]);
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (localVersion && info.version && info.version > localVersion)
       openDialog("newVersion");
   }, [info, localVersion, openDialog]);
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (releaseNotification || updateNotification) {
       PermissionsModule.grantPostNotification().then((_) =>
         BackgroundTasksModule.initBackgroundTasks()
@@ -46,7 +46,7 @@ function App(): React.JSX.Element {
     }
   }, [releaseNotification, updateNotification]);
 
-  useEffect(() => {
+  React.useEffect(() => {
     fetchTips(); // Fetch tips from the server
 
     if (deleteOnLeave) FilesModule.deleteAllFiles(); // Clean up files on app enter (In case it didn't clean up on exit)
@@ -59,7 +59,7 @@ function App(): React.JSX.Element {
   const statusBarProps: {
     backgroundColor: string;
     barStyle: StatusBarStyle;
-  } = useMemo(
+  } = React.useMemo(
     () => ({
       backgroundColor: theme.schemedTheme.surfaceContainer,
       barStyle: theme.colorScheme === "dark" ? "light-content" : "dark-content",

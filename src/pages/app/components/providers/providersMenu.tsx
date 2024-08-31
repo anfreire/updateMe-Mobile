@@ -8,15 +8,15 @@ import { CurrAppProps } from "@/states/computed/currApp";
 import { useTranslations } from "@/states/persistent/translations";
 
 const ProvidersMenu = ({ currApp }: { currApp: CurrAppProps }) => {
-  const [providersMenuVisible, setProvidersMenuVisible] = useState(false);
+  const [providersMenuVisible, setProvidersMenuVisible] = React.useState(false);
   const { schemedTheme } = useTheme();
   const setDefaultProvider = useDefaultProviders(
     (state) => state.setDefaultProvider
   );
   const openDialog = useDialogs((state) => state.openDialog);
-  const translations = useTranslations();
+  const translations = useTranslations((state) => state.translations);
 
-  const handleProviderChange = useCallback(
+  const handleProviderChange = React.useCallback(
     (provider: string) => {
       if (currApp.defaultProvider === provider) return;
 
@@ -72,7 +72,7 @@ const ProvidersMenu = ({ currApp }: { currApp: CurrAppProps }) => {
     [currApp, translations]
   );
 
-  const providerMenuItems = useMemo(
+  const providerMenuItems = React.useMemo(
     () =>
       Object.keys(currApp.providers).map((provider) => (
         <Menu.Item

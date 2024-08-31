@@ -25,12 +25,12 @@ export default function AppScreen() {
   );
   const refreshVersions = useVersions((state) => state.refresh);
 
-  const refresh = useCallback(() => {
+  const refresh = React.useCallback(() => {
     refreshVersions({ index, defaultProviders });
   }, [index, defaultProviders]);
 
   useFocusEffect(
-    useCallback(() => {
+    React.useCallback(() => {
       const interval: NodeJS.Timeout = setInterval(refresh, 2500);
 
       return () => {

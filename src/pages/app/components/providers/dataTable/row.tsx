@@ -14,7 +14,7 @@ const ProvidersDataTableRow = memo(
     provider: string;
     tableSize: { provider: number; packageName: number; version: number };
   }) => {
-    const translations = useTranslations();
+    const translations = useTranslations((state) => state.translations);
 
     const copiableCellProps = [
       {

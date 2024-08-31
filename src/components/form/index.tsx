@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef, useState } from "react";
+import React, { React.useCallback, React.useMemo, useRef, React.useState } from "react";
 import {
   Dimensions,
   FlatList,
@@ -43,29 +43,29 @@ const FormScreen: React.FC<FormScreenProps> = ({
   submit,
 }) => {
   const scrollViewRef = useRef<ScrollView>(null);
-  const [disabled, setDisabled] = useState(false);
-  const [fieldsState, setFieldsState] = useState<FormFieldsState>(() =>
+  const [disabled, setDisabled] = React.useState(false);
+  const [fieldsState, setFieldsState] = React.useState<FormFieldsState>(() =>
     Object.fromEntries(
       Object.keys(fieldsData).map((key) => [key, { value: "", error: false }])
     )
   );
   const openToast = useToast((state) => state.openToast);
-  const translations = useTranslations();
+  const translations = useTranslations(state => state.translations);
 
   useFocusEffect(
-    useCallback(() => {
+    React.useCallback(() => {
       init(setDisabled);
     }, [init])
   );
 
-  const handleChange = useCallback((field: string, value: string) => {
+  const handleChange = React.useCallback((field: string, value: string) => {
     setFieldsState((prev) => ({
       ...prev,
       [field]: { value, error: false },
     }));
   }, []);
 
-  const handleSubmit = useCallback(() => {
+  const handleSubmit = React.useCallback(() => {
     const errors = Object.entries(fieldsState).reduce(
       (acc, [key, value]) => {
         if (value.value.trim() === "" && fieldsData[key].errorMessage) {
@@ -98,11 +98,11 @@ const FormScreen: React.FC<FormScreenProps> = ({
     );
   }, [fieldsState, fieldsData, submit, openToast]);
 
-  const scrollTo = useCallback((y: number) => {
+  const scrollTo = React.useCallback((y: number) => {
     scrollViewRef.current?.scrollTo({ y, animated: true });
   }, []);
 
-  const numberOfLines = useMemo(
+  const numberOfLines = React.useMemo(
     () =>
       Object.fromEntries(
         Object.keys(fieldsData).map((key) => [
@@ -113,7 +113,7 @@ const FormScreen: React.FC<FormScreenProps> = ({
     [fieldsData]
   );
 
-  const renderField: ListRenderItem<[string, FormFieldData]> = useCallback(
+  const renderField: ListRenderItem<[string, FormFieldData]> = React.useCallback(
     ({ item: [key, field] }) => (
       <FormField
         suggestions={field.suggestions}
