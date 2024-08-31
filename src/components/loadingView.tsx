@@ -4,21 +4,21 @@ import { useTheme } from "@/theme";
 import { ActivityIndicator } from "react-native-paper";
 
 export default function LoadingView() {
-	const { sourceColor } = useTheme();
-	return (
-		<View style={styles.screen}>
-			<ActivityIndicator size="large" color={sourceColor} />
-		</View>
-	);
+  const { sourceColor } = useTheme();
+  return (
+    <View style={styles.screen}>
+      <ActivityIndicator size="large" color={sourceColor} />
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
-	screen: {
-		width: "100%",
-		height: "100%",
-		display: "flex",
-		flexDirection: "column",
-		alignItems: "center",
-		justifyContent: "center",
-	},
+  screen: {
+    width: "100%",
+    height: "100%",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+  },
 });

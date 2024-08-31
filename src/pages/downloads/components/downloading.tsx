@@ -1,5 +1,4 @@
 import * as React from "react";
-import React, { useCallback, useMemo } from "react";
 import { StyleSheet, View } from "react-native";
 import { IconButton, List, Text, TouchableRipple } from "react-native-paper";
 import { useDialogs } from "@/states/temporary/dialogs";

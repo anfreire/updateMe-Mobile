@@ -1,144 +1,69 @@
 import * as React from "react";
-import {TextInput as RNTextInput, View} from 'react-native';
-import {IconButton} from 'react-native-paper';
-import {ScrollView} from 'react-native-gesture-handler';
-import React, {useCallback, useEffect, useState} from 'react';
-import {useSharedValue, withTiming} from 'react-native-reanimated';
-import Animated from 'react-native-reanimated';
-import {useTheme} from '@/theme';
-import useBackButton from '@/hooks/useBackButton';
-import useKeyboard from '@/hooks/useKeyboard';
-import {CategoriesProps, IndexProps, useIndex} from '@/states/temporary';
-import {CurrAppProps, useCurrApp} from '@/states/computed/currApp';
-import {useSettings} from '@/states/persistent/settings';
-import HomeBanner from './components/banner';
-import {useVersions} from '@/states/computed/versions';
-import useScreenCallback from '@/hooks/screenCallback';
-import ThemedRefreshControl from '@/components/refreshControl';
-import HomeCategories from './components/categories';
-import HomeList from './components/list';
-import HomeGrid from './components/grid';
-import LoadingView from '@/components/loadingView';
-import HomeSearchFAB from './components/searchFAB';
+import LoadingView from "@/components/loadingView";
+import { useIndex } from "@/states/temporary";
+import { useSettings } from "@/states/persistent/settings";
+import HomeBanner from "./components/banner";
+import HomeCategories from "./components/layouts/categories";
+import HomeSearchFAB from "./components/searchFAB";
+import HomeList from "./components/layouts/list";
+import HomeGrid from "./components/layouts/grid";
 
-export interface HomeScreenChildProps {
-  navigation: any;
-  route: any;
-  index: IndexProps;
-  categories: CategoriesProps;
-  versions: Record<string, string | null>;
-  updates: string[];
-  currApp: CurrAppProps | null;
-  setCurrApp: (appName: string | null) => void;
-  search: string;
-  filteredApps: string[];
-}
+const LayoutComponents = {
+  categories: HomeCategories,
+  list: HomeList,
+  grid: HomeGrid,
+} as const;
 
-export default function HomeScreen({navigation, route}: any) {
-  const theme = useTheme();
-  const {isLoaded, index, categories, fetchAll} = useIndex(state => ({
-    isLoaded: state.isLoaded,
-    index: state.index,
-    categories: state.categories,
-    fetchAll: state.fetch,
-  }));
-  const {versions, updates} = useVersions();
-  const {currApp, setCurrApp} = useCurrApp();
-  const [search, setSearch] = useState<string>('');
-  const [appsFiltered, setAppsFiltered] = useState<string[]>([]);
-  const homeLayoutType = useSettings(state => state.settings.layout.homeStyle);
+const HomeScreen = () => {
+  const [isLoaded, index] = useIndex((state) => [
+    state.isLoaded,
+    state.index,
+    state.categories,
+  ]);
+  const [search, setSearch] = React.useState<string>("");
+  const [apps, setApps] = React.useState<string[]>([]);
+  const homeLayoutType = useSettings(
+    (state) => state.settings.layout.homeStyle
+  );
 
-  useEffect(() => {
-    const sortedApps = Object.keys(index).sort();
-    if (search === '') {
-      setAppsFiltered(sortedApps);
-    } else {
-      const terms = search
-        .toLowerCase()
-        .split(' ')
-        .map(term => term.trim().toLowerCase());
-      setAppsFiltered(
-        sortedApps.filter(app =>
-          terms.every(term => app.toLowerCase().includes(term)),
-        ),
+  const handleSearchChange = React.useCallback(
+    (text: string) => {
+      let sortedApps = Object.keys(index).sort();
+      if (text.trim() !== "") {
+        const terms = text.toLowerCase().split(" ");
+        sortedApps = sortedApps.filter((app) =>
+          terms.every((term) => app.toLowerCase().includes(term))
+        );
+      }
+      setApps((prev) =>
+        JSON.stringify(prev) === JSON.stringify(sortedApps) ? prev : sortedApps
       );
-    }
-  }, [search]);
+    },
+    [index]
+  );
 
-  useScreenCallback({
-    initial: () => setCurrApp(null),
-  });
+  React.useEffect(() => {
+    handleSearchChange(search);
+  }, [handleSearchChange, search]);
+
+  const LayoutComponent = React.useMemo(
+    () => LayoutComponents[homeLayoutType],
+    [homeLayoutType]
+  );
+
+  if (!isLoaded) {
+    return <LoadingView />;
+  }
 
   return (
     <>
-      {isLoaded ? (
-        <>
-          <HomeBanner
-            route={route}
-            navigation={navigation}
-            updates={updates}
-            versions={versions}
-            index={index}
-            categories={categories}
-            currApp={currApp}
-            setCurrApp={setCurrApp}
-            search={search}
-            filteredApps={appsFiltered}
-          />
-          <ScrollView
-            refreshControl={ThemedRefreshControl(theme, {
-              onRefresh: () => {
-                fetchAll();
-                setSearch('');
-              },
-              refreshing: !isLoaded,
-            })}>
-            {homeLayoutType === 'categories' ? (
-              <HomeCategories
-                route={route}
-                navigation={navigation}
-                updates={updates}
-                versions={versions}
-                index={index}
-                categories={categories}
-                currApp={currApp}
-                setCurrApp={setCurrApp}
-                search={search}
-                filteredApps={appsFiltered}
-              />
-            ) : homeLayoutType === 'list' ? (
-              <HomeList
-                route={route}
-                navigation={navigation}
-                updates={updates}
-                versions={versions}
-                index={index}
-                categories={categories}
-                currApp={currApp}
-                setCurrApp={setCurrApp}
-                search={search}
-                filteredApps={appsFiltered}
-              />
-            ) : (
-              <HomeGrid
-                route={route}
-                navigation={navigation}
-                updates={updates}
-                versions={versions}
-                index={index}
-                categories={categories}
-                currApp={currApp}
-                setCurrApp={setCurrApp}
-                search={search}
-                filteredApps={appsFiltered}
-              />
-            )}
-          </ScrollView>
-          <HomeSearchFAB search={search} setSearch={setSearch} />
-        </>
-      ) : (
-        <LoadingView />
-      )}
+      <HomeBanner />
+      <LayoutComponent apps={apps} />
+      <HomeSearchFAB search={search} setSearch={setSearch} />
     </>
   );
-}
+};
+
+HomeScreen.displayName = "HomeScreen";
+
+export default HomeScreen;

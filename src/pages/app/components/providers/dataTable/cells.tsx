@@ -1,5 +1,4 @@
 import * as React from "react";
-import React, { memo } from "react";
 import { Linking, ScrollView, View } from "react-native";
 import { DataTable, Icon, Text } from "react-native-paper";
 import Clipboard from "@react-native-clipboard/clipboard";

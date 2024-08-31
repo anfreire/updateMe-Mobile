@@ -1,30 +1,50 @@
-import * as React from "react";
 import React, { useCallback, useMemo, useRef, useState } from "react";
-import { Dimensions, StyleSheet, View } from "react-native";
+import {
+  Dimensions,
+  FlatList,
+  ListRenderItem,
+  StyleSheet,
+  View,
+} from "react-native";
 import { Button } from "react-native-paper";
 import { useFocusEffect } from "@react-navigation/native";
 import { ScrollView } from "react-native";
 import { useToast } from "@/states/temporary/toast";
-import Field, { FieldsDataType, FieldStates } from "./field";
 import { useTranslations } from "@/states/persistent/translations";
+import FormField from "./field";
 
-const minHeight = Dimensions.get("screen").height - 100;
+interface FormFieldData {
+  label: string;
+  errorMessage: string;
+  suggestions?: string[];
+}
 
-export default function FormScreen({
+export interface FormFieldState {
+  value: string;
+  error: boolean;
+}
+
+export type FormFieldsState = Record<string, FormFieldState>;
+
+const MIN_HEIGHT = Dimensions.get("screen").height - 100;
+
+interface FormScreenProps {
+  fieldsData: Record<string, FormFieldData>;
+  init: (setDisabled: React.Dispatch<React.SetStateAction<boolean>>) => void;
+  submit: (
+    data: Record<string, string>,
+    setDisabled: React.Dispatch<React.SetStateAction<boolean>>
+  ) => void;
+}
+
+const FormScreen: React.FC<FormScreenProps> = ({
   fieldsData,
   init,
   submit,
-}: {
-  fieldsData: FieldsDataType;
-  init: (setDisabled: (value: boolean) => void) => void;
-  submit: (
-    data: Record<string, string>,
-    setDisabled: (value: boolean) => void
-  ) => void;
-}) {
+}) => {
   const scrollViewRef = useRef<ScrollView>(null);
   const [disabled, setDisabled] = useState(false);
-  const [state, setState] = useState<FieldStates>(() =>
+  const [fieldsState, setFieldsState] = useState<FormFieldsState>(() =>
     Object.fromEntries(
       Object.keys(fieldsData).map((key) => [key, { value: "", error: false }])
     )
@@ -39,67 +59,87 @@ export default function FormScreen({
   );
 
   const handleChange = useCallback((field: string, value: string) => {
-    setState((prev) => ({
+    setFieldsState((prev) => ({
       ...prev,
       [field]: { value, error: false },
     }));
   }, []);
 
   const handleSubmit = useCallback(() => {
-    for (const key in state) {
-      if (
-        state[key].value.trim() === "" &&
-        fieldsData[key].errorMessage.length > 0
-      ) {
-        setState({
-          ...state,
-          [key]: { value: state[key].value, error: true },
-        });
-        openToast(fieldsData[key].errorMessage, "error");
-        return;
-      }
+    const errors = Object.entries(fieldsState).reduce(
+      (acc, [key, value]) => {
+        if (value.value.trim() === "" && fieldsData[key].errorMessage) {
+          acc[key] = true;
+          openToast(fieldsData[key].errorMessage, "error");
+        }
+        return acc;
+      },
+      {} as Record<string, boolean>
+    );
+
+    if (Object.keys(errors).length > 0) {
+      setFieldsState((prev) => ({
+        ...prev,
+        ...Object.fromEntries(
+          Object.entries(errors).map(([key, error]) => [
+            key,
+            { ...prev[key], error },
+          ])
+        ),
+      }));
+      return;
     }
 
     submit(
       Object.fromEntries(
-        Object.entries(state).map(([key, value]) => [key, value.value])
+        Object.entries(fieldsState).map(([key, { value }]) => [key, value])
       ),
       setDisabled
     );
-  }, [state, fieldsData, submit]);
+  }, [fieldsState, fieldsData, submit, openToast]);
 
-  const scrollTo = useCallback(
-    (y: number) => {
-      scrollViewRef.current?.scrollTo({ y, animated: true });
-    },
-    [scrollViewRef]
+  const scrollTo = useCallback((y: number) => {
+    scrollViewRef.current?.scrollTo({ y, animated: true });
+  }, []);
+
+  const numberOfLines = useMemo(
+    () =>
+      Object.fromEntries(
+        Object.keys(fieldsData).map((key) => [
+          key,
+          key === "description" ? 5 : 1,
+        ])
+      ),
+    [fieldsData]
   );
 
-  const numberOfLines = useMemo(() => {
-    return Object.fromEntries(
-      Object.keys(fieldsData).map((key) => [key, key === "description" ? 5 : 1])
-    );
-  }, [fieldsData]);
+  const renderField: ListRenderItem<[string, FormFieldData]> = useCallback(
+    ({ item: [key, field] }) => (
+      <FormField
+        suggestions={field.suggestions}
+        label={field.label}
+        fieldKey={key}
+        value={fieldsState[key].value}
+        error={fieldsState[key].error}
+        onChange={handleChange}
+        disabled={disabled}
+        numberOfLines={numberOfLines[key]}
+        scrollTo={scrollTo}
+        scrollViewRef={scrollViewRef}
+      />
+    ),
+    [fieldsState, disabled, handleChange, numberOfLines, scrollTo]
+  );
 
   return (
     <View style={styles.wrapper}>
       <ScrollView ref={scrollViewRef} style={styles.scrollView}>
-        <View style={[styles.body, { minHeight: minHeight }]}>
-          {Object.entries(fieldsData).map(([key, value]) => (
-            <Field
-              key={key}
-              suggestions={value.suggestions}
-              label={value.label}
-              fieldKey={key}
-              value={state[key].value}
-              error={state[key].error}
-              onChange={handleChange}
-              disabled={disabled}
-              numberOfLines={numberOfLines[key]}
-              scrollTo={scrollTo}
-              scrollViewRef={scrollViewRef}
-            />
-          ))}
+        <View style={[styles.body, { minHeight: MIN_HEIGHT }]}>
+          <FlatList
+            data={Object.entries(fieldsData)}
+            renderItem={renderField}
+            keyExtractor={([key]) => key}
+          />
         </View>
       </ScrollView>
       <View style={styles.footer}>
@@ -113,7 +153,7 @@ export default function FormScreen({
       </View>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   scrollView: {
@@ -143,3 +183,5 @@ const styles = StyleSheet.create({
     bottom: 15,
   },
 });
+
+export default React.memo(FormScreen);

@@ -1,5 +1,4 @@
 import * as React from "react";
-import React, { useCallback } from "react";
 import { Image, StyleSheet, Dimensions } from "react-native";
 import { Button, Dialog } from "react-native-paper";
 import { Share } from "react-native";

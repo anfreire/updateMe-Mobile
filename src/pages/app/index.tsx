@@ -1,6 +1,5 @@
 import * as React from "react";
 import { StyleSheet, View } from "react-native";
-import React, { useCallback, useMemo } from "react";
 import { ScrollView } from "react-native-gesture-handler";
 import { ActivityIndicator } from "react-native-paper";
 import RelatedAppsBanner from "@/pages/app/components/relatedAppsBanner";

@@ -13,7 +13,6 @@ import Animated, {
 import { useDrawer } from "@/states/temporary/drawer";
 import { CustomDialogsType, useDialogs } from "@/states/temporary/dialogs";
 import { useDownloads } from "@/states/temporary/downloads";
-import { useCallback, useEffect, useMemo } from "react";
 import { useNavigate } from "@/hooks/navigation";
 import { Page } from "@/states/temporary/session";
 import { useTranslations } from "@/states/persistent/translations";

@@ -5,7 +5,6 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { IconButton } from "react-native-paper";
 import TipsScreen from "@/pages/tips";
 import TipScreen from "@/pages/tips/tip";
-import { useCallback, useMemo } from "react";
 import { Page, useSession } from "@/states/temporary/session";
 import { useGoBack } from "@/hooks/navigation";
 

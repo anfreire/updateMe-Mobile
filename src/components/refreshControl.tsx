@@ -1,22 +1,26 @@
 import * as React from "react";
 import { RefreshControl } from "react-native";
-import { UseThemeProps } from "@/theme";
-
-interface ThemedRefreshControlProps {
-	onRefresh: () => void;
-	refreshing?: boolean;
-}
+import { useTheme } from "@/theme";
 
 export default function ThemedRefreshControl(
-	theme: UseThemeProps,
-	{ onRefresh, refreshing = false }: ThemedRefreshControlProps,
+  onRefresh: () => void,
+  refreshing = false
 ) {
-	return (
-		<RefreshControl
-			refreshing={refreshing}
-			colors={[theme.sourceColor]}
-			progressBackgroundColor={theme.schemedTheme.surfaceBright}
-			onRefresh={onRefresh}
-		/>
-	);
+  const theme = useTheme();
+
+  const themeStyles = React.useMemo(
+    () => ({
+      colors: [theme.sourceColor],
+      progressBackgroundColor: theme.schemedTheme.surfaceBright,
+    }),
+    [theme]
+  );
+  return (
+    <RefreshControl
+      refreshing={refreshing}
+      colors={themeStyles.colors}
+      progressBackgroundColor={themeStyles.progressBackgroundColor}
+      onRefresh={onRefresh}
+    />
+  );
 }

@@ -1,6 +1,5 @@
 import * as React from "react";
 import { Portal, Snackbar } from "react-native-paper";
-import React, { useMemo } from "react";
 import { useToast } from "@/states/temporary/toast";
 import { useTheme } from "@/theme";
 

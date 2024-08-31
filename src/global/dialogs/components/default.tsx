@@ -1,8 +1,6 @@
 import * as React from "react";
 import { Button, Dialog, Text } from "react-native-paper";
 import { ActiveDialogType, useDialogs } from "@/states/temporary/dialogs";
-import { useCallback } from "react";
-
 export default function DefaultDialog({
   activeDialog,
 }: {

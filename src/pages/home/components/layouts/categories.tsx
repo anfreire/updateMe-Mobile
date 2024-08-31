@@ -1,91 +1,130 @@
-import * as React from "react";
-import {useEffect, useState} from 'react';
-import {List} from 'react-native-paper';
-import {Image} from 'react-native';
-import {HomeScreenChildProps} from '..';
-import MultiIcon from '@/components/multiIcon';
+import { FlatList, Image, ListRenderItem, StyleSheet } from "react-native";
+import { List } from "react-native-paper";
+import MultiIcon from "@/components/multiIcon";
+import { CategoriesProps, useIndex } from "@/states/temporary";
+import { useSetCurrApp } from "@/hooks/useSetCurrApp";
+import ThemedRefreshControl from "@/components/refreshControl";
 
-export default function HomeCategories(props: HomeScreenChildProps) {
-  const [filteredCategories, setFilteredCategories] = useState<
-    Record<string, string[]>
-  >({});
-  const [openCategories, setOpenCategories] = useState<string[]>([]);
+export default function HomeCategories({ apps }: { apps: string[] }) {
+  const [index, categories, isLoaded, fetchIndex] = useIndex((state) => [
+    state.index,
+    state.categories,
+    state.isLoaded,
+    state.fetch,
+  ]);
+  const [filteredCategories, setFilteredCategories] =
+    useState<CategoriesProps>(categories);
+  const [openCategories, setOpenCategories] = useState<Set<string>>(new Set());
+  const setCurrApp = useSetCurrApp();
 
-  useEffect(() => {
-    let newCategories = {} as any;
-    if (props.filteredApps.length == Object.keys(props.index).length) {
-      setFilteredCategories(
-        Object.fromEntries(
-          Object.entries(props.categories).map(([category, value]) => [
-            category,
-            value.apps,
-          ]),
-        ),
+  const isCategoryOpen = useCallback(
+    (category: string) =>
+      openCategories.has(category) || apps.length === Object.keys(index).length,
+    [openCategories, apps, index]
+  );
+
+  const toggleCategory = useCallback((category: string) => {
+    setOpenCategories((prev) => {
+      const newSet = new Set(prev);
+      newSet.has(category) ? newSet.delete(category) : newSet.add(category);
+      return newSet;
+    });
+  }, []);
+
+  const handleAppsChange = useCallback(() => {
+    if (apps.length === Object.keys(index).length) {
+      setFilteredCategories((prev) =>
+        JSON.stringify(prev) === JSON.stringify(categories) ? prev : categories
       );
-      setOpenCategories([]);
       return;
     }
-    for (let category in props.categories) {
-      const categoryApps = props.categories[category]['apps'].filter(app =>
-        props.filteredApps.includes(app),
-      );
-      if (categoryApps.length == 0) continue;
-      newCategories[category] = categoryApps;
-    }
-    setFilteredCategories(newCategories);
-    setOpenCategories(Object.keys(newCategories));
-  }, [props.filteredApps]);
+
+    const appsSet = new Set(apps);
+    const newCategories = Object.entries(categories).reduce(
+      (acc, [category, categoryData]) => {
+        const categoryApps = categoryData.apps.filter((app) =>
+          appsSet.has(app)
+        );
+        if (categoryApps.length > 0) {
+          acc[category] = { ...categoryData, apps: categoryApps };
+        }
+        return acc;
+      },
+      {} as CategoriesProps
+    );
+
+    setFilteredCategories((prev) =>
+      JSON.stringify(prev) === JSON.stringify(newCategories)
+        ? prev
+        : newCategories
+    );
+  }, [apps, categories, index]);
+
+  useEffect(() => {
+    handleAppsChange();
+  }, [handleAppsChange]);
+
+  const renderApp: ListRenderItem<string> = useCallback(
+    ({ item: app }) => (
+      <List.Item
+        onPress={() => setCurrApp(app)}
+        title={app}
+        style={styles.appItem}
+        left={() => (
+          <Image
+            resizeMode="contain"
+            style={styles.appIcon}
+            source={{ uri: index[app]?.icon }}
+          />
+        )}
+      />
+    ),
+    [index, setCurrApp]
+  );
+
+  const categoryData = useMemo(
+    () => Object.keys(filteredCategories),
+    [filteredCategories]
+  );
 
   return (
     <List.Section>
-      {Object.keys(filteredCategories).map(category => (
-        <List.Accordion
-          key={category}
-          title={category}
-          expanded={openCategories.includes(category)}
-          onPress={_ => {
-            if (openCategories.includes(category)) {
-              setOpenCategories(openCategories.filter(c => c !== category));
-            } else {
-              setOpenCategories([...openCategories, category]);
-            }
-          }}
-          left={_props => (
-            <MultiIcon
-              {..._props}
-              size={20}
-              type={
-                (props.categories[category]['type'] as any) ??
-                'material-community'
-              }
-              name={props.categories[category]['icon']}
+      <FlatList
+        data={categoryData}
+        renderItem={({ item: category }) => (
+          <List.Accordion
+            title={category}
+            expanded={isCategoryOpen(category)}
+            onPress={() => toggleCategory(category)}
+            left={(props) => (
+              <MultiIcon
+                {...props}
+                size={20}
+                type={categories[category].type ?? "material-community"}
+                name={categories[category].icon}
+              />
+            )}
+          >
+            <FlatList
+              data={filteredCategories[category].apps}
+              renderItem={renderApp}
+              keyExtractor={(item) => `home-category-app-${item}`}
             />
-          )}>
-          {filteredCategories[category].map(app => (
-            <List.Item
-              onPress={_ => {
-                props.setCurrApp(app);
-                props.navigation.navigate('App-Home' as never);
-              }}
-              key={app}
-              title={app}
-              style={{
-                paddingLeft: 25,
-              }}
-              left={_ => (
-                <Image
-                  resizeMode="contain"
-                  style={{
-                    width: 25,
-                    height: 25,
-                  }}
-                  source={{uri: props.index[app]?.icon}}
-                />
-              )}
-            />
-          ))}
-        </List.Accordion>
-      ))}
+          </List.Accordion>
+        )}
+        keyExtractor={(item) => `home-category-${item}`}
+        refreshControl={ThemedRefreshControl(fetchIndex, !isLoaded)}
+      />
     </List.Section>
   );
 }
+
+const styles = StyleSheet.create({
+  appItem: {
+    paddingLeft: 25,
+  },
+  appIcon: {
+    width: 25,
+    height: 25,
+  },
+});

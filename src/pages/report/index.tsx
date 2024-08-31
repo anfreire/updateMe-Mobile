@@ -5,8 +5,6 @@ import { Logger } from "@/states/persistent/logs";
 import { useToken } from "@/states/persistent/token";
 import { useTranslations } from "@/states/persistent/translations";
 import { useToast } from "@/states/temporary/toast";
-import { useCallback, useMemo } from "react";
-
 export default function ReportScreen() {
   const openToast = useToast((state) => state.openToast);
   const [didReport, registerReport] = useFeedback((state) => [

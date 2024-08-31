@@ -1,39 +1,30 @@
 import * as React from "react";
-import { useCallback, useEffect } from "react";
 import { useDefaultProviders } from "@/states/persistent/defaultProviders";
 import { useIndex } from "@/states/temporary";
 import { useVersions } from "@/states/computed/versions";
-import { useCurrApp } from "@/states/computed/currApp";
 
 function useStatesBridge() {
-	const index = useIndex((state) => state.index);
-	const [defaultProviders, sanitizeDefaultProviders] = useDefaultProviders(
-		(state) => [state.defaultProviders, state.sanitize],
-	);
-	const [versions, refreshVersions] = useVersions((state) => [
-		state.versions,
-		state.refresh,
-	]);
+  const index = useIndex((state) => state.index);
+  const [defaultProviders, sanitizeDefaultProviders] = useDefaultProviders(
+    (state) => [state.defaultProviders, state.sanitize]
+  );
+  const refreshVersions = useVersions((state) => state.refresh);
 
-	const handleSanitizeDefaultProviders = useCallback(() => {
-		useDefaultProviders.getState().sanitize(index);
-	}, [index]);
+  React.useEffect(() => {
+    sanitizeDefaultProviders(index);
+  }, [index]);
 
-	const handleRefreshVersions = useCallback(() => {
-		useVersions.getState().refresh({ index, defaultProviders });
-	}, [index, defaultProviders]);
-
-	useEffect(() => {
-		handleSanitizeDefaultProviders();
-	}, [sanitizeDefaultProviders]);
-
-	useEffect(() => {
-		handleRefreshVersions();
-	}, [refreshVersions]);
+  React.useEffect(() => {
+    refreshVersions({ index, defaultProviders });
+  }, [index, defaultProviders]);
 }
 
-export function StatesBridgeManager() {
-	useStatesBridge();
+const StatesBridgeManager = () => {
+  useStatesBridge();
 
-	return null;
-}
+  return null;
+};
+
+StatesBridgeManager.displayName = "StatesBridgeManager";
+
+export default StatesBridgeManager;

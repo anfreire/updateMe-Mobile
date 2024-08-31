@@ -1,5 +1,4 @@
 import * as React from "react";
-import { useCallback, useMemo } from "react";
 import { StyleSheet, View } from "react-native";
 import { Button, Card, DataTable, Text } from "react-native-paper";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";

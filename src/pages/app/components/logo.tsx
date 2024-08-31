@@ -1,5 +1,4 @@
 import * as React from "react";
-import React, { useEffect, useState, useMemo, memo } from "react";
 import { Card, Text } from "react-native-paper";
 import { Image, StyleSheet } from "react-native";
 import { CurrAppProps } from "@/states/computed/currApp";

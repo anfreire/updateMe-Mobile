@@ -2,7 +2,6 @@ import * as React from "react";
 import { useTranslations } from "@/states/persistent/translations";
 import { useDialogs } from "@/states/temporary/dialogs";
 import { useToast } from "@/states/temporary/toast";
-import { useCallback, useEffect, useState } from "react";
 import { FlatList, ScrollView, StyleSheet, View } from "react-native";
 import { Card, IconButton, ProgressBar, Text } from "react-native-paper";
 
@@ -98,30 +97,30 @@ export default function SuggestionsStats() {
 
   return (
     <View style={styles.rootView}>
-        <View style={styles.cardView}>
-          <Card mode="elevated" contentStyle={styles.card} elevation={2}>
-            <Text variant="titleLarge">{translations["App Suggestions"]}</Text>
-          </Card>
+      <View style={styles.cardView}>
+        <Card mode="elevated" contentStyle={styles.card} elevation={2}>
+          <Text variant="titleLarge">{translations["App Suggestions"]}</Text>
+        </Card>
 
-          <Card mode="elevated" style={{ width: "80%" }} elevation={2}>
-            <View style={styles.suggestionView}>
-              <IconButton
-                icon="information"
-                style={styles.infoButton}
-                onPress={handleInfo}
-              />
-              <FlatList
-                data={stats}
-                keyExtractor={(item) => item.app}
-                renderItem={({ item }) => <SuggestionStat value={item} />}
-                contentContainerStyle={{ width: "100%" }}
-              />
-              {stats.map((value) => (
-                <SuggestionStat value={value} />
-              ))}
-            </View>
-          </Card>
-        </View>
+        <Card mode="elevated" style={{ width: "80%" }} elevation={2}>
+          <View style={styles.suggestionView}>
+            <IconButton
+              icon="information"
+              style={styles.infoButton}
+              onPress={handleInfo}
+            />
+            <FlatList
+              data={stats}
+              keyExtractor={(item) => item.app}
+              renderItem={({ item }) => <SuggestionStat value={item} />}
+              contentContainerStyle={{ width: "100%" }}
+            />
+            {stats.map((value) => (
+              <SuggestionStat value={value} />
+            ))}
+          </View>
+        </Card>
+      </View>
     </View>
   );
 }

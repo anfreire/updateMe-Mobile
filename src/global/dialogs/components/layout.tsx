@@ -1,6 +1,5 @@
 import * as React from "react";
 import { Button, Dialog, SegmentedButtons, Text } from "react-native-paper";
-import { useCallback, useEffect, useState } from "react";
 import { ActiveDialogType, useDialogs } from "@/states/temporary/dialogs";
 import Slider from "@react-native-community/slider";
 import { StyleSheet, View } from "react-native";

@@ -1,5 +1,4 @@
 import * as React from "react";
-import React, { useCallback, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import { Icon, Text } from "react-native-paper";

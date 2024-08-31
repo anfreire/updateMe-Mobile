@@ -1,5 +1,4 @@
 import * as React from "react";
-import React, { useCallback, useEffect, useMemo } from "react";
 import { View } from "react-native";
 import { Checkbox, IconButton, List } from "react-native-paper";
 import Share from "react-native-share";

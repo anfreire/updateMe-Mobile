@@ -1,27 +1,34 @@
 import * as React from "react";
 import { Text, TouchableRipple } from "react-native-paper";
-import {
-  Dimensions,
-  Image,
-  ListRenderItem,
-  StyleSheet,
-  View,
-} from "react-native";
+import { Dimensions, Image, ListRenderItem, StyleSheet } from "react-native";
 import { useTheme } from "@/theme";
 import { FlatList } from "react-native-gesture-handler";
 import { useSetCurrApp } from "@/hooks/useSetCurrApp";
 import { useIndex } from "@/states/temporary";
+import ThemedRefreshControl from "@/components/refreshControl";
 
-const { width: SCREEN_WIDTH } = Dimensions.get("window");
 const ITEM_MARGIN = 10;
 const MIN_ITEM_WIDTH = 125;
 
+function calculateLayout() {
+  const screenWidth = Dimensions.get("window").width;
+  const columns = Math.floor(
+    (screenWidth + ITEM_MARGIN) / (MIN_ITEM_WIDTH + ITEM_MARGIN)
+  );
+  const itemWidth = (screenWidth - (columns + 1) * ITEM_MARGIN) / columns;
+  return { columns, itemWidth };
+}
+
 export default function HomeGrid({ apps }: { apps: string[] }) {
   const theme = useTheme();
-  const index = useIndex((state) => state.index);
+  const [index, isLoaded, fetchIndex] = useIndex((state) => [
+    state.index,
+    state.isLoaded,
+    state.fetch,
+  ]);
   const setCurrApp = useSetCurrApp();
 
-  const [layout, setLayout] = React.useState(() => calculateLayout(apps.length));
+  const [layout, setLayout] = React.useState(calculateLayout);
 
   const themedStyles = React.useMemo(
     () => ({
@@ -32,8 +39,16 @@ export default function HomeGrid({ apps }: { apps: string[] }) {
   );
 
   React.useEffect(() => {
-    const handleLayoutChange = () => setLayout(calculateLayout(apps.length));
-    const subscription = Dimensions.addEventListener("change", handleLayoutChange);
+    const handleLayoutChange = () => {
+      const newLayout = calculateLayout();
+      setLayout((prev) =>
+        JSON.stringify(prev) === JSON.stringify(newLayout) ? prev : newLayout
+      );
+    };
+    const subscription = Dimensions.addEventListener(
+      "change",
+      handleLayoutChange
+    );
     return () => subscription.remove();
   }, [apps.length]);
 
@@ -64,14 +79,9 @@ export default function HomeGrid({ apps }: { apps: string[] }) {
       numColumns={layout.columns}
       contentContainerStyle={styles.container}
       columnWrapperStyle={styles.row}
+      refreshControl={ThemedRefreshControl(fetchIndex, !isLoaded)}
     />
   );
-}
-
-function calculateLayout(itemCount: number) {
-  const columns = Math.floor((SCREEN_WIDTH + ITEM_MARGIN) / (MIN_ITEM_WIDTH + ITEM_MARGIN));
-  const itemWidth = (SCREEN_WIDTH - (columns + 1) * ITEM_MARGIN) / columns;
-  return { columns, itemWidth };
 }
 
 const styles = StyleSheet.create({
@@ -79,7 +89,7 @@ const styles = StyleSheet.create({
     paddingVertical: ITEM_MARGIN,
   },
   row: {
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
     paddingHorizontal: ITEM_MARGIN,
     marginBottom: ITEM_MARGIN,
   },

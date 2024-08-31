@@ -1,5 +1,4 @@
 import * as React from "react";
-import React, { useState, useEffect, useCallback } from "react";
 import { StyleSheet } from "react-native";
 import { Button, Dialog, IconButton } from "react-native-paper";
 import { ColorPicker, fromHsv, toHsv } from "react-native-color-picker";

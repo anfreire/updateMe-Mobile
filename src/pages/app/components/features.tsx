@@ -3,7 +3,6 @@ import { Card, Text } from "react-native-paper";
 import Carousel from "react-native-reanimated-carousel";
 import { StyleSheet, View } from "react-native";
 import { CurrAppProps, useCurrApp } from "@/states/computed/currApp";
-import { memo } from "react";
 import { useTranslations } from "@/states/persistent/translations";
 
 const renderItem = ({ item }: { item: string }) => (

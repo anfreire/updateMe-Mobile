@@ -1,6 +1,5 @@
 import * as React from "react";
 import { useTheme } from "@/theme";
-import { useEffect } from "react";
 import Animated, {
   Easing,
   useAnimatedStyle,

@@ -1,6 +1,5 @@
 import * as React from "react";
 import { Banner } from "react-native-paper";
-import { useCallback, useEffect, useMemo } from "react";
 import { useSession } from "@/states/temporary/session";
 import { CurrAppProps, useCurrApp } from "@/states/computed/currApp";
 import {

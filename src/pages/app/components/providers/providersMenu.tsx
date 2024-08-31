@@ -1,5 +1,4 @@
 import * as React from "react";
-import React, { useState, useCallback, useMemo } from "react";
 import { Menu, Text, TextInput } from "react-native-paper";
 import { Linking, StyleSheet, View } from "react-native";
 import { useDefaultProviders } from "@/states/persistent/defaultProviders";
