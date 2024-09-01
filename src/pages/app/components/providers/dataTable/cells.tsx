@@ -3,9 +3,9 @@ import { Linking, ScrollView, View } from "react-native";
 import { DataTable, Icon, Text } from "react-native-paper";
 import Clipboard from "@react-native-clipboard/clipboard";
 import MultiIcon from "@/components/multiIcon";
-import { CurrAppProps } from "@/states/computed/currApp";
 import { interpolate } from "@/states/persistent/translations";
-import { useToast } from "@/states/temporary/toast";
+import { CurrAppProps } from "@/hooks/useCurrApp";
+import { useToast } from "@/states/runtime/toast";
 
 interface CellProps {
   onPress: () => void;
@@ -39,7 +39,7 @@ const Cell = ({ onPress, onLongPress, style, children }: CellProps) => (
   </DataTable.Cell>
 );
 
-export const WebsiteCell = memo(
+export const WebsiteCell = React.memo(
   ({ size, provider, currApp, translations }: WebsiteCellProps) => {
     const openToast = useToast((state) => state.openToast);
 
@@ -67,33 +67,35 @@ export const WebsiteCell = memo(
   }
 );
 
-export const SecureCell = memo(({ sha256, translations }: SecureCellProps) => {
-  const openToast = useToast((state) => state.openToast);
+export const SecureCell = React.memo(
+  ({ sha256, translations }: SecureCellProps) => {
+    const openToast = useToast((state) => state.openToast);
 
-  return (
-    <Cell
-      onPress={() =>
-        openToast(translations["Long press to open VirusTotal analysis"])
-      }
-      onLongPress={() =>
-        Linking.openURL(`https://www.virustotal.com/gui/file/${sha256}`)
-      }
-      style={{ width: 70, justifyContent: "center" }}
-    >
-      <View style={{ position: "relative", width: 18, height: 18 }}>
-        <Icon size={18} source={sha256 ? "check" : "close"} />
-        <MultiIcon
-          style={{ position: "absolute", top: -8, right: -10 }}
-          size={10}
-          type="material-icons"
-          name="open-in-new"
-        />
-      </View>
-    </Cell>
-  );
-});
+    return (
+      <Cell
+        onPress={() =>
+          openToast(translations["Long press to open VirusTotal analysis"])
+        }
+        onLongPress={() =>
+          Linking.openURL(`https://www.virustotal.com/gui/file/${sha256}`)
+        }
+        style={{ width: 70, justifyContent: "center" }}
+      >
+        <View style={{ position: "relative", width: 18, height: 18 }}>
+          <Icon size={18} source={sha256 ? "check" : "close"} />
+          <MultiIcon
+            style={{ position: "absolute", top: -8, right: -10 }}
+            size={10}
+            type="material-icons"
+            name="open-in-new"
+          />
+        </View>
+      </Cell>
+    );
+  }
+);
 
-export const CopiableCell = memo(
+export const CopiableCell = React.memo(
   ({
     onPressMessage,
     onLongPressMessage,

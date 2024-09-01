@@ -1,50 +1,57 @@
 import * as React from "react";
 import { View, StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { useIndex } from "@/states/temporary";
-import { useApp } from "@/states/temporary/app";
-import Icon from "./icon";
-import { NavigationProps } from "@/hooks/navigation";
 import { Logger } from "@/states/persistent/logs";
+import { useIndex } from "@/states/fetched";
+import { useApp } from "@/states/fetched/app";
+import { useCategories } from "@/states/fetched/categories";
+import { NavigationProps } from "@/types/navigation";
+import LoadingIcon from "./icon";
 
-export default function LoadingScreen() {
-  const navigation = useNavigation<NavigationProps>();
+const LoadingScreen = () => {
+  const { reset } = useNavigation<NavigationProps>();
   const fetchIndex = useIndex((state) => state.fetch);
-  const [fetchInfo, getVersion] = useApp((state) => [
-    state.fetchInfo,
-    state.getVersion,
+  const fetchCategories = useCategories((state) => state.fetch);
+  const [fetchLatestAppInfo, getLocalVersion] = useApp((state) => [
+    state.fetch,
+    state.getLocalVersion,
   ]);
 
   const fetchData = React.useCallback(
-    async (indexFetched = false) => {
+    async (indexFetched = false, categoriesFetched = false) => {
       if (!indexFetched && (await fetchIndex()) === null) {
         Logger.error("Failed to fetch index");
         return fetchData(false);
       }
 
-      if ((await fetchInfo()) === null) {
-        Logger.error("Failed to fetch info");
+      if (!categoriesFetched && (await fetchCategories()) === null) {
+        Logger.error("Failed to fetch categories");
         return fetchData(true);
       }
 
-      navigation.reset({
+      if ((await fetchLatestAppInfo()) === null) {
+        Logger.error("Failed to fetch info");
+        return fetchData(true, true);
+      }
+
+      reset({
         index: 0,
         routes: [{ name: "home" }],
       });
     },
-    [navigation]
+    [reset]
   );
 
   React.useEffect(() => {
-    getVersion().then(() => fetchData());
+    getLocalVersion().then(() => fetchData());
   }, []);
 
   return (
     <View style={styles.container}>
-      <Icon />
+      <LoadingIcon />
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -53,3 +60,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
 });
+
+LoadingScreen.displayName = "LoadingScreen";
+
+export default LoadingScreen;

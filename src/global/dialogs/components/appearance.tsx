@@ -4,10 +4,9 @@ import { Button, Dialog, IconButton } from "react-native-paper";
 import { ColorPicker, fromHsv, toHsv } from "react-native-color-picker";
 import { HsvColor } from "react-native-color-picker/dist/typeHelpers";
 import { useTheme } from "@/theme";
-import { useToast } from "@/states/temporary/toast";
-import { useDialogs } from "@/states/temporary/dialogs";
+import { useToast } from "@/states/runtime/toast";
+import { useDialogs } from "@/states/runtime/dialogs";
 import { useTranslations } from "@/states/persistent/translations";
-import { useShallow } from "zustand/react/shallow";
 
 const SourceColorPickerDialog = () => {
   const { sourceColor, setSourceColor, resetSourceColor } = useTheme();
@@ -15,9 +14,10 @@ const SourceColorPickerDialog = () => {
     state.activeDialog,
     state.closeDialog,
   ]);
-  const [openToast, closeToast] = useToast(
-    useShallow((state) => [state.openToast, state.closeToast])
-  );
+  const [openToast, closeToast] = useToast((state) => [
+    state.openToast,
+    state.closeToast,
+  ]);
   const translations = useTranslations((state) => state.translations);
   const [oldColor, setOldColor] = React.useState("");
   const [activeColor, setActiveColor] = React.useState<HsvColor>({
@@ -58,7 +58,9 @@ const SourceColorPickerDialog = () => {
     }
   }, [activeDialog, sourceColor]);
 
-  if (activeDialog !== "sourceColorPicker") return null;
+  if (activeDialog !== "sourceColorPicker") {
+    return null;
+  }
 
   return (
     <Dialog visible onDismiss={handleClose} style={styles.dialog}>

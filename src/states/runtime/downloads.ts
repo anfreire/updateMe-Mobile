@@ -8,8 +8,11 @@ export interface Download {
   task?: StatefulPromise<FetchBlobResponse>;
 }
 
-export interface UseDownloadsStore {
+type useDownloadsState = {
   downloads: Record<string, Download>;
+};
+
+type useDownloadsActions = {
   addDownload: (
     fileName: string,
     url: string,
@@ -18,9 +21,11 @@ export interface UseDownloadsStore {
   ) => void;
   cancelDownload: (fileName: string) => void;
   removeDownload: (fileName: string) => void;
-}
+};
 
-export const useDownloads = create<UseDownloadsStore>((set, get) => ({
+export type useDownloadsProps = useDownloadsState & useDownloadsActions;
+
+export const useDownloads = create<useDownloadsProps>((set, get) => ({
   downloads: {},
   addDownload: (
     fileName: string,
@@ -52,17 +57,18 @@ export const useDownloads = create<UseDownloadsStore>((set, get) => ({
     set((state) => ({
       downloads: {
         ...state.downloads,
-        [fileName]: { progress: 0, task },
+        [fileName]: { ...state.downloads[fileName], task },
       },
     }));
 
     task
       .then((result) => {
-        get().removeDownload(fileName);
         onFinished(result.path());
       })
       .catch((reason) => {
         Logger.error(`Error downloading file ${fileName}: ${reason}`);
+      })
+      .finally(() => {
         get().removeDownload(fileName);
       });
   },

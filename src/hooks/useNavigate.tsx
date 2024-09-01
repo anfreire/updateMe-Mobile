@@ -1,27 +1,27 @@
 import * as React from "react";
-import { MainStackParams } from "@/navigation";
-import { AppsStackParams } from "@/navigation/apps";
-import { TipsStackParams } from "@/navigation/tips";
-import { useSession, Page } from "@/states/temporary/session";
-import { NavigationProp, useNavigation } from "@react-navigation/native";
-export type PageParams = AppsStackParams & MainStackParams & TipsStackParams;
+import { useSession } from "@/states/runtime/session";
+import { useNavigation } from "@react-navigation/native";
+import { Page, PagesParams, NavigationProps } from "@/types/navigation";
 
-export type NavigationProps = NavigationProp<PageParams>;
+type NavigateOptions<T extends Page> = {
+  params?: PagesParams[T];
+  silent?: boolean;
+};
 
 export function useNavigate() {
   const navigation = useNavigation<NavigationProps>();
   const setCurrPage = useSession((state) => state.setCurrPage);
 
   return React.useCallback(
-    <T extends Page>(
-      page: T,
-      params?: PageParams[T],
-      silent: boolean = false
-    ) => {
-      navigation.navigate(page as Page, params);
-      if (silent) return;
-      setCurrPage(page);
+    <T extends Page>(page: T, options: NavigateOptions<T> = {}) => {
+      const { params, silent = false } = options;
+
+      navigation.navigate(page as any, params);
+
+      if (!silent) {
+        setCurrPage(page);
+      }
     },
-    [navigation.navigate]
+    [navigation]
   );
 }

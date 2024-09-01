@@ -1,34 +1,29 @@
 import * as React from "react";
 import { View, FlatList, ListRenderItemInfo } from "react-native";
-import { Button, Icon, List, Text } from "react-native-paper";
+import { Button, Icon, Text } from "react-native-paper";
 import { useTheme } from "@/theme";
-import { useIndex } from "@/states/temporary";
-import { useToast } from "@/states/temporary/toast";
-import { useDownloads } from "@/states/temporary/downloads";
+import { useToast } from "@/states/runtime/toast";
+import { useDownloads } from "@/states/runtime/downloads";
 import { useDefaultProviders } from "@/states/persistent/defaultProviders";
 import { useVersions } from "@/states/computed/versions";
 import ThemedRefreshControl from "@/components/refreshControl";
 import FilesModule from "@/lib/files";
-import { useFocusEffect } from "@react-navigation/native";
-import { NavigationProps } from "@/hooks/navigation";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { interpolate, useTranslations } from "@/states/persistent/translations";
 import { useSettings } from "@/states/persistent/settings";
 import UpdateItem from "./item";
+import { useIndex } from "@/states/fetched";
+import { useUpdates } from "@/states/computed/updates";
+import { NavigationProps } from "@/types/navigation";
 
-export default function UpdatesScreen({
-  navigation,
-}: {
-  navigation: NavigationProps;
-}) {
+export default function UpdatesScreen() {
   const theme = useTheme();
   const index = useIndex((state) => state.index);
-  const defaultProviders = useDefaultProviders(
-    (state) => state.defaultProviders
+  const populatedDefaultProviders = useDefaultProviders(
+    (state) => state.populatedDefaultProviders
   );
-  const [updates, refresh] = useVersions((state) => [
-    state.updates,
-    state.refresh,
-  ]);
+  const refresh = useVersions((state) => state.refresh);
+  const updates = useUpdates((state) => state.updates);
   const openToast = useToast((state) => state.openToast);
   const addDownload = useDownloads((state) => state.addDownload);
   const translations = useTranslations((state) => state.translations);
@@ -36,40 +31,46 @@ export default function UpdatesScreen({
     (state) => state.settings.downloads.installAfterDownload
   );
   const [updating, setUpdating] = React.useState<Record<string, string>>({});
+  const { setOptions } = useNavigation<NavigationProps>();
 
   const updateApp = React.useCallback(
     (appName: string) => {
-      const provider =
-        index[appName].providers[
-          defaultProviders[appName] ?? Object.keys(index[appName].providers)[0]
-        ];
-      const fileName = FilesModule.buildFileName(appName, provider.version);
+      const fileName = FilesModule.buildFileName(
+        appName,
+        index[appName].providers[populatedDefaultProviders[appName]].version
+      );
       setUpdating((prev) => ({ ...prev, [appName]: fileName }));
-      addDownload(fileName, provider.download, undefined, (path) => {
-        setUpdating((prev) => {
-          const { [appName]: _, ...rest } = prev;
-          return rest;
-        });
-        if (installAfterDownload) {
-          FilesModule.installApk(path);
-        } else {
-          openToast(
-            interpolate(translations["$1 finished downloading"], appName),
-            undefined,
-            {
-              label: translations["Install"],
-              onPress: () => FilesModule.installApk(path),
-            }
-          );
+      addDownload(
+        fileName,
+        index[appName].providers[populatedDefaultProviders[appName]].download,
+        undefined,
+        (path) => {
+          setUpdating((prev) => {
+            const { [appName]: _, ...rest } = prev;
+            return rest;
+          });
+          if (installAfterDownload) {
+            FilesModule.installApk(path);
+          } else {
+            openToast(
+              interpolate(translations["$1 finished downloading"], appName),
+              {
+                action: {
+                  label: translations["Install"],
+                  onPress: () => FilesModule.installApk(path),
+                },
+              }
+            );
+          }
         }
-      });
+      );
     },
-    [translations, defaultProviders, index, installAfterDownload]
+    [translations, populatedDefaultProviders, index, installAfterDownload]
   );
 
   const refreshUpdates = React.useCallback(() => {
-    refresh({ index, defaultProviders });
-  }, [index, defaultProviders]);
+    refresh(index, populatedDefaultProviders);
+  }, [index, populatedDefaultProviders]);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -79,7 +80,7 @@ export default function UpdatesScreen({
   );
 
   React.useEffect(() => {
-    navigation.setOptions({
+    setOptions({
       headerRight:
         updates.length > 0
           ? () => (
@@ -98,7 +99,7 @@ export default function UpdatesScreen({
         ? prev
         : filtered;
     });
-  }, [updates, updateApp, translations, navigation]);
+  }, [updates, updateApp, translations, setOptions]);
 
   const renderItem = React.useCallback(
     (item: ListRenderItemInfo<string>) => (
@@ -134,9 +135,8 @@ export default function UpdatesScreen({
       data={updates}
       renderItem={renderItem}
       keyExtractor={(item) => item}
-      refreshControl={ThemedRefreshControl(theme, {
+      refreshControl={ThemedRefreshControl({
         onRefresh: refreshUpdates,
-        refreshing: false,
       })}
       ListEmptyComponent={EmptyComponent}
     />

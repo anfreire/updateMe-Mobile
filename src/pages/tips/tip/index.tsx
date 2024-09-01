@@ -1,10 +1,9 @@
 import * as React from "react";
 import LoadingView from "@/components/loadingView";
-import { useTips } from "@/states/temporary/tips";
+import { useTips } from "@/states/fetched/tips";
 import { useTheme } from "@/theme";
-import { Dimensions, ScrollView, View } from "react-native";
+import { FlatList, Dimensions, ScrollView, View } from "react-native";
 import FastImage from "react-native-fast-image";
-import { FlatList } from "react-native-gesture-handler";
 import { Text } from "react-native-paper";
 
 const HEIGHT = 0.65 * Dimensions.get("window").height;

@@ -1,10 +1,10 @@
 import * as React from "react";
-import { CurrAppProps } from "@/states/computed/currApp";
 import { DataTable } from "react-native-paper";
 import ProvidersDataTableRow from "./row";
 import ProvidersDataTableHeader from "./header";
+import { CurrAppProps } from "@/hooks/useCurrApp";
 
-const ProvidersDataTable = memo(({ currApp }: { currApp: CurrAppProps }) => {
+const ProvidersDataTable = ({ currApp }: { currApp: CurrAppProps }) => {
   const tableSize = React.useMemo(() => {
     const maxLengths = Object.entries(currApp.providers).reduce(
       (acc, [provider, { packageName, version }]) => ({
@@ -35,6 +35,8 @@ const ProvidersDataTable = memo(({ currApp }: { currApp: CurrAppProps }) => {
       ))}
     </DataTable>
   );
-});
+};
 
-export default ProvidersDataTable;
+ProvidersDataTable.displayName = "ProvidersDataTable";
+
+export default React.memo(ProvidersDataTable);

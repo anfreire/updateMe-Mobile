@@ -1,13 +1,18 @@
 import * as React from "react";
 import { Menu, Text, TextInput } from "react-native-paper";
-import { Linking, StyleSheet, View } from "react-native";
+import { Linking, ListRenderItem, StyleSheet, View } from "react-native";
 import { useDefaultProviders } from "@/states/persistent/defaultProviders";
 import { useTheme } from "@/theme";
-import { useDialogs } from "@/states/temporary/dialogs";
-import { CurrAppProps } from "@/states/computed/currApp";
+import { useDialogs } from "@/states/runtime/dialogs";
 import { useTranslations } from "@/states/persistent/translations";
+import { CurrAppProps } from "@/hooks/useCurrApp";
+import { FlatList } from "react-native-gesture-handler";
 
-const ProvidersMenu = ({ currApp }: { currApp: CurrAppProps }) => {
+interface ProvidersMenuProps {
+  currApp: CurrAppProps;
+}
+
+const ProvidersMenu = ({ currApp }: ProvidersMenuProps) => {
   const [providersMenuVisible, setProvidersMenuVisible] = React.useState(false);
   const { schemedTheme } = useTheme();
   const setDefaultProvider = useDefaultProviders(
@@ -18,18 +23,7 @@ const ProvidersMenu = ({ currApp }: { currApp: CurrAppProps }) => {
 
   const handleProviderChange = React.useCallback(
     (provider: string) => {
-      if (currApp.defaultProvider === provider) return;
-
-      const showWarningDialog = (content: string, onContinue: () => void) => {
-        openDialog({
-          title: translations["Warning"],
-          content,
-          actions: [
-            { title: translations["Cancel"], action: () => {} },
-            { title: translations["Continue"], action: onContinue },
-          ],
-        });
-      };
+      if (currApp.defaultProviderTitle === provider) return;
 
       if (!currApp.providers[provider].safe) {
         openDialog({
@@ -49,46 +43,52 @@ const ProvidersMenu = ({ currApp }: { currApp: CurrAppProps }) => {
             },
             {
               title: translations["Continue"],
-              action: () => setDefaultProvider(currApp.name, provider),
+              action: () => setDefaultProvider(currApp.title, provider),
             },
           ],
         });
       } else if (
         currApp.providers[provider].packageName !==
-          currApp.providers[currApp.defaultProvider].packageName ||
+          currApp.providers[currApp.defaultProviderTitle].packageName ||
         currApp.version == null
       ) {
-        setDefaultProvider(currApp.name, provider);
+        setDefaultProvider(currApp.title, provider);
       } else {
-        showWarningDialog(
-          translations[
-            "Changing the provider will likely require uninstalling and reinstalling the app in order to install updates. Are you sure you want to continue?"
+        openDialog({
+          title: translations["Warning"],
+          content:
+            translations[
+              "Changing the provider will likely require uninstalling and reinstalling the app in order to install updates. Are you sure you want to continue?"
+            ],
+          actions: [
+            { title: translations["Cancel"], action: () => {} },
+            {
+              title: translations["Continue"],
+              action: () => setDefaultProvider(currApp.title, provider),
+            },
           ],
-          () => setDefaultProvider(currApp.name, provider)
-        );
+        });
       }
       setProvidersMenuVisible(false);
     },
     [currApp, translations]
   );
 
-  const providerMenuItems = React.useMemo(
-    () =>
-      Object.keys(currApp.providers).map((provider) => (
-        <Menu.Item
-          key={provider}
-          style={{
-            backgroundColor:
-              currApp.defaultProvider === provider
-                ? schemedTheme.surfaceBright
-                : schemedTheme.surfaceContainer,
-          }}
-          titleStyle={styles.menuItemTitle}
-          trailingIcon={currApp.defaultProvider === provider ? "star" : ""}
-          onPress={() => handleProviderChange(provider)}
-          title={provider}
-        />
-      )),
+  const renderMenuItem: ListRenderItem<string> = React.useCallback(
+    ({ item }) => (
+      <Menu.Item
+        style={{
+          backgroundColor:
+            currApp.defaultProviderTitle === item
+              ? schemedTheme.surfaceBright
+              : schemedTheme.surfaceContainer,
+        }}
+        titleStyle={styles.menuItemTitle}
+        trailingIcon={currApp.defaultProviderTitle === item ? "star" : ""}
+        onPress={() => handleProviderChange(item)}
+        title={item}
+      />
+    ),
     [
       currApp.providers,
       currApp.defaultProvider,
@@ -113,7 +113,7 @@ const ProvidersMenu = ({ currApp }: { currApp: CurrAppProps }) => {
           <TextInput
             editable={false}
             mode="outlined"
-            placeholder={currApp.defaultProvider}
+            placeholder={currApp.defaultProviderTitle}
             style={styles.textInput}
             dense
             contentStyle={styles.textInputContent}
@@ -127,7 +127,11 @@ const ProvidersMenu = ({ currApp }: { currApp: CurrAppProps }) => {
           />
         }
       >
-        {providerMenuItems}
+        <FlatList
+          data={Object.keys(currApp.providers)}
+          renderItem={renderMenuItem}
+          keyExtractor={(item) => item}
+        />
       </Menu>
     </View>
   );

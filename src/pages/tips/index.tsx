@@ -1,42 +1,52 @@
 import * as React from "react";
 import ThemedRefreshControl from "@/components/refreshControl";
-import { useNavigate } from "@/hooks/navigation";
-import { useTips } from "@/states/temporary/tips";
+import { useTips } from "@/states/fetched/tips";
 import { useTheme } from "@/theme";
-import { ScrollView } from "react-native-gesture-handler";
+import { FlatList, ListRenderItem, ScrollView } from "react-native";
 import { List } from "react-native-paper";
+import { useNavigate } from "@/hooks/useNavigate";
+import LoadingView from "@/components/loadingView";
 
 export default function TipsScreen() {
-  const theme = useTheme();
-  const [tips, setCurrTip, refresh] = useTips((state) => [
+  const [tips, isfetched, fetchTips] = useTips((state) => [
     state.tips,
-    state.setCurrTip,
-    state.fetchTips,
+    state.isFetched,
+    state.fetch,
   ]);
   const navigate = useNavigate();
+
+  const renderItem: ListRenderItem<string> = React.useCallback(
+    ({ item: tip }) => (
+      <List.Item
+        title={tip}
+        right={(props) => <List.Icon {...props} icon="chevron-right" />}
+        description={tips[tip].description}
+        descriptionStyle={{ fontSize: 13 }}
+        onPress={() => navigate("tip", { params: { tip } })}
+      />
+    ),
+    []
+  );
+
+  if (!isfetched) {
+    return <LoadingView />;
+  }
+
   return (
-    <ScrollView
-      refreshControl={ThemedRefreshControl(theme, { onRefresh: refresh })}
-      style={{
+    <FlatList
+      contentContainerStyle={{
         width: "100%",
         height: "100%",
         display: "flex",
         flexDirection: "column",
       }}
-    >
-      {Object.keys(tips).map((key) => (
-        <List.Item
-          key={key}
-          title={key}
-          right={(props) => <List.Icon {...props} icon="chevron-right" />}
-          description={tips[key].description}
-          descriptionStyle={{ fontSize: 13 }}
-          onPress={() => {
-            setCurrTip(key);
-            navigate("tip");
-          }}
-        ></List.Item>
-      ))}
-    </ScrollView>
+      data={Object.keys(tips)}
+      keyExtractor={(item) => item}
+      renderItem={renderItem}
+      refreshControl={ThemedRefreshControl({
+        onRefresh: fetchTips,
+        refreshing: !isfetched,
+      })}
+    />
   );
 }

@@ -2,7 +2,6 @@ import * as React from "react";
 import { Card, Text } from "react-native-paper";
 import Carousel from "react-native-reanimated-carousel";
 import { StyleSheet, View } from "react-native";
-import { CurrAppProps, useCurrApp } from "@/states/computed/currApp";
 import { useTranslations } from "@/states/persistent/translations";
 
 const renderItem = ({ item }: { item: string }) => (
@@ -13,7 +12,7 @@ const renderItem = ({ item }: { item: string }) => (
   </View>
 );
 
-function AppFeatures({ currApp }: { currApp: CurrAppProps }) {
+function AppFeatures({ features }: { features: string[] }) {
   const translations = useTranslations((state) => state.translations);
 
   return (
@@ -24,7 +23,7 @@ function AppFeatures({ currApp }: { currApp: CurrAppProps }) {
         height={50}
         loop
         autoPlay={true}
-        data={currApp.features}
+        data={features}
         renderItem={renderItem}
       />
     </Card>
@@ -54,4 +53,6 @@ const styles = StyleSheet.create({
   },
 });
 
-export default memo(AppFeatures);
+AppFeatures.displayName = "AppFeatures";
+
+export default React.memo(AppFeatures);

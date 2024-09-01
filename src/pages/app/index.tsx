@@ -1,6 +1,5 @@
 import * as React from "react";
-import { StyleSheet, View } from "react-native";
-import { ScrollView } from "react-native-gesture-handler";
+import { ScrollView, StyleSheet, View } from "react-native";
 import { ActivityIndicator } from "react-native-paper";
 import RelatedAppsBanner from "@/pages/app/components/relatedAppsBanner";
 import { useTheme } from "@/theme";
@@ -9,25 +8,43 @@ import AppLogo from "@/pages/app/components/logo";
 import AppInfo from "@/pages/app/components/info";
 import AppFeatures from "@/pages/app/components/features";
 import AppProvider from "@/pages/app/components/providers";
-import { useIndex } from "@/states/temporary";
-import { useCurrApp } from "@/states/computed/currApp";
 import { useVersions } from "@/states/computed/versions";
-import { useFocusEffect } from "@react-navigation/native";
+import {
+  useFocusEffect,
+  useNavigation,
+  useRoute,
+} from "@react-navigation/native";
 import { useDefaultProviders } from "@/states/persistent/defaultProviders";
+import { NavigationProps, RouteProps } from "@/types/navigation";
+import { useIndex } from "@/states/fetched";
+import { useCurrApp } from "@/hooks/useCurrApp";
 
-export default function AppScreen() {
-  const currApp = useCurrApp((state) => state.currApp);
+const AppScreen = () => {
   const theme = useTheme();
-
+  const { setOptions } = useNavigation<NavigationProps>();
+  const { params } = useRoute<RouteProps>();
   const index = useIndex((state) => state.index);
-  const defaultProviders = useDefaultProviders(
-    (state) => state.defaultProviders
+  const populatedDefaultProviders = useDefaultProviders(
+    (state) => state.populatedDefaultProviders
   );
   const refreshVersions = useVersions((state) => state.refresh);
 
+  const appTitle = React.useMemo(() => {
+    return params && "app" in params ? params.app : null;
+  }, [params]);
+
   const refresh = React.useCallback(() => {
-    refreshVersions({ index, defaultProviders });
-  }, [index, defaultProviders]);
+    refreshVersions(index, populatedDefaultProviders);
+  }, [index, populatedDefaultProviders]);
+
+  const currApp = useCurrApp(appTitle);
+
+  React.useEffect(() => {
+    if (!appTitle) {
+      return;
+    }
+    setOptions({ title: appTitle });
+  }, [appTitle]);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -36,7 +53,7 @@ export default function AppScreen() {
       return () => {
         clearInterval(interval);
       };
-    }, [])
+    }, [refresh])
   );
 
   if (!currApp) {
@@ -51,21 +68,21 @@ export default function AppScreen() {
     <>
       <RelatedAppsBanner currApp={currApp} />
       <ScrollView
-        refreshControl={ThemedRefreshControl(theme, {
+        refreshControl={ThemedRefreshControl({
           refreshing: false,
           onRefresh: refresh,
         })}
       >
         <View style={styles.contentContainer}>
-          <AppLogo currApp={currApp} />
+          <AppLogo title={currApp.title} icon={currApp.icon} />
           <AppInfo currApp={currApp} />
-          <AppFeatures currApp={currApp} />
+          <AppFeatures features={currApp.features} />
           <AppProvider currApp={currApp} />
         </View>
       </ScrollView>
     </>
   );
-}
+};
 
 const styles = StyleSheet.create({
   loadingContainer: {
@@ -86,3 +103,7 @@ const styles = StyleSheet.create({
     gap: 20,
   },
 });
+
+AppScreen.displayName = "AppScreen";
+
+export default AppScreen;

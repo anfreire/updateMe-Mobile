@@ -4,7 +4,6 @@ import { useTheme } from "@/theme";
 import { IconButton } from "react-native-paper";
 import LoadingScreen from "@/pages/loading";
 import HomeStack from "./apps";
-import { useGoBack } from "@/hooks/navigation";
 import DownloadsScreen from "@/pages/downloads";
 import { useTranslations } from "@/states/persistent/translations";
 import ReportScreen from "@/pages/report";
@@ -12,30 +11,8 @@ import SettingsScreen from "@/pages/settings";
 import UpdatesScreen from "@/pages/updates";
 import TipsStack from "./tips";
 import SuggestScreen from "@/pages/suggest";
-
-export const MainStackPages = [
-  "loading",
-  "home",
-  "downloads",
-  "report",
-  "settings",
-  "updates",
-  "tips",
-  "suggest",
-] as const;
-
-export type MainStackPage = (typeof MainStackPages)[number];
-
-export type MainStackParams = {
-  loading: undefined;
-  home: undefined;
-  downloads: undefined;
-  report: undefined;
-  settings: undefined | { setting: string };
-  updates: undefined;
-  tips: undefined;
-  suggest: undefined;
-};
+import { useGoBack } from "@/hooks/useGoBack";
+import { MainStackParams } from "@/types/navigation";
 
 const Stack = createStackNavigator<MainStackParams>();
 

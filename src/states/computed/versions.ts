@@ -1,50 +1,42 @@
 import AppsModule from "@/lib/apps";
-import { IndexProps } from "../temporary";
 import { create } from "zustand";
+import { Index } from "@/states/fetched/index";
+import { DefaultProviders } from "@/states/persistent/defaultProviders";
+import isEqual from "react-fast-compare";
 
-interface StoresProps {
-  index: IndexProps;
-  defaultProviders: Record<string, string>;
+export type Versions = Record<string, string | null>;
+
+interface useVersionsState {
+  versions: Versions;
 }
 
-export interface useVersionsProps {
-  versions: Record<string, string | null>;
-  updates: string[];
-  refresh: ({ index, defaultProviders }: StoresProps) => Promise<{
-    versions: Record<string, string | null>;
-    updates: string[];
-  }>;
+interface useVersionsActions {
+  refresh: (
+    index: Index,
+    populatedDefaultProviders: DefaultProviders
+  ) => Promise<Versions>;
 }
 
-export const useVersions = create<useVersionsProps>((set, get) => ({
+export type useVersionsProps = useVersionsState & useVersionsActions;
+
+export const useVersions = create<useVersionsProps>((set) => ({
   versions: {},
-  updates: [],
-  refresh: async ({ index, defaultProviders }) => {
-    let newVersions: Record<string, string | null> = {};
-    let newUpdates: string[] = [];
-    await Promise.all(
-      Object.keys(index).map(async (appName) => {
-        const defaultProvider = Object.keys(defaultProviders).includes(appName)
-          ? defaultProviders[appName]
-          : Object.keys(index[appName].providers)[0];
-        newVersions[appName] = await AppsModule.getAppVersion(
-          index[appName].providers[defaultProvider].packageName
-        );
-        if (
-          newVersions[appName] &&
-          newVersions[appName]! <
-            index[appName].providers[defaultProvider].version
-        )
-          newUpdates.push(appName);
-      })
+  refresh: async (index, populatedDefaultProviders) => {
+    const entries = await Promise.all(
+      Object.entries(populatedDefaultProviders).map(async ([app, provider]) => [
+        app,
+        await AppsModule.getAppVersion(
+          index[app].providers[provider].packageName
+        ),
+      ])
     );
 
-    if (JSON.stringify(newVersions) !== JSON.stringify(get().versions))
-      set({ versions: newVersions });
+    const newVersions = Object.fromEntries(entries);
 
-    if (JSON.stringify(newUpdates) !== JSON.stringify(get().updates))
-      set({ updates: newUpdates });
+    set((state) =>
+      isEqual(state.versions, newVersions) ? state : { versions: newVersions }
+    );
 
-    return { versions: newVersions, updates: newUpdates };
+    return newVersions;
   },
 }));

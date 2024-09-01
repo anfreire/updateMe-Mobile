@@ -12,7 +12,7 @@ import { Path, Svg } from "react-native-svg";
 const AnimatedSvg = Animated.createAnimatedComponent(Svg);
 const AnimatedPath = Animated.createAnimatedComponent(Path);
 
-export default function Icon() {
+const LoadingIcon = () => {
   const theme = useTheme();
   const animation = useSharedValue(0);
 
@@ -50,4 +50,8 @@ export default function Icon() {
       />
     </AnimatedSvg>
   );
-}
+};
+
+LoadingIcon.displayName = "LoadingIcon";
+
+export default LoadingIcon;

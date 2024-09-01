@@ -3,28 +3,28 @@ import { FlatList, ListRenderItem } from "react-native";
 import { Checkbox, List } from "react-native-paper";
 import Animated from "react-native-reanimated";
 import MultiIcon, { MultiIconType } from "@/components/multiIcon";
-import {
-  SettingsSectionType,
-  SettingsSectionItemType,
-  useSettings,
-} from "@/states/persistent/settings";
-import { Translation, useTranslations } from "@/states/persistent/translations";
+import { useSettings } from "@/states/persistent/settings";
+import { useTranslations } from "@/states/persistent/translations";
 import { usePulsing } from "@/hooks/usePulsing";
-import { RouteProp, useRoute } from "@react-navigation/native";
-import { AppsStackParams } from "@/navigation/apps";
-import { MainStackParams } from "@/navigation";
-import { TipsStackParams } from "@/navigation/tips";
+import { useRoute } from "@react-navigation/native";
+import { Translation } from "@/types/translations";
+import {
+  BooleanSettingsSection,
+  BooleanSettingsSectionItem,
+  SettingsSection,
+} from "@/types/settings";
+import { RouteProps } from "@/types/navigation";
 
 const AnimatedListItem = Animated.createAnimatedComponent(List.Item);
 
 type PossibleText = string | Translation;
 
-type CheckboxItem<T extends PossibleText, S extends SettingsSectionType> = {
+type CheckboxItem<T extends PossibleText, S extends BooleanSettingsSection> = {
   title: T;
   description: T;
   setting: {
-    section: SettingsSectionType;
-    item: SettingsSectionItemType<S>;
+    section: BooleanSettingsSection;
+    item: BooleanSettingsSectionItem<S>;
   };
   icon: {
     name: string;
@@ -32,14 +32,14 @@ type CheckboxItem<T extends PossibleText, S extends SettingsSectionType> = {
   };
 };
 
-type SectionItem<T extends PossibleText, S extends SettingsSectionType> = {
+type SectionItem<T extends PossibleText, S extends BooleanSettingsSection> = {
   title: T;
   items: CheckboxItem<T, S>[];
 };
 
 type SectionItems<T extends PossibleText> = {
-  [I in SettingsSectionType]: SectionItem<T, I>;
-}[SettingsSectionType][];
+  [I in BooleanSettingsSection]: SectionItem<T, I>;
+}[BooleanSettingsSection][];
 
 const SettingsData: SectionItems<Translation> = [
   {
@@ -101,9 +101,13 @@ const SettingsCheckboxes = () => {
     state.settings,
     state.toggleSetting,
   ]);
-  const route =
-    useRoute<RouteProp<AppsStackParams & MainStackParams & TipsStackParams>>();
-  const pulsingStyle = usePulsing(!!route.params?.setting);
+  const { params } = useRoute<RouteProps>();
+  const pulsingSetting = React.useMemo(
+    () => (params && "setting" in params ? params.setting : undefined),
+    [params]
+  );
+
+  const pulsingStyle = usePulsing(!!(params && "setting" in params));
 
   const translatedSettingsData = React.useMemo(
     () =>
@@ -115,7 +119,7 @@ const SettingsCheckboxes = () => {
           title: translations[item.title],
           description: translations[item.description],
         })),
-      })) as SectionItem<string, SettingsSectionType>[],
+      })) as SectionItem<string, BooleanSettingsSection>[],
     [translations]
   );
 
@@ -131,11 +135,7 @@ const SettingsCheckboxes = () => {
               <AnimatedListItem
                 title={item.title}
                 description={item.description}
-                style={
-                  item.title === route.params?.setting
-                    ? pulsingStyle
-                    : undefined
-                }
+                style={item.title === pulsingSetting ? pulsingStyle : undefined}
                 left={(props) => (
                   <MultiIcon
                     {...props}

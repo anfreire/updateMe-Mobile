@@ -1,8 +1,8 @@
 import * as React from "react";
 import { useTranslations } from "@/states/persistent/translations";
-import { useDialogs } from "@/states/temporary/dialogs";
-import { useToast } from "@/states/temporary/toast";
-import { FlatList, ScrollView, StyleSheet, View } from "react-native";
+import { useDialogs } from "@/states/runtime/dialogs";
+import { useToast } from "@/states/runtime/toast";
+import { FlatList, StyleSheet, View } from "react-native";
 import { Card, IconButton, ProgressBar, Text } from "react-native-paper";
 
 const SuggestionStat = ({
@@ -71,7 +71,9 @@ export default function SuggestionsStats() {
         })
       )
       .catch(() =>
-        openToast(translations["Failed to fetch suggestions list"], "error")
+        openToast(translations["Failed to fetch suggestions list"], {
+          type: "error",
+        })
       );
 
     return () => {

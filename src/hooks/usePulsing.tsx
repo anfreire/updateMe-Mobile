@@ -1,35 +1,43 @@
 import * as React from "react";
 import {
-	Easing,
-	useAnimatedStyle,
-	useSharedValue,
-	withRepeat,
-	withTiming,
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withRepeat,
+  withTiming,
 } from "react-native-reanimated";
 
-export function usePulsing(isActive: boolean) {
-	const opacity = useSharedValue(1);
+export function usePulsing(animate: boolean) {
+  const opacity = useSharedValue(1);
+  const prevAnimateRef = React.useRef<boolean>(animate);
 
-	React.useEffect(() => {
-		if (!isActive) return;
+  React.useEffect(() => {
+    if (prevAnimateRef.current === animate) {
+      return;
+    }
 
-		opacity.value = withRepeat(
-			withTiming(0.5, {
-				duration: 600,
-				easing: Easing.inOut(Easing.quad),
-			}),
-			-1,
-			true,
-		);
+    prevAnimateRef.current = animate;
+    
+    if (!animate) {
+      opacity.value = 1;
+      return;
+    }
 
-		const timer = setTimeout(() => {
-			opacity.value = 1;
-		}, 2500);
+    opacity.value = withRepeat(
+      withTiming(0.5, {
+        duration: 600,
+        easing: Easing.inOut(Easing.quad),
+      }),
+      5,
+      true
+    );
 
-		return () => clearTimeout(timer);
-	}, [isActive]);
+    return () => {
+      opacity.value = 1;
+    };
+  }, [animate]);
 
-	return useAnimatedStyle(() => ({
-		opacity: opacity.value,
-	}));
+  return useAnimatedStyle(() => ({
+    opacity: opacity.value,
+  }));
 }

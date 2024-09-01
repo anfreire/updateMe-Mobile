@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Portal, Snackbar } from "react-native-paper";
-import { useToast } from "@/states/temporary/toast";
+import { useToast } from "@/states/runtime/toast";
 import { useTheme } from "@/theme";
 
 const TOAST_COLORS = {
@@ -42,7 +42,7 @@ export function Toast() {
       <Snackbar
         style={snackbarStyle}
         action={activeToast?.action}
-        visible={activeToast !== null}
+        visible={!!activeToast}
         onDismiss={closeToast}
         duration={3000}
       >

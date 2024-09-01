@@ -25,4 +25,4 @@ const styles = StyleSheet.create({
 
 LoadingView.displayName = "LoadingView";
 
-export default React.memo(LoadingView);
+export default LoadingView;

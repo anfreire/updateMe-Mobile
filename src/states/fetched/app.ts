@@ -1,41 +1,57 @@
 import { create } from "zustand";
 import AppsModule from "@/lib/apps";
 import { Logger } from "@/states/persistent/logs";
+import isEqual from "react-fast-compare";
 
 const APP_INFO_URL =
   "https://raw.githubusercontent.com/anfreire/updateMe-Data/main/app.json";
 
-interface AppInfo {
+interface LatestAppInfo {
   version: string;
   download: string;
   releaseNotes: { title: string; description: string }[];
 }
 
-export interface useAppProps {
+interface useAppState {
   localVersion: string;
-  info: AppInfo;
-  getVersion: () => Promise<string>;
-  fetchInfo: () => Promise<null | AppInfo>;
+  latest: LatestAppInfo;
+  isFetched: boolean;
 }
+
+interface useAppActions {
+  getLocalVersion: () => Promise<string>;
+  fetch: () => Promise<LatestAppInfo | null>;
+}
+
+export type useAppProps = useAppState & useAppActions;
 
 export const useApp = create<useAppProps>((set) => ({
   localVersion: "",
-  info: {
+  latest: {
     version: "",
     download: "",
     releaseNotes: [],
   },
-  getVersion: async () => {
+  isFetched: false,
+  getLocalVersion: async () => {
     const version = (await AppsModule.getAppVersion("com.updateme")) as string;
     set({ localVersion: version });
     return version;
   },
-  fetchInfo: async () => {
+  fetch: async () => {
+    set({ isFetched: false });
     try {
       const response = await fetch(APP_INFO_URL);
-      const info = await response.json();
-      set({ info });
-      return info;
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const newLatest = (await response.json()) as LatestAppInfo;
+      set((state) =>
+        isEqual(state.latest, newLatest)
+          ? { isFetched: true }
+          : { latest: newLatest, isFetched: true }
+      );
+      return newLatest;
     } catch (error) {
       Logger.error(`Error fetching app info: ${error}`);
       return null;

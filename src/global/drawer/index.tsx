@@ -2,20 +2,15 @@ import * as React from "react";
 import { List } from "react-native-paper";
 import { Drawer } from "react-native-drawer-layout";
 import { useTheme } from "@/theme";
-import { useNavigation } from "@react-navigation/native";
-import Animated, {
-  Easing,
-  useAnimatedStyle,
-  useSharedValue,
-  withRepeat,
-  withTiming,
-} from "react-native-reanimated";
-import { useDrawer } from "@/states/temporary/drawer";
-import { CustomDialogsType, useDialogs } from "@/states/temporary/dialogs";
-import { useDownloads } from "@/states/temporary/downloads";
-import { useNavigate } from "@/hooks/navigation";
-import { Page } from "@/states/temporary/session";
+import Animated from "react-native-reanimated";
+import { useDrawer } from "@/states/runtime/drawer";
+import { Dialog, useDialogs } from "@/states/runtime/dialogs";
+import { useDownloads } from "@/states/runtime/downloads";
 import { useTranslations } from "@/states/persistent/translations";
+import { useNavigate } from "@/hooks/useNavigate";
+import { usePulsing } from "@/hooks/usePulsing";
+import { ListRenderItem, FlatList } from "react-native";
+import { Page } from "@/types/navigation";
 
 const AnimatedListItem = Animated.createAnimatedComponent(List.Item);
 
@@ -26,12 +21,12 @@ interface DrawerItem {
   onClick: () => void;
 }
 
-export default function DrawerWrapper({
-  children,
-}: {
+interface DrawerWrapperProps {
   children: React.ReactNode;
-}) {
-  const theme = useTheme();
+}
+
+const DrawerWrapper = ({ children }: DrawerWrapperProps) => {
+  const { schemedTheme } = useTheme();
   const navigate = useNavigate();
   const [isDrawerOpen, closeDrawer] = useDrawer((state) => [
     state.isDrawerOpen,
@@ -41,26 +36,12 @@ export default function DrawerWrapper({
   const openDialog = useDialogs((state) => state.openDialog);
   const translations = useTranslations((state) => state.translations);
 
-  const opacity = useSharedValue(1);
+  const pulseSettings = React.useMemo(
+    () => isDrawerOpen && Object.keys(downloads).length > 0,
+    [isDrawerOpen, downloads]
+  );
 
-  const animationStyle = useAnimatedStyle(() => ({
-    opacity: opacity.value,
-  }));
-
-  const pulse = React.useCallback(() => {
-    opacity.value = withRepeat(
-      withTiming(0.5, {
-        duration: 600,
-        easing: Easing.inOut(Easing.quad),
-      }),
-      -1,
-      true
-    );
-  }, []);
-
-  const stopPulsing = React.useCallback(() => {
-    opacity.value = withTiming(1, { duration: 300 });
-  }, []);
+  const puslingStyles = usePulsing(pulseSettings);
 
   const navigateTo = React.useCallback(
     (route: Page) => {
@@ -71,22 +52,12 @@ export default function DrawerWrapper({
   );
 
   const handleOpenDialog = React.useCallback(
-    (key: CustomDialogsType) => {
+    (key: Dialog) => {
       closeDrawer();
       openDialog(key);
     },
     [openDialog]
   );
-
-  React.useEffect(() => {
-    if (isDrawerOpen && Object.keys(downloads).length > 0) {
-      pulse();
-      const timer = setTimeout(stopPulsing, 2500);
-      return () => clearTimeout(timer);
-    } else {
-      stopPulsing();
-    }
-  }, [isDrawerOpen, downloads, pulse, stopPulsing]);
 
   const items: Record<string, DrawerItem> = React.useMemo(
     () => ({
@@ -136,33 +107,32 @@ export default function DrawerWrapper({
     [navigateTo, handleOpenDialog, translations]
   );
 
-  const renderDrawerContent = React.useCallback(
-    () => (
+  const renderDrawerItem: ListRenderItem<[string, DrawerItem]> =
+    React.useCallback(
+      ({ item }) => (
+        <AnimatedListItem
+          title={item[1].title}
+          description={item[1].description}
+          left={(props) => <List.Icon {...props} icon={item[1].icon} />}
+          onPress={item[1].onClick}
+          style={item[0] === "downloads" ? puslingStyles : undefined}
+        />
+      ),
+      []
+    );
+
+  const renderDrawerContent = React.useCallback(() => {
+    const keyExtractor = (item: [string, DrawerItem]) => item[0];
+    return (
       <List.Section>
-        {Object.entries(items).map(([key, item]) =>
-          key === "downloads" ? (
-            <AnimatedListItem
-              key={key}
-              title={item.title}
-              description={item.description}
-              style={animationStyle}
-              left={(props) => <List.Icon {...props} icon={item.icon} />}
-              onPress={item.onClick}
-            />
-          ) : (
-            <List.Item
-              key={key}
-              title={item.title}
-              description={item.description}
-              left={(props) => <List.Icon {...props} icon={item.icon} />}
-              onPress={item.onClick}
-            />
-          )
-        )}
+        <FlatList
+          data={Object.entries(items)}
+          renderItem={renderDrawerItem}
+          keyExtractor={keyExtractor}
+        />
       </List.Section>
-    ),
-    [items, animationStyle]
-  );
+    );
+  }, [items]);
 
   return (
     <Drawer
@@ -172,11 +142,15 @@ export default function DrawerWrapper({
       drawerPosition="right"
       swipeEnabled={false}
       drawerStyle={{
-        backgroundColor: theme.schemedTheme.surfaceContainer,
+        backgroundColor: schemedTheme.surfaceContainer,
       }}
       renderDrawerContent={renderDrawerContent}
     >
       {children}
     </Drawer>
   );
-}
+};
+
+DrawerWrapper.displayName = "DrawerWrapper";
+
+export default DrawerWrapper;

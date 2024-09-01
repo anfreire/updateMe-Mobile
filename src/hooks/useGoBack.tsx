@@ -1,27 +1,7 @@
 import * as React from "react";
-import { MainStackParams } from "@/navigation";
-import { AppsStackParams } from "@/navigation/apps";
-import { TipsStackParams } from "@/navigation/tips";
-import { useCurrApp } from "@/states/computed/currApp";
-import { useSession, Page } from "@/states/temporary/session";
-import { useTips } from "@/states/temporary/tips";
-import { NavigationProp, useNavigation } from "@react-navigation/native";
-export type PageParams = AppsStackParams & MainStackParams & TipsStackParams;
-
-export type NavigationProps = NavigationProp<PageParams>;
-
-const PREVIOUS_ROUTES: Record<Page, Page | null> = {
-  app: "home",
-  downloads: "home",
-  home: null,
-  loading: null,
-  report: "home",
-  settings: "home",
-  suggest: "home",
-  tip: "tips",
-  tips: "home",
-  updates: "home",
-} as const;
+import { useSession } from "@/states/runtime/session";
+import { useNavigation } from "@react-navigation/native";
+import { NavigationProps, PREVIOUS_ROUTES } from "@/types/navigation";
 
 export function useGoBack() {
   const navigation = useNavigation<NavigationProps>();
@@ -29,14 +9,10 @@ export function useGoBack() {
     state.currPage,
     state.setCurrPage,
   ]);
-  const setCurrTip = useTips((state) => state.setCurrTip);
-  const clearCurrApp = useCurrApp((state) => state.clearCurrApp);
 
   return React.useCallback(() => {
     const prevPage = PREVIOUS_ROUTES[currPage];
     if (!prevPage) return;
-    if (prevPage === "tips") setCurrTip(null);
-    if (prevPage === "app") clearCurrApp();
     navigation.goBack();
     setCurrPage(prevPage);
   }, [navigation.navigate, currPage]);

@@ -1,7 +1,6 @@
 import * as React from "react";
 import { Card, Text } from "react-native-paper";
 import { Image, StyleSheet } from "react-native";
-import { CurrAppProps } from "@/states/computed/currApp";
 
 const MAX_IMAGE_SIZE = 100;
 
@@ -10,21 +9,26 @@ const calculateImageSize = (width: number, height: number) => ({
   height: MAX_IMAGE_SIZE,
 });
 
-function AppLogo({ currApp }: { currApp: CurrAppProps }) {
+interface AppLogoProps {
+  title: string;
+  icon: string;
+}
+
+const AppLogo = ({ title, icon }: AppLogoProps) => {
   const [imageSize, setImageSize] = React.useState({
     width: MAX_IMAGE_SIZE,
     height: MAX_IMAGE_SIZE,
   });
 
   React.useEffect(() => {
-    Image.getSize(currApp.icon, (width, height) =>
+    Image.getSize(icon, (width, height) =>
       setImageSize(calculateImageSize(width, height))
     );
-  }, [currApp.icon]);
+  }, [icon]);
 
   const paddingHorizontal = React.useMemo(
-    () => (currApp.name.length > 15 ? 40 : 50),
-    [currApp.name]
+    () => (title.length > 15 ? 40 : 50),
+    [title]
   );
 
   return (
@@ -32,12 +36,12 @@ function AppLogo({ currApp }: { currApp: CurrAppProps }) {
       <Card.Cover
         resizeMode="contain"
         style={[styles.cardCover, imageSize]}
-        source={{ uri: currApp.icon }}
+        source={{ uri: icon }}
       />
-      <Text variant="headlineLarge">{currApp.name}</Text>
+      <Text variant="headlineLarge">{title}</Text>
     </Card>
   );
-}
+};
 
 const styles = StyleSheet.create({
   card: {
@@ -54,4 +58,6 @@ const styles = StyleSheet.create({
   },
 });
 
-export default memo(AppLogo);
+AppLogo.displayName = "AppLogo";
+
+export default React.memo(AppLogo);

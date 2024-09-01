@@ -1,12 +1,14 @@
 import * as React from "react";
 import LoadingView from "@/components/loadingView";
-import { useIndex } from "@/states/temporary";
 import { useSettings } from "@/states/persistent/settings";
 import HomeBanner from "./components/banner";
 import HomeCategories from "./components/layouts/categories";
 import HomeSearchFAB from "./components/searchFAB";
 import HomeList from "./components/layouts/list";
 import HomeGrid from "./components/layouts/grid";
+import { useIndex } from "@/states/fetched";
+import { useShallow } from "zustand/react/shallow";
+import { useCategories } from "@/states/fetched/categories";
 
 const LayoutComponents = {
   categories: HomeCategories,
@@ -15,11 +17,12 @@ const LayoutComponents = {
 } as const;
 
 const HomeScreen = () => {
-  const [isLoaded, index] = useIndex((state) => [
-    state.isLoaded,
-    state.index,
-    state.categories,
-  ]);
+  const [isIndexLoaded, index] = useIndex(
+    useShallow((state) => [state.isFetched, state.index])
+  );
+  const [isCategoriesLoaded] = useCategories(
+    useShallow((state) => [state.isFetched, state.categories])
+  );
   const [search, setSearch] = React.useState<string>("");
   const [apps, setApps] = React.useState<string[]>([]);
   const homeLayoutType = useSettings(
@@ -46,12 +49,17 @@ const HomeScreen = () => {
     handleSearchChange(search);
   }, [handleSearchChange, search]);
 
-  const LayoutComponent = React.useMemo(
-    () => LayoutComponents[homeLayoutType],
-    [homeLayoutType]
-  );
+  const LayoutComponent = React.useMemo(() => {
+    if (
+      !isIndexLoaded ||
+      (homeLayoutType === "categories" && !isCategoriesLoaded)
+    ) {
+      return null;
+    }
+    return LayoutComponents[homeLayoutType];
+  }, [homeLayoutType]);
 
-  if (!isLoaded) {
+  if (!LayoutComponent) {
     return <LoadingView />;
   }
 

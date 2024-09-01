@@ -5,11 +5,21 @@ import {
   withSpring,
 } from "react-native-reanimated";
 
-export function useRotate() {
+export function useRotate(animate: boolean) {
   const rotation = useSharedValue(0);
+  const prevAnimateRef = React.useRef<boolean>(animate);
 
-  const rotate = React.useCallback(() => {
-    if (rotation.value !== 0) return;
+  React.useEffect(() => {
+    if (prevAnimateRef.current === animate) {
+      return;
+    }
+
+    prevAnimateRef.current = animate;
+    if (!animate) {
+      rotation.value = 0;
+      return;
+    }
+
     rotation.value = withSpring(
       360,
       {
@@ -21,13 +31,13 @@ export function useRotate() {
         rotation.value = 0;
       }
     );
-  }, []);
 
-  const animatedStyles = useAnimatedStyle(() => {
-    return {
-      transform: [{ rotate: `${rotation.value}deg` }],
+    return () => {
+      rotation.value = 0;
     };
-  });
+  }, [animate]);
 
-  return { rotate, animatedStyles };
+  return useAnimatedStyle(() => ({
+    transform: [{ rotate: `${rotation.value}deg` }],
+  }));
 }

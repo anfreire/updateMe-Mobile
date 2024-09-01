@@ -1,7 +1,5 @@
 import { useVersions } from "@/states/computed/versions";
 import { useSettings } from "@/states/persistent/settings";
-import { useIndex } from "@/states/temporary";
-import { useApp } from "@/states/temporary/app";
 import BackgroundFetch, { HeadlessEvent } from "react-native-background-fetch";
 import {
   useNotifications,
@@ -10,23 +8,25 @@ import {
 import { useDefaultProviders } from "@/states/persistent/defaultProviders";
 import NotificationsModule from "@/lib/notifications";
 import { interpolate, useTranslations } from "@/states/persistent/translations";
+import { useApp } from "@/states/fetched/app";
+import { useIndex } from "@/states/fetched";
+import { useUpdates } from "@/states/computed/updates";
 
 namespace BackgroundTasksModule {
-  async function handleBackgroundNewRelease({
-    sentNotifications,
-    setSentNotifications,
-  }: useNotificationsProps) {
-    const info = await useApp.getState().fetchInfo();
-    if (!info) return;
-    const localVersion = await useApp.getState().getVersion();
+  async function handleBackgroundNewRelease() {
+    const { fetch: fetchLatestApp, getLocalVersion } = useApp.getState();
+    const latestApp = await fetchLatestApp();
+    if (!latestApp) return;
+    const localVersion = await getLocalVersion();
+    const { appsVersionsSent, addAppVersionSent } = useNotifications.getState();
     if (
-      localVersion >= info.version ||
-      (sentNotifications["com.updateme"] &&
-        sentNotifications["com.updateme"] >= info.version)
+      localVersion >= latestApp.version ||
+      (appsVersionsSent["com.updateme"] &&
+        appsVersionsSent["com.updateme"] >= latestApp.version)
     )
       return;
-    setSentNotifications("com.updateme", info.version);
-    const translations = useTranslations.getState();
+    addAppVersionSent("com.updateme", latestApp.version);
+    const translations = useTranslations.getState().translations;
     NotificationsModule.sendNotification(
       translations["Time to Update You!"],
       translations["Update Me has a new version available"],
@@ -34,67 +34,63 @@ namespace BackgroundTasksModule {
     );
   }
 
-  async function handleBackgroundUpdates({
-    sentNotifications,
-    setSentNotifications,
-  }: useNotificationsProps) {
-    const index = await useIndex.getState().fetchIndex();
-    const defaultProviders = useDefaultProviders.getState().defaultProviders;
+  async function handleBackgroundUpdates() {
+    const index = await useIndex.getState().fetch();
     if (!index) return;
-    let { updates, versions } = await useVersions
+
+    const populatedDefaultProviders =
+      useDefaultProviders.getState().populatedDefaultProviders;
+
+    const versions = await useVersions
       .getState()
-      .refresh({ index, defaultProviders });
+      .refresh(index, populatedDefaultProviders);
+    const updates = useUpdates
+      .getState()
+      .refresh(index, populatedDefaultProviders, versions);
+    const { appsVersionsSent, addAppVersionSent } = useNotifications.getState();
     const updatesToSend = updates.filter(
       (update) =>
-        !Object.keys(sentNotifications).includes(update) ||
-        versions[update]! > sentNotifications[update]
+        !Object.keys(appsVersionsSent).includes(update) ||
+        versions[update]! > appsVersionsSent[update]
     );
-    if (updatesToSend && updatesToSend.length) {
-      let title = "";
-      let message = "";
-      const translations = useTranslations.getState();
+    if (!updatesToSend.length) return;
 
-      if (updatesToSend.length === 1) {
-        title = translations["Update Available"];
-        message = interpolate(
-          translations["Update available for $1"],
-          updatesToSend[0]
-        );
-      } else {
-        title = translations["Updates Available"];
-		message = interpolate(
-		  translations["Updates Available for $1 and $2"],
-		  updatesToSend.slice(0, -1).join(", "),
-		  updatesToSend.slice(-1)[0]
-		);
-      }
+    let title = "";
+    let message = "";
+    const translations = useTranslations.getState().translations;
 
-      updatesToSend.forEach((update) => {
-        setSentNotifications(update, versions[update]!);
-      });
-
-      NotificationsModule.sendNotification(title, message, "app-updates");
+    if (updatesToSend.length === 1) {
+      title = translations["Update Available"];
+      message = interpolate(
+        translations["Update available for $1"],
+        updatesToSend[0]
+      );
+    } else {
+      title = translations["Updates Available"];
+      message = interpolate(
+        translations["Updates Available for $1 and $2"],
+        updatesToSend.slice(0, -1).join(", "),
+        updatesToSend.slice(-1)[0]
+      );
     }
+
+    updatesToSend.forEach((update) => {
+      addAppVersionSent(update, versions[update]!);
+    });
+
+    NotificationsModule.sendNotification(title, message, "app-updates");
   }
 
   async function backgroundCallback() {
-    const { sentNotifications, setSentNotifications } =
-      useNotifications.getState();
     const { newReleaseNotification, updatesNotification } =
       useSettings.getState().settings.notifications;
 
     if (newReleaseNotification) {
-      await handleBackgroundNewRelease({
-        sentNotifications,
-        setSentNotifications,
-      });
+      await handleBackgroundNewRelease();
     }
 
     if (updatesNotification) {
-      await handleBackgroundUpdates({
-        sentNotifications,
-        setSentNotifications,
-      });
+      await handleBackgroundUpdates();
     }
   }
 

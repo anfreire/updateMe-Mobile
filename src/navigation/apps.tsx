@@ -2,28 +2,18 @@ import * as React from "react";
 import AppScreen from "@/pages/app";
 import HomeScreen from "@/pages/home";
 import HomeLogo from "@/pages/home/components/logo";
-import { useCurrApp } from "@/states/computed/currApp";
-import { useDrawer } from "@/states/temporary/drawer";
+import { useDrawer } from "@/states/runtime/drawer";
 import { useTheme } from "@/theme";
 import { createStackNavigator } from "@react-navigation/stack";
 import { IconButton } from "react-native-paper";
 import { useGoBack } from "@/hooks/useGoBack";
-
-export const AppsStackPages = ["app", "home"] as const;
-
-export type AppsStackPage = (typeof AppsStackPages)[number];
-
-export type AppsStackParams = {
-  app: { app: string };
-  home: undefined;
-};
+import { AppsStackParams } from "@/types/navigation";
 
 const Stack = createStackNavigator<AppsStackParams>();
 
 export default function HomeStack() {
   const { schemedTheme } = useTheme();
   const openDrawer = useDrawer((state) => state.openDrawer);
-  const currApp = useCurrApp((state) => state.currApp);
   const goBack = useGoBack();
 
   return (
@@ -48,7 +38,7 @@ export default function HomeStack() {
           headerTitleStyle: {
             color: schemedTheme.onSurface,
           },
-          headerTitle: currApp?.name ?? "",
+          headerTitle: "",
           headerLeft: (_) => <IconButton icon="arrow-left" onPress={goBack} />,
           headerRight: () => <IconButton icon="menu" onPress={openDrawer} />,
         }}

@@ -52,7 +52,7 @@ const HomeSearchFAB = ({ search, setSearch }: HomeSearchFABProps) => {
       setSearch("");
       close();
     }
-  }, [width, open, close, setSearch]);
+  }, [open, close]);
 
   const handleOnFocus = React.useCallback(() => {
     const backHandler = BackHandler.addEventListener(
@@ -153,4 +153,4 @@ const styles = StyleSheet.create({
 
 HomeSearchFAB.displayName = "HomeSearchFAB";
 
-export default HomeSearchFAB;
+export default React.memo(HomeSearchFAB);

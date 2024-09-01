@@ -1,8 +1,8 @@
 import * as React from "react";
 import FormScreen from "@/components/form";
 import { useFeedback } from "@/states/persistent/feedback";
-import { useToken } from "@/states/persistent/token";
-import { useToast } from "@/states/temporary/toast";
+import { useToken } from "@/states/persistent/session";
+import { useToast } from "@/states/runtime/toast";
 import SuggestionsStats from "./stats";
 import { useTranslations } from "@/states/persistent/translations";
 import { Logger } from "@/states/persistent/logs";
@@ -42,10 +42,9 @@ export default function SuggestScreen() {
       setAppsSuggestions([]);
       if (didSuggest()) {
         setSuggested(true);
-        openToast(
-          translations["You can only suggest one app per day"],
-          "warning"
-        );
+        openToast(translations["You can only suggest one app per day"], {
+          type: "warning",
+        });
       } else setDisabled(false);
     },
     [translations]
@@ -69,10 +68,9 @@ export default function SuggestScreen() {
           if (response.status === 201) {
             registerSuggestion();
             setSuggested(true);
-            openToast(
-              translations["Suggestion submitted successfully"],
-              "success"
-            );
+            openToast(translations["Suggestion submitted successfully"], {
+              type: "success",
+            });
             return;
           }
           response.json().then((data) => {
@@ -81,13 +79,15 @@ export default function SuggestScreen() {
             }
             const message =
               data.message ?? translations["Failed to submit suggestion"];
-            openToast(message, "error");
+            openToast(message, { type: "error" });
             setDisabled(false);
             Logger.error(message);
           });
         })
         .catch((e) => {
-          openToast(translations["Failed to submit suggestion"], "error");
+          openToast(translations["Failed to submit suggestion"], {
+            type: "error",
+          });
           setDisabled(false);
           Logger.error(`Failed to submit suggestion: ${e}`);
         });

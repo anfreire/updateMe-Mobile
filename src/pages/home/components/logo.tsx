@@ -1,29 +1,27 @@
 import * as React from "react";
-import { StyleSheet } from "react-native";
+import { TouchableWithoutFeedback, StyleSheet } from "react-native";
 import { Path, Svg } from "react-native-svg";
 import Animated from "react-native-reanimated";
-import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 import { Text } from "react-native-paper";
 import { useTheme } from "@/theme";
 import { useRotate } from "@/hooks/useRotate";
-import { useIndex } from "@/states/temporary";
+import { useIndex } from "@/states/fetched";
 
 const AnimatedSvg = Animated.createAnimatedComponent(Svg);
 const AnimatedPath = Animated.createAnimatedComponent(Path);
 
 const HomeLogo = () => {
   const theme = useTheme();
-  const { rotate, animatedStyles } = useRotate();
-  const [isLoaded, fetchAll] = useIndex((state) => [
-    state.isLoaded,
+  const [isFetched, fetchAll] = useIndex((state) => [
+    state.isFetched,
     state.fetch,
   ]);
+  const animatedStyles = useRotate(isFetched);
 
   const handlePress = React.useCallback(() => {
-    if (!isLoaded) return;
+    if (!isFetched) return;
     fetchAll();
-    rotate();
-  }, [isLoaded, rotate]);
+  }, [isFetched]);
 
   return (
     <TouchableWithoutFeedback style={styles.container} onPress={handlePress}>
@@ -63,4 +61,4 @@ const styles = StyleSheet.create({
 
 HomeLogo.displayName = "HomeLogo";
 
-export default React.memo(HomeLogo);
+export default HomeLogo;

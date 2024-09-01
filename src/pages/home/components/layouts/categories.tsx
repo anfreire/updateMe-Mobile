@@ -1,23 +1,31 @@
+import * as React from "react";
 import { FlatList, Image, ListRenderItem, StyleSheet } from "react-native";
 import { List } from "react-native-paper";
 import MultiIcon from "@/components/multiIcon";
-import { CategoriesProps, useIndex } from "@/states/temporary";
-import { useSetCurrApp } from "@/hooks/useSetCurrApp";
 import ThemedRefreshControl from "@/components/refreshControl";
+import { useIndex } from "@/states/fetched";
+import { Categories, useCategories } from "@/states/fetched/categories";
+import { useNavigate } from "@/hooks/useNavigate";
+import { useShallow } from "zustand/react/shallow";
 
-export default function HomeCategories({ apps }: { apps: string[] }) {
-  const [index, categories, isLoaded, fetchIndex] = useIndex((state) => [
-    state.index,
-    state.categories,
-    state.isLoaded,
-    state.fetch,
-  ]);
+const HomeCategories = ({ apps }: { apps: string[] }) => {
+  const [index, isIndexFetched, fetchIndex] = useIndex(
+    useShallow((state) => [state.index, state.isFetched, state.fetch])
+  );
+  const [categories, isCategoriesFetched, fetchCategories] = useCategories(
+    useShallow((state) => [state.categories, state.isFetched, state.fetch])
+  );
   const [filteredCategories, setFilteredCategories] =
-    React.useState<CategoriesProps>(categories);
+    React.useState<Categories>(categories);
   const [openCategories, setOpenCategories] = React.useState<Set<string>>(
     new Set()
   );
-  const setCurrApp = useSetCurrApp();
+  const navigate = useNavigate();
+
+  const refresh = React.useCallback(() => {
+    fetchIndex();
+    fetchCategories();
+  }, []);
 
   const isCategoryOpen = React.useCallback(
     (category: string) =>
@@ -52,7 +60,7 @@ export default function HomeCategories({ apps }: { apps: string[] }) {
         }
         return acc;
       },
-      {} as CategoriesProps
+      {} as Categories
     );
 
     setFilteredCategories((prev) =>
@@ -69,7 +77,7 @@ export default function HomeCategories({ apps }: { apps: string[] }) {
   const renderApp: ListRenderItem<string> = React.useCallback(
     ({ item: app }) => (
       <List.Item
-        onPress={() => setCurrApp(app)}
+        onPress={() => navigate("app", { params: { app } })}
         title={app}
         style={styles.appItem}
         left={() => (
@@ -81,7 +89,7 @@ export default function HomeCategories({ apps }: { apps: string[] }) {
         )}
       />
     ),
-    [index, setCurrApp]
+    [index, navigate]
   );
 
   const categoryData = React.useMemo(
@@ -115,11 +123,14 @@ export default function HomeCategories({ apps }: { apps: string[] }) {
           </List.Accordion>
         )}
         keyExtractor={(item) => `home-category-${item}`}
-        refreshControl={ThemedRefreshControl(fetchIndex, !isLoaded)}
+        refreshControl={ThemedRefreshControl({
+          onRefresh: refresh,
+          refreshing: !isIndexFetched || !isCategoriesFetched,
+        })}
       />
     </List.Section>
   );
-}
+};
 
 const styles = StyleSheet.create({
   appItem: {
@@ -130,3 +141,7 @@ const styles = StyleSheet.create({
     height: 25,
   },
 });
+
+HomeCategories.displayName = "HomeCategories";
+
+export default HomeCategories;

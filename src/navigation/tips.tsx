@@ -1,27 +1,18 @@
 import * as React from "react";
-import { useTips } from "@/states/temporary/tips";
+import { useTips } from "@/states/fetched/tips";
 import { useTheme } from "@/theme";
 import { createStackNavigator } from "@react-navigation/stack";
 import { IconButton } from "react-native-paper";
 import TipsScreen from "@/pages/tips";
 import TipScreen from "@/pages/tips/tip";
-import { Page, useSession } from "@/states/temporary/session";
-import { useGoBack } from "@/hooks/navigation";
-
-export const TipsStackPages = ["tips", "tip"] as const;
-
-export type TipsStackPage = (typeof TipsStackPages)[number];
-
-export type TipsStackParams = {
-  tips: undefined;
-  tip: undefined;
-};
+import { useSession } from "@/states/runtime/session";
+import { useGoBack } from "@/hooks/useGoBack";
+import { Page, TipsStackParams } from "@/types/navigation";
 
 const Stack = createStackNavigator<TipsStackParams>();
 
 export default function TipsStack() {
   const { schemedTheme } = useTheme();
-  const currTip = useTips((state) => state.currTip);
   const setCurrPage = useSession((state) => state.setCurrPage);
   const goBack = useGoBack();
 
@@ -64,7 +55,7 @@ export default function TipsStack() {
       <Stack.Screen
         name="tip"
         options={{
-          headerTitle: currTip ?? "",
+          headerTitle: "",
           headerLeft: (_) => headerLeft("tips"),
           ...themeOptions,
         }}

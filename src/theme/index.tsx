@@ -22,11 +22,14 @@ import { useSettings } from "@/states/persistent/settings";
 export type ColorSchemeType = "light" | "dark";
 export type SavedColorSchemeType = "system" | ColorSchemeType;
 
-export type UseThemeProps = {
+type useThemeState = {
   theme: Material3Theme;
   colorScheme: ColorSchemeType;
   schemedTheme: Material3Scheme;
   sourceColor: string;
+};
+
+type useThemeActions = {
   setSourceColor: (sourceColor: string) => void;
   setColorScheme: (colorScheme: SavedColorSchemeType) => void;
   resetSourceColor: () => void;
@@ -34,18 +37,20 @@ export type UseThemeProps = {
   resetTheme: () => void;
 };
 
-const ThemeContext = createContext<UseThemeProps | undefined>(undefined);
+export type UseThemeProps = useThemeState & useThemeActions;
+
+const ThemeContext = React.createContext<UseThemeProps | undefined>(undefined);
 
 type ThemeProviderProps = ProviderProps & {
   sourceColor?: string;
   fallbackSourceColor?: string;
 };
 
-export const ThemeProvider: React.FC<ThemeProviderProps> = ({
+const ThemeProvider = ({
   children,
   fallbackSourceColor,
   ...otherProps
-}) => {
+}: ThemeProviderProps) => {
   const systemColorScheme = useColorScheme() === "dark" ? "dark" : "light";
   const { colorScheme: rawColorScheme, sourceColor } = useSettings((state) => ({
     colorScheme: state.settings.theme.colorScheme,
@@ -138,8 +143,12 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
   );
 };
 
+ThemeProvider.displayName = "ThemeProvider";
+
+export default ThemeProvider;
+
 export const useTheme = (): UseThemeProps => {
-  const context = useContext(ThemeContext);
+  const context = React.useContext(ThemeContext);
   if (!context) {
     throw new Error("useTheme must be used within a ThemeProvider");
   }

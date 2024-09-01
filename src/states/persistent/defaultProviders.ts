@@ -1,9 +1,14 @@
 import { StateStorage, createJSONStorage, persist } from "zustand/middleware";
-import { IndexProps, useIndex } from "@/states/temporary/index";
 import { MMKV } from "react-native-mmkv";
 import { create } from "zustand";
+import isEqual from "react-fast-compare";
+import { Index, IndexApp } from "@/states/fetched/index";
 
-const storage = new MMKV({ id: "default-providers" });
+const STORAGE_ID = "default-providers" as const;
+
+export type DefaultProviders = Record<IndexApp, string>;
+
+const storage = new MMKV({ id: STORAGE_ID });
 
 const zustandStorage: StateStorage = {
   setItem: (name, value) => storage.set(name, value),
@@ -11,45 +16,72 @@ const zustandStorage: StateStorage = {
   removeItem: (name) => storage.delete(name),
 };
 
-export interface useDefaultProvidersProps {
-  defaultProviders: Record<string, string>;
-  setDefaultProvider: (appName: string, provider: string) => void;
-  sanitize: (index: IndexProps) => void;
+interface useDefaultProvidersState {
+  defaultProviders: DefaultProviders;
+  populatedDefaultProviders: DefaultProviders;
 }
+
+interface useDefaultProvidersActions {
+  setDefaultProvider: (appName: IndexApp, provider: string) => void;
+  sanitize: (index: Index) => DefaultProviders;
+  populate: (index: Index) => DefaultProviders;
+}
+
+export type useDefaultProvidersProps = useDefaultProvidersState &
+  useDefaultProvidersActions;
 
 export const useDefaultProviders = create<useDefaultProvidersProps>()(
   persist(
     (set, get) => ({
       defaultProviders: {},
-      setDefaultProvider: (appName: string, provider: string) => {
-        set((state) => ({
-          defaultProviders: {
-            ...state.defaultProviders,
-            [appName]: provider,
-          },
-        }));
+      populatedDefaultProviders: {},
+      setDefaultProvider: (appName, provider) => {
+        set((state) => {
+          if (state.defaultProviders[appName] === provider) return state;
+          const newState = {
+            defaultProviders: {
+              ...state.defaultProviders,
+              [appName]: provider,
+            },
+            populatedDefaultProviders: {
+              ...state.populatedDefaultProviders,
+              [appName]: provider,
+            },
+          };
+          return newState;
+        });
       },
-      sanitize: (index: IndexProps) => {
-        let filteredProviders: Record<string, string> = {};
-        for (const appName in get().defaultProviders) {
-          if (
-            !(appName in index) ||
-            !(get().defaultProviders[appName] in index[appName].providers)
-          ) {
-            continue;
-          }
-          filteredProviders[appName] = get().defaultProviders[appName];
-        }
-        if (
-          JSON.stringify(filteredProviders) !==
-          JSON.stringify(get().defaultProviders)
-        ) {
-          set({ defaultProviders: filteredProviders });
-        }
+      sanitize: (index) => {
+        const newDefaultProviders = Object.fromEntries(
+          Object.entries(get().defaultProviders).filter(
+            ([appName, provider]) =>
+              appName in index && provider in index[appName].providers
+          )
+        );
+        set((state) =>
+          isEqual(state.defaultProviders, newDefaultProviders)
+            ? state
+            : { defaultProviders: newDefaultProviders }
+        );
+        return newDefaultProviders;
+      },
+      populate: (index) => {
+        const newPopulatedDefaultProviders = Object.fromEntries(
+          Object.entries(index).map(([appName, app]) => [
+            appName,
+            get().defaultProviders[appName] ?? Object.keys(app.providers)[0],
+          ])
+        );
+        set((state) =>
+          isEqual(state.populatedDefaultProviders, newPopulatedDefaultProviders)
+            ? state
+            : { populatedDefaultProviders: newPopulatedDefaultProviders }
+        );
+        return newPopulatedDefaultProviders;
       },
     }),
     {
-      name: "default-providers",
+      name: STORAGE_ID,
       storage: createJSONStorage(() => zustandStorage),
     }
   )

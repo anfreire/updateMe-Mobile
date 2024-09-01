@@ -2,30 +2,32 @@ import * as React from "react";
 import { Image, StyleSheet, Dimensions } from "react-native";
 import { Button, Dialog } from "react-native-paper";
 import { Share } from "react-native";
-import { ActiveDialogType, useDialogs } from "@/states/temporary/dialogs";
-import { useApp } from "@/states/temporary/app";
+import { useDialogs } from "@/states/runtime/dialogs";
 import { useTranslations } from "@/states/persistent/translations";
+import { useApp } from "@/states/fetched/app";
 
 const QRCODE_RELEASES = require("@assets/QRCODE.png");
 
 const { width } = Dimensions.get("window");
 const QR_CODE_SIZE = width * 0.55;
 
-export default function ShareDialog({
-  activeDialog,
-}: {
-  activeDialog: ActiveDialogType;
-}) {
-  const info = useApp((state) => state.info);
+const ShareDialog = () => {
+  const latestApp = useApp((state) => state.latest);
   const translations = useTranslations((state) => state.translations);
-  const closeDialog = useDialogs((state) => state.closeDialog);
+  const [activeDialog, closeDialog] = useDialogs((state) => [
+    state.activeDialog,
+    state.closeDialog,
+  ]);
 
   const handleShare = React.useCallback(() => {
     Share.share(
-      { message: info.download, title: translations["UpdateMe Download Link"] },
+      {
+        message: latestApp.download,
+        title: translations["UpdateMe Download Link"],
+      },
       { dialogTitle: translations["UpdateMe Download Link"] }
     );
-  }, [info.download, translations]);
+  }, [latestApp.download, translations]);
 
   if (activeDialog !== "share") return null;
 
@@ -47,7 +49,7 @@ export default function ShareDialog({
       </Dialog.Actions>
     </Dialog>
   );
-}
+};
 
 const styles = StyleSheet.create({
   dialog: {
@@ -65,3 +67,7 @@ const styles = StyleSheet.create({
     width: QR_CODE_SIZE,
   },
 });
+
+export default ShareDialog;
+
+ShareDialog.displayName = "ShareDialog";

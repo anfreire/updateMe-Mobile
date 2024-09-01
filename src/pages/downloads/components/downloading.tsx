@@ -1,10 +1,10 @@
 import * as React from "react";
 import { StyleSheet, View } from "react-native";
 import { IconButton, List, Text, TouchableRipple } from "react-native-paper";
-import { useDialogs } from "@/states/temporary/dialogs";
+import { useDialogs } from "@/states/runtime/dialogs";
 import { useTheme } from "@/theme";
 import { ReactNativeBlobUtilStat } from "react-native-blob-util";
-import { useDownloads } from "@/states/temporary/downloads";
+import { useDownloads } from "@/states/runtime/downloads";
 import { useTranslations, interpolate } from "@/states/persistent/translations";
 
 const DownloadItem = ({

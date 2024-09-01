@@ -1,20 +1,18 @@
 import * as React from "react";
 import { List } from "react-native-paper";
-import { FlatList, Image, ListRenderItem, StyleSheet } from "react-native";
+import { FlatList, Image, StyleSheet } from "react-native";
 import { useTheme } from "@/theme";
-import { useSetCurrApp } from "@/hooks/useSetCurrApp";
-import { useIndex } from "@/states/temporary";
 import ThemedRefreshControl from "@/components/refreshControl";
+import { useShallow } from "zustand/react/shallow";
+import { useIndex } from "@/states/fetched";
+import { useNavigate } from "@/hooks/useNavigate";
 
 const HomeList = ({ apps }: { apps: string[] }) => {
   const theme = useTheme();
-  const setCurrApp = useSetCurrApp();
-  const [index, isLoaded, fetchIndex] = useIndex((state) => [
-    state.index,
-    state.isLoaded,
-    state.fetch,
-  ]);
-
+  const [index, isIndexFetched, fetchIndex] = useIndex(
+    useShallow((state) => [state.index, state.isFetched, state.fetch])
+  );
+  const navigate = useNavigate();
   const themeStyles = React.useMemo(
     () => ({
       borderColor: theme.schemedTheme.outlineVariant,
@@ -23,17 +21,14 @@ const HomeList = ({ apps }: { apps: string[] }) => {
     [theme]
   );
 
-
-  const keyExtractor = React.useCallback((app: string) => app, []);
-
   return (
     <FlatList
       data={apps}
-      keyExtractor={keyExtractor}
+      keyExtractor={(app) => app}
       renderItem={({ item: app, index: i }) => (
         <List.Item
           key={app}
-          onPress={(_) => setCurrApp(app)}
+          onPress={() => navigate("app", { params: { app } })}
           title={app}
           style={[
             styles.listItem,
@@ -50,14 +45,13 @@ const HomeList = ({ apps }: { apps: string[] }) => {
           )}
         />
       )}
-      refreshControl={ThemedRefreshControl(fetchIndex, !isLoaded)}
+      refreshControl={ThemedRefreshControl({
+        onRefresh: fetchIndex,
+        refreshing: !isIndexFetched,
+      })}
     />
   );
 };
-
-HomeList.displayName = "HomeList";
-
-export default HomeList;
 
 const styles = StyleSheet.create({
   listItem: {
@@ -81,3 +75,7 @@ const styles = StyleSheet.create({
     height: 30,
   },
 });
+
+HomeList.displayName = "HomeList";
+
+export default HomeList;

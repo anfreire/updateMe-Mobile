@@ -4,12 +4,16 @@ import SettingsAppearance from "./sections/appearance";
 import SettingsLayout from "./sections/layout";
 import SettingsCheckboxes from "./sections/checkboxes";
 
-export default function SettingsScreen() {
-	return (
-		<ScrollView>
-			<SettingsAppearance />
-			<SettingsLayout />
-			<SettingsCheckboxes  />
-		</ScrollView>
-	);
-}
+const SettingsScreen = () => {
+  return (
+    <ScrollView>
+      <SettingsAppearance />
+      <SettingsLayout />
+      <SettingsCheckboxes />
+    </ScrollView>
+  );
+};
+
+SettingsScreen.displayName = "SettingsScreen";
+
+export default SettingsScreen;

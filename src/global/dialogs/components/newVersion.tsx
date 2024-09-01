@@ -1,12 +1,7 @@
 import * as React from "react";
 import { Linking, StyleSheet, View } from "react-native";
 import { Button, Dialog, ProgressBar, Text } from "react-native-paper";
-import {
-  ActiveDialogType,
-  useDialogs,
-  useDialogsProps,
-} from "@/states/temporary/dialogs";
-import { useApp } from "@/states/temporary/app";
+import { useDialogs } from "@/states/runtime/dialogs";
 import FilesModule from "@/lib/files";
 import ReactNativeBlobUtil from "react-native-blob-util";
 import Carousel, { CarouselRenderItem } from "react-native-reanimated-carousel";
@@ -17,6 +12,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { useTheme } from "@/theme";
 import { interpolate, useTranslations } from "@/states/persistent/translations";
+import { useApp } from "@/states/fetched/app";
 
 const renderCarouselItem: CarouselRenderItem<{
   title: string;
@@ -32,41 +28,34 @@ const renderCarouselItem: CarouselRenderItem<{
   </View>
 );
 
-export default function NewVersionDialog({
-  activeDialog,
-}: {
-  activeDialog: ActiveDialogType;
-}) {
-  const appInfo = useApp((state) => state.info);
+const NewVersionDialog = () => {
+  const activeDialog = useDialogs((state) => state.activeDialog);
+  const latestApp = useApp((state) => state.latest);
   const translations = useTranslations((state) => state.translations);
-  const closeDialog = useDialogs((state) => state.closeDialog);
-
   const { schemedTheme } = useTheme();
-
   const [progress, setProgress] = React.useState(0);
   const progressHeight = useSharedValue(0);
 
   const handleUpdate = React.useCallback(async () => {
     progressHeight.value = withTiming(10, { duration: 500 });
     setProgress(0);
-    const fileName = `UpdateMe_v${appInfo.version}.apk`;
+    const fileName = `UpdateMe_v${latestApp.version}.apk`;
     const path = FilesModule.buildAbsolutePath(fileName);
     await ReactNativeBlobUtil.fs.unlink(path).catch(() => {});
-    FilesModule.downloadFile(appInfo.download, fileName, path, (progress) => {
+    FilesModule.downloadFile(latestApp.download, fileName, path, (progress) => {
       setProgress(progress);
     }).then((res) => {
       setProgress(1);
       FilesModule.installApk(res.path());
-      progressHeight.value = withTiming(0, { duration: 500 });
-      setTimeout(() => {
+      progressHeight.value = withTiming(0, { duration: 500 }, () => {
         setProgress(0);
-      }, 500);
+      });
     });
-  }, [appInfo.download, appInfo.version]);
+  }, [latestApp.download, latestApp.version]);
 
   const handleManualUpdate = React.useCallback(() => {
-    Linking.openURL(appInfo.download);
-  }, [appInfo.download]);
+    Linking.openURL(latestApp.download);
+  }, [latestApp.download]);
 
   const progressBarStyle = useAnimatedStyle(() => ({
     width: 300,
@@ -77,8 +66,11 @@ export default function NewVersionDialog({
 
   const title = React.useMemo(
     () =>
-      interpolate(translations["Update Me v$1 is available!"], appInfo.version),
-    [appInfo.version, translations]
+      interpolate(
+        translations["Update Me v$1 is available!"],
+        latestApp.version
+      ),
+    [latestApp.version, translations]
   );
 
   if (activeDialog !== "newVersion") return null;
@@ -100,7 +92,7 @@ export default function NewVersionDialog({
             loop
             autoPlay={true}
             autoPlayInterval={4000}
-            data={appInfo.releaseNotes}
+            data={latestApp.releaseNotes}
             renderItem={renderCarouselItem}
           />
           <Animated.View style={progressBarStyle}>
@@ -120,7 +112,7 @@ export default function NewVersionDialog({
       </Dialog.Actions>
     </Dialog>
   );
-}
+};
 
 const styles = StyleSheet.create({
   dialog: {
@@ -165,3 +157,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
 });
+
+NewVersionDialog.displayName = "NewVersionDialog";
+
+export default NewVersionDialog;

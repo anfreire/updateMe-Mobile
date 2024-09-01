@@ -2,22 +2,11 @@ import { create } from "zustand";
 import { MMKV } from "react-native-mmkv";
 import { StateStorage, createJSONStorage, persist } from "zustand/middleware";
 
-interface LogEntry {
-  timestamp: string;
-  level: "info" | "warn" | "error";
-  message: string;
-}
+const STORAGE_ID = "logs" as const;
 
 const MAX_LOGS = 1000;
 
-export interface useLogsProps {
-  logs: LogEntry[];
-  addLog: (level: LogEntry["level"], message: string) => void;
-  clearLogs: () => void;
-  exportLogs: () => string[];
-}
-
-const storage = new MMKV({ id: "logs" });
+const storage = new MMKV({ id: STORAGE_ID });
 
 const zustandStorage: StateStorage = {
   setItem: (name, value) => storage.set(name, value),
@@ -25,11 +14,28 @@ const zustandStorage: StateStorage = {
   removeItem: (name) => storage.delete(name),
 };
 
+interface LogEntry {
+  timestamp: string;
+  level: "info" | "warn" | "error";
+  message: string;
+}
+
+type useLogsState = {
+  logs: LogEntry[];
+};
+
+type useLogsActions = {
+  addLog: (level: LogEntry["level"], message: string) => void;
+  clearLogs: () => void;
+  exportLogs: () => string[];
+};
+
+export type useLogsProps = useLogsState & useLogsActions;
+
 export const useLogs = create<useLogsProps>()(
   persist(
     (set, get) => ({
       logs: [],
-
       addLog: (level, message) => {
         const newLog: LogEntry = {
           timestamp: new Date().toISOString(),
@@ -41,9 +47,7 @@ export const useLogs = create<useLogsProps>()(
           return { logs };
         });
       },
-
       clearLogs: () => set({ logs: [] }),
-
       exportLogs: () => {
         return get().logs.map(
           (log) =>
@@ -52,7 +56,7 @@ export const useLogs = create<useLogsProps>()(
       },
     }),
     {
-      name: "logs",
+      name: STORAGE_ID,
       storage: createJSONStorage(() => zustandStorage),
     }
   )

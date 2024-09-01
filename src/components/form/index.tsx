@@ -1,4 +1,4 @@
-import React, { React.useCallback, React.useMemo, useRef, React.useState } from "react";
+import * as React from "react";
 import {
   Dimensions,
   FlatList,
@@ -9,7 +9,7 @@ import {
 import { Button } from "react-native-paper";
 import { useFocusEffect } from "@react-navigation/native";
 import { ScrollView } from "react-native";
-import { useToast } from "@/states/temporary/toast";
+import { useToast } from "@/states/runtime/toast";
 import { useTranslations } from "@/states/persistent/translations";
 import FormField from "./field";
 
@@ -37,12 +37,8 @@ interface FormScreenProps {
   ) => void;
 }
 
-const FormScreen: React.FC<FormScreenProps> = ({
-  fieldsData,
-  init,
-  submit,
-}) => {
-  const scrollViewRef = useRef<ScrollView>(null);
+const FormScreen = ({ fieldsData, init, submit }: FormScreenProps) => {
+  const scrollViewRef = React.useRef<ScrollView>(null);
   const [disabled, setDisabled] = React.useState(false);
   const [fieldsState, setFieldsState] = React.useState<FormFieldsState>(() =>
     Object.fromEntries(
@@ -50,7 +46,7 @@ const FormScreen: React.FC<FormScreenProps> = ({
     )
   );
   const openToast = useToast((state) => state.openToast);
-  const translations = useTranslations(state => state.translations);
+  const translations = useTranslations((state) => state.translations);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -70,7 +66,9 @@ const FormScreen: React.FC<FormScreenProps> = ({
       (acc, [key, value]) => {
         if (value.value.trim() === "" && fieldsData[key].errorMessage) {
           acc[key] = true;
-          openToast(fieldsData[key].errorMessage, "error");
+          openToast(fieldsData[key].errorMessage, {
+            type: "error",
+          });
         }
         return acc;
       },
@@ -96,7 +94,7 @@ const FormScreen: React.FC<FormScreenProps> = ({
       ),
       setDisabled
     );
-  }, [fieldsState, fieldsData, submit, openToast]);
+  }, [fieldsState, fieldsData, submit]);
 
   const scrollTo = React.useCallback((y: number) => {
     scrollViewRef.current?.scrollTo({ y, animated: true });
@@ -113,23 +111,24 @@ const FormScreen: React.FC<FormScreenProps> = ({
     [fieldsData]
   );
 
-  const renderField: ListRenderItem<[string, FormFieldData]> = React.useCallback(
-    ({ item: [key, field] }) => (
-      <FormField
-        suggestions={field.suggestions}
-        label={field.label}
-        fieldKey={key}
-        value={fieldsState[key].value}
-        error={fieldsState[key].error}
-        onChange={handleChange}
-        disabled={disabled}
-        numberOfLines={numberOfLines[key]}
-        scrollTo={scrollTo}
-        scrollViewRef={scrollViewRef}
-      />
-    ),
-    [fieldsState, disabled, handleChange, numberOfLines, scrollTo]
-  );
+  const renderField: ListRenderItem<[string, FormFieldData]> =
+    React.useCallback(
+      ({ item: [key, field] }) => (
+        <FormField
+          suggestions={field.suggestions}
+          label={field.label}
+          fieldKey={key}
+          value={fieldsState[key].value}
+          error={fieldsState[key].error}
+          onChange={handleChange}
+          disabled={disabled}
+          numberOfLines={numberOfLines[key]}
+          scrollTo={scrollTo}
+          scrollViewRef={scrollViewRef}
+        />
+      ),
+      [fieldsState, disabled, handleChange, numberOfLines, scrollTo]
+    );
 
   return (
     <View style={styles.wrapper}>
@@ -183,5 +182,7 @@ const styles = StyleSheet.create({
     bottom: 15,
   },
 });
+
+FormScreen.displayName = "FormScreen";
 
 export default React.memo(FormScreen);

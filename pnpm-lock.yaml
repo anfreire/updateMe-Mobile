@@ -41,6 +41,9 @@ importers:
       react:
         specifier: 18.2.0
         version: 18.2.0
+      react-fast-compare:
+        specifier: ^3.2.2
+        version: 3.2.2
       react-native:
         specifier: 0.73.8
         version: 0.73.8(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(react@18.2.0)
@@ -4364,6 +4367,9 @@ packages:
 
   react-devtools-core@4.28.5:
     resolution: {integrity: sha512-cq/o30z9W2Wb4rzBefjv5fBalHU0rJGZCHAkf/RHSBWSSYwh8PlQTqqOJmgIIbBtpj27T6FIPXeomIjZtCNVqA==}
+
+  react-fast-compare@3.2.2:
+    resolution: {integrity: sha512-nsO+KSNgo1SbJqJEYRE9ERzo7YtYbou/OqjSQKxV7jcKox7+usiUVZOAC+XnDOABXggQTno0Y1CpVnuWEc1boQ==}
 
   react-freeze@1.0.4:
     resolution: {integrity: sha512-r4F0Sec0BLxWicc7HEyo2x3/2icUTrRmDjaaRyzzn+7aDyFZliszMDOgLVwSnQnYENOlL1o569Ze2HZefk8clA==}
@@ -11113,6 +11119,8 @@ snapshots:
       - bufferutil
       - utf-8-validate
 
+  react-fast-compare@3.2.2: {}
+
   react-freeze@1.0.4(react@18.2.0):
     dependencies:
       react: 18.2.0
@@ -11204,7 +11212,7 @@ snapshots:
       scheduler: 0.24.0-canary-efb381bbf-20230505
       stacktrace-parser: 0.1.10
       whatwg-fetch: 3.6.20
-      ws: 6.2.2
+      ws: 6.2.3
       yargs: 17.7.2
     transitivePeerDependencies:
       - '@babel/core'
@@ -11332,7 +11340,7 @@ snapshots:
       source-map-support: 0.5.21
       stacktrace-parser: 0.1.10
       whatwg-fetch: 3.6.20
-      ws: 6.2.2
+      ws: 6.2.3
       yargs: 17.7.2
     transitivePeerDependencies:
       - '@babel/core'

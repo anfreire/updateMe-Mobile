@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Button, Dialog, SegmentedButtons } from "react-native-paper";
-import { ActiveDialogType, useDialogs } from "@/states/temporary/dialogs";
+import { useDialogs } from "@/states/runtime/dialogs";
 import { SavedColorSchemeType, useTheme } from "@/theme";
 import MultiIcon from "@/components/multiIcon";
 import { useSettings } from "@/states/persistent/settings";
@@ -9,16 +9,15 @@ import { IconSource } from "react-native-paper/lib/typescript/components/Icon";
 import { StyleSheet } from "react-native";
 import { useTranslations } from "@/states/persistent/translations";
 
-export default function ColorSchemePickerDialog({
-  activeDialog,
-}: {
-  activeDialog: ActiveDialogType;
-}) {
+const ColorSchemePickerDialog = () => {
   const colorScheme = useSettings((state) => state.settings.theme.colorScheme);
   const [savedColorScheme, setSavedColorScheme] = React.useState(colorScheme);
   const { setColorScheme } = useTheme();
   const translations = useTranslations((state) => state.translations);
-  const closeDialog = useDialogs((state) => state.closeDialog);
+  const [activeDialog, closeDialog] = useDialogs((state) => [
+    state.activeDialog,
+    state.closeDialog,
+  ]);
 
   const colorSchemeOptions = React.useMemo(
     () => [
@@ -65,10 +64,11 @@ export default function ColorSchemePickerDialog({
     closeDialog();
   }, [savedColorScheme]);
 
-  if (activeDialog !== "colorSchemePicker") return null;
-
   return (
-    <Dialog visible onDismiss={handleRevert}>
+    <Dialog
+      visible={activeDialog === "colorSchemePicker"}
+      onDismiss={handleRevert}
+    >
       <Dialog.Title>{translations["Color Scheme"]}</Dialog.Title>
       <Dialog.Content>
         <SegmentedButtons
@@ -84,7 +84,7 @@ export default function ColorSchemePickerDialog({
       </Dialog.Actions>
     </Dialog>
   );
-}
+};
 
 const styles = StyleSheet.create({
   segmentedButtons: {
@@ -94,3 +94,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
 });
+
+ColorSchemePickerDialog.displayName = "ColorSchemePickerDialog";
+
+export default ColorSchemePickerDialog;

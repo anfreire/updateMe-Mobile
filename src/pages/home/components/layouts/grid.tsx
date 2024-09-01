@@ -1,11 +1,17 @@
 import * as React from "react";
 import { Text, TouchableRipple } from "react-native-paper";
-import { Dimensions, Image, ListRenderItem, StyleSheet } from "react-native";
+import {
+  FlatList,
+  Dimensions,
+  Image,
+  ListRenderItem,
+  StyleSheet,
+} from "react-native";
 import { useTheme } from "@/theme";
-import { FlatList } from "react-native-gesture-handler";
-import { useSetCurrApp } from "@/hooks/useSetCurrApp";
-import { useIndex } from "@/states/temporary";
 import ThemedRefreshControl from "@/components/refreshControl";
+import { useShallow } from "zustand/react/shallow";
+import { useIndex } from "@/states/fetched";
+import { useNavigate } from "@/hooks/useNavigate";
 
 const ITEM_MARGIN = 10;
 const MIN_ITEM_WIDTH = 125;
@@ -19,16 +25,14 @@ function calculateLayout() {
   return { columns, itemWidth };
 }
 
-export default function HomeGrid({ apps }: { apps: string[] }) {
+const HomeGrid = ({ apps }: { apps: string[] }) => {
   const theme = useTheme();
-  const [index, isLoaded, fetchIndex] = useIndex((state) => [
-    state.index,
-    state.isLoaded,
-    state.fetch,
-  ]);
-  const setCurrApp = useSetCurrApp();
+  const [index, isIndexFetched, fetchIndex] = useIndex(
+    useShallow((state) => [state.index, state.isFetched, state.fetch])
+  );
 
   const [layout, setLayout] = React.useState(calculateLayout);
+  const navigate = useNavigate();
 
   const themedStyles = React.useMemo(
     () => ({
@@ -55,7 +59,7 @@ export default function HomeGrid({ apps }: { apps: string[] }) {
   const renderItem: ListRenderItem<string> = React.useCallback(
     ({ item: app }) => (
       <TouchableRipple
-        onPress={() => setCurrApp(app)}
+        onPress={() => navigate("app", { params: { app } })}
         style={[styles.item, themedStyles, { width: layout.itemWidth }]}
       >
         <>
@@ -68,7 +72,7 @@ export default function HomeGrid({ apps }: { apps: string[] }) {
         </>
       </TouchableRipple>
     ),
-    [setCurrApp, themedStyles, layout.itemWidth, index]
+    [navigate, themedStyles, layout.itemWidth, index]
   );
 
   return (
@@ -79,10 +83,13 @@ export default function HomeGrid({ apps }: { apps: string[] }) {
       numColumns={layout.columns}
       contentContainerStyle={styles.container}
       columnWrapperStyle={styles.row}
-      refreshControl={ThemedRefreshControl(fetchIndex, !isLoaded)}
+      refreshControl={ThemedRefreshControl({
+        refreshing: !isIndexFetched,
+        onRefresh: fetchIndex,
+      })}
     />
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -115,3 +122,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 });
+
+HomeGrid.displayName = "HomeGrid";
+
+export default HomeGrid;

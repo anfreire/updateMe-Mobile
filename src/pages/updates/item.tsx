@@ -1,15 +1,14 @@
 import * as React from "react";
 import { Image, View, StyleSheet } from "react-native";
 import { Button, List, Text } from "react-native-paper";
-import { useNavigate } from "@/hooks/navigation";
-import { useCurrApp } from "@/states/computed/currApp";
 import { useVersions } from "@/states/computed/versions";
 import { useDefaultProviders } from "@/states/persistent/defaultProviders";
 import { interpolate, useTranslations } from "@/states/persistent/translations";
-import { useIndex } from "@/states/temporary";
-import { useDownloads } from "@/states/temporary/downloads";
-import { useToast } from "@/states/temporary/toast";
+import { useDownloads } from "@/states/runtime/downloads";
+import { useToast } from "@/states/runtime/toast";
 import { useTheme } from "@/theme";
+import { useIndex } from "@/states/fetched";
+import { useNavigate } from "@/hooks/useNavigate";
 
 export default function UpdateItem({
   appName,
@@ -26,7 +25,6 @@ export default function UpdateItem({
   const theme = useTheme();
   const openToast = useToast((state) => state.openToast);
   const navigate = useNavigate();
-  const setCurrApp = useCurrApp((state) => state.setCurrApp);
   const defaultProviders = useDefaultProviders(
     (state) => state.defaultProviders
   );
@@ -39,8 +37,7 @@ export default function UpdateItem({
   }, [openToast, translations, appName]);
 
   const handleLongPress = React.useCallback(() => {
-    setCurrApp(appName, { index, defaultProviders, versions });
-    navigate("app");
+    navigate("app", { params: { app: appName } });
   }, [appName, index, defaultProviders, versions, navigate]);
 
   return (

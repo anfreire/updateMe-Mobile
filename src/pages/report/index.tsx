@@ -2,16 +2,16 @@ import * as React from "react";
 import FormScreen from "@/components/form";
 import { useFeedback } from "@/states/persistent/feedback";
 import { Logger } from "@/states/persistent/logs";
-import { useToken } from "@/states/persistent/token";
 import { useTranslations } from "@/states/persistent/translations";
-import { useToast } from "@/states/temporary/toast";
+import { useToast } from "@/states/runtime/toast";
+import { useSession } from "@/states/runtime/session";
 export default function ReportScreen() {
   const openToast = useToast((state) => state.openToast);
   const [didReport, registerReport] = useFeedback((state) => [
     state.didReport,
     state.registerReport,
   ]);
-  const getToken = useToken((state) => state.getToken);
+  const token = useSession((state) => state.token);
   const translations = useTranslations((state) => state.translations);
 
   const FieldsData: Record<string, { label: string; errorMessage: string }> =
@@ -37,10 +37,9 @@ export default function ReportScreen() {
     (setDisabled: (value: boolean) => void) => {
       if (didReport()) {
         setDisabled(true);
-        openToast(
-          translations["You have already submitted a report today"],
-          "warning"
-        );
+        openToast(translations["You have already submitted a report today"], {
+          type: "warning",
+        });
       } else setDisabled(false);
     },
     [translations]
@@ -56,31 +55,33 @@ export default function ReportScreen() {
         },
         body: JSON.stringify({
           ...data,
-          token: getToken(),
+          token: token,
         }),
       })
         .then((response) => {
           if (response.status === 201) {
             registerReport();
-            openToast(translations["Report submitted successfully"], "success");
+            openToast(translations["Report submitted successfully"], {
+              type: "success",
+            });
             return;
           }
 
           response.json().then((data) => {
             const message =
               data.message ?? translations["Failed to submit report"];
-            openToast(message, "error");
+            openToast(message, { type: "error" });
             setDisabled(false);
             Logger.error(message);
           });
         })
         .catch((e) => {
-          openToast(translations["Failed to submit report"], "error");
+          openToast(translations["Failed to submit report"], { type: "error" });
           setDisabled(false);
           Logger.error(`Failed to submit report: ${e}`);
         });
     },
-    [translations]
+    [translations, token]
   );
 
   return (

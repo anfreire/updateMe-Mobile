@@ -17,15 +17,15 @@ interface NotificationsModuleInterface {
 namespace NotificationsModule {
   const NotificationsNativeModule: NotificationsModuleInterface =
     NativeModules.NotificationsModule;
-  const translations = useTranslations.getState();
+
   const ChannelsProps = {
     "new-release": {
-      name: translations["New Release"],
-      description: translations["Notifications for new releases"],
+      name: "New Release",
+      description: "Notifications for new releases",
     },
     "app-updates": {
-      name: translations["App Updates"],
-      description: translations["Notifications for app updates"],
+      name: "App Updates",
+      description: "Notifications for app updates",
     },
   } as const;
 
@@ -34,10 +34,12 @@ namespace NotificationsModule {
     message: string,
     channelId: keyof typeof ChannelsProps
   ) {
-    const _ = await NotificationsNativeModule.createChannel(
+    const translations = useTranslations.getState().translations;
+
+    await NotificationsNativeModule.createChannel(
       channelId,
-      ChannelsProps[channelId].name,
-      ChannelsProps[channelId].description
+      translations[ChannelsProps[channelId].name],
+      translations[ChannelsProps[channelId].description]
     );
     return await NotificationsNativeModule.sendNotification(
       channelId,

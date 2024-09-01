@@ -1,7 +1,7 @@
 import * as React from "react";
 import MultiIcon from "@/components/multiIcon";
 import { useTranslations } from "@/states/persistent/translations";
-import { useDialogs } from "@/states/temporary/dialogs";
+import { useDialogs } from "@/states/runtime/dialogs";
 import { List } from "react-native-paper";
 
 export default function SettingsAppearance() {

@@ -1,6 +1,5 @@
 import * as React from "react";
-import { StyleSheet, View } from "react-native";
-import { ScrollView } from "react-native-gesture-handler";
+import { ScrollView, StyleSheet, View } from "react-native";
 import { Icon, Text } from "react-native-paper";
 import { ReactNativeBlobUtilStat } from "react-native-blob-util";
 import { useFocusEffect } from "@react-navigation/native";
@@ -8,19 +7,12 @@ import FilesModule from "@/lib/files";
 import ThemedRefreshControl from "@/components/refreshControl";
 import Downloading from "./components/downloading";
 import Downloaded from "./components/downloaded";
-import { useDownloads } from "@/states/temporary/downloads";
+import { useDownloads } from "@/states/runtime/downloads";
 import { useTranslations } from "@/states/persistent/translations";
-import { useTheme } from "@/theme";
-import { NavigationProps } from "@/hooks/navigation";
 
 const REFRESH_INTERVAL = 2500;
 
-export default function DownloadsScreen({
-  navigation,
-}: {
-  navigation: NavigationProps;
-}) {
-  const theme = useTheme();
+const DownloadsScreen = () => {
   const downloads = useDownloads((state) => state.downloads);
   const [files, setFiles] = React.useState<
     Record<string, ReactNativeBlobUtilStat>
@@ -75,20 +67,16 @@ export default function DownloadsScreen({
 
   return (
     <ScrollView
-      refreshControl={ThemedRefreshControl(theme, {
+      refreshControl={ThemedRefreshControl({
         onRefresh: updateFiles,
         refreshing: false,
       })}
     >
       <Downloading files={downloadingFiles} />
-      <Downloaded
-        files={downloadedFiles}
-        updateFiles={updateFiles}
-        navigation={navigation}
-      />
+      <Downloaded files={downloadedFiles} updateFiles={updateFiles} />
     </ScrollView>
   );
-}
+};
 
 const styles = StyleSheet.create({
   emptyContainer: {
@@ -100,3 +88,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
 });
+
+DownloadsScreen.displayName = "DownloadsScreen";
+
+export default DownloadsScreen;

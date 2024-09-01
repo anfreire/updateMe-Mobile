@@ -1,12 +1,16 @@
 import * as React from "react";
 import { Card } from "react-native-paper";
-import { StyleSheet, View } from "react-native";
-import { ScrollView } from "react-native-gesture-handler";
+import { ScrollView, StyleSheet, View } from "react-native";
 import ProvidersMenu from "./providersMenu";
-import { CurrAppProps } from "@/states/computed/currApp";
 import ProvidersInfo from "./providersInfo";
 import ProvidersDataTable from "./dataTable";
-export default function AppProvider({ currApp }: { currApp: CurrAppProps }) {
+import { CurrAppProps } from "@/hooks/useCurrApp";
+
+interface AppProviderProps {
+  currApp: CurrAppProps;
+}
+
+const AppProvider = ({ currApp }: AppProviderProps) => {
   const paddingTop = React.useMemo(
     () => (Object.keys(currApp.providers).length > 1 ? 30 : 15),
     [currApp.providers]
@@ -20,10 +24,10 @@ export default function AppProvider({ currApp }: { currApp: CurrAppProps }) {
           <ProvidersDataTable currApp={currApp} />
         </ScrollView>
       </View>
-      <ProvidersInfo currApp={currApp} />
+      <ProvidersInfo providers={currApp.providers} />
     </Card>
   );
-}
+};
 
 const style = StyleSheet.create({
   container: {
@@ -40,3 +44,7 @@ const style = StyleSheet.create({
     flex: 1,
   },
 });
+
+AppProvider.displayName = "AppProvider";
+
+export default React.memo(AppProvider);

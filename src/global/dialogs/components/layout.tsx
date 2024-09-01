@@ -1,17 +1,18 @@
 import * as React from "react";
 import { Button, Dialog, SegmentedButtons, Text } from "react-native-paper";
-import { ActiveDialogType, useDialogs } from "@/states/temporary/dialogs";
+import { useDialogs } from "@/states/runtime/dialogs";
 import Slider from "@react-native-community/slider";
 import { StyleSheet, View } from "react-native";
-import { SettingsProps, useSettings } from "@/states/persistent/settings";
+import { useSettings } from "@/states/persistent/settings";
 import { useTheme } from "@/theme";
-import MultiIcon, { MultiIconType } from "@/components/multiIcon";
+import MultiIcon from "@/components/multiIcon";
 import { IconProps } from "react-native-paper/lib/typescript/components/MaterialCommunityIcon";
 import { IconSource } from "react-native-paper/lib/typescript/components/Icon";
-import { useSilentNavigate } from "@/hooks/navigation";
 import { useTranslations } from "@/states/persistent/translations";
+import { useNavigate } from "@/hooks/useNavigate";
+import { Settings } from "@/types/settings";
 
-type HomeLayoutType = SettingsProps["layout"]["homeStyle"];
+type HomeLayoutType = Settings["layout"]["homeStyle"];
 
 const Buttons: { value: HomeLayoutType; icon: IconSource }[] = [
   {
@@ -49,12 +50,11 @@ const Buttons: { value: HomeLayoutType; icon: IconSource }[] = [
   },
 ] as const;
 
-export default function HomeLayoutPickerDialog({
-  activeDialog,
-}: {
-  activeDialog: ActiveDialogType;
-}) {
-  const closeDialog = useDialogs((state) => state.closeDialog);
+const HomeLayoutPickerDialog = () => {
+  const [activeDialog, closeDialog] = useDialogs((state) => [
+    state.activeDialog,
+    state.closeDialog,
+  ]);
 
   const [layout, setSetting] = useSettings((state) => [
     state.settings.layout.homeStyle,
@@ -64,7 +64,7 @@ export default function HomeLayoutPickerDialog({
 
   const { schemedTheme } = useTheme();
 
-  const navigate = useSilentNavigate();
+  const navigate = useNavigate();
 
   const [previousLayout, setPreviousLayout] =
     React.useState<HomeLayoutType>(layout);
@@ -83,12 +83,12 @@ export default function HomeLayoutPickerDialog({
   const handleCancel = React.useCallback(() => {
     setSetting("layout", "homeStyle", previousLayout);
     closeDialog();
-    navigate("settings");
+    navigate("settings", { silent: true });
   }, [previousLayout, navigate]);
 
   const handleApply = React.useCallback(() => {
     closeDialog();
-    navigate("settings");
+    navigate("settings", { silent: true });
   }, [navigate]);
 
   if (activeDialog !== "homeLayoutPicker") return null;
@@ -137,7 +137,7 @@ export default function HomeLayoutPickerDialog({
       </Dialog.Actions>
     </Dialog>
   );
-}
+};
 
 const styles = StyleSheet.create({
   content: {
@@ -169,3 +169,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
 });
+
+HomeLayoutPickerDialog.displayName = "HomeLayoutPickerDialog";
+
+export default HomeLayoutPickerDialog;
