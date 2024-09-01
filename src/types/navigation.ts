@@ -1,20 +1,22 @@
 import { NavigationProp, RouteProp } from "@react-navigation/native";
 
+const HOME_PAGE = "apps" as const;
+
 /*******************************************************************************
  *                                     APPS                                    *
  *******************************************************************************/
-export const AppsStackPages = ["app", "home"] as const;
+export const AppsStackPages = ["app", "apps"] as const;
 
 export type AppsStackPage = (typeof AppsStackPages)[number];
 
 export const AppsPreviousRoutes: Record<AppsStackPage, AppsStackPage | null> = {
-  app: "home",
-  home: null,
+  app: "apps",
+  apps: null,
 };
 
 export type AppsStackParams = {
   app: { app: string };
-  home: undefined;
+  apps: undefined;
 };
 
 /*******************************************************************************
@@ -24,9 +26,12 @@ export const TipsStackPages = ["tips", "tip"] as const;
 
 export type TipsStackPage = (typeof TipsStackPages)[number];
 
-export const TipsPreviousRoutes: Record<TipsStackPage, TipsStackPage | null> = {
+export const TipsPreviousRoutes: Record<
+  TipsStackPage,
+  TipsStackPage | typeof HOME_PAGE | null
+> = {
   tip: "tips",
-  tips: null,
+  tips: HOME_PAGE,
 };
 
 export type TipsStackParams = {
@@ -39,36 +44,39 @@ export type TipsStackParams = {
  *******************************************************************************/
 export const MainStackPages = [
   "loading",
-  "home",
+  "apps-stack",
   "downloads",
   "report",
   "settings",
   "updates",
-  "tips",
+  "tips-stack",
   "suggest",
 ] as const;
 
 export type MainStackPage = (typeof MainStackPages)[number];
 
-export const MainPreviousRoutes: Record<MainStackPage, MainStackPage | null> = {
-  downloads: "home",
-  home: null,
+export const MainPreviousRoutes: Record<
+  MainStackPage,
+  typeof HOME_PAGE | null
+> = {
+  downloads: HOME_PAGE,
+  "apps-stack": null,
   loading: null,
-  report: "home",
-  settings: "home",
-  suggest: "home",
-  tips: "home",
-  updates: "home",
+  report: HOME_PAGE,
+  settings: HOME_PAGE,
+  suggest: HOME_PAGE,
+  "tips-stack": HOME_PAGE,
+  updates: HOME_PAGE,
 };
 
 export type MainStackParams = {
   loading: undefined;
-  home: undefined;
+  "apps-stack": undefined;
   downloads: undefined;
   report: undefined;
   settings: undefined | { setting: string };
   updates: undefined;
-  tips: undefined;
+  "tips-stack": undefined;
   suggest: undefined;
 };
 
@@ -76,9 +84,9 @@ export type MainStackParams = {
  *                                     ALL                                     *
  *******************************************************************************/
 
-export type Page = AppsStackPage | MainStackPage | TipsStackPage;
+export type _Page = AppsStackPage | MainStackPage | TipsStackPage;
 
-export const INITIAL_PAGE: Page = "loading" as const;
+export const INITIAL_PAGE: _Page = "loading" as const;
 
 export const PAGES = [
   ...AppsStackPages,
@@ -97,3 +105,7 @@ export type PagesParams = AppsStackParams & MainStackParams & TipsStackParams;
 export type NavigationProps = NavigationProp<PagesParams>;
 
 export type RouteProps = RouteProp<PagesParams>;
+
+export const STACK_PAGES = ["apps-stack", "tips-stack"] as const;
+
+export type Page = Exclude<_Page, (typeof STACK_PAGES)[number]>;

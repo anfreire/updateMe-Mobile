@@ -13,7 +13,7 @@ export function useNavigate() {
   const setCurrPage = useSession((state) => state.setCurrPage);
 
   return React.useCallback(
-    <T extends Page>(page: T, options: NavigateOptions<T> = {}) => {
+    <T extends Page>(page: Page, options: NavigateOptions<T> = {}) => {
       const { params, silent = false } = options;
 
       navigation.navigate(page as any, params);

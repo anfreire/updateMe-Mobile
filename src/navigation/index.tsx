@@ -30,7 +30,7 @@ export default function MainStack() {
         component={LoadingScreen}
       />
       <Stack.Screen
-        name="home"
+        name="apps-stack"
         options={{
           headerShown: false,
         }}
@@ -93,7 +93,7 @@ export default function MainStack() {
         component={UpdatesScreen}
       />
       <Stack.Screen
-        name="tips"
+        name="tips-stack"
         options={{
           headerShown: false,
         }}

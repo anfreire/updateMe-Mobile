@@ -47,7 +47,7 @@ export default function TipsStack() {
         name="tips"
         options={{
           headerTitle: "Tips",
-          headerLeft: (_) => headerLeft("home"),
+          headerLeft: (_) => headerLeft("apps"),
           ...themeOptions,
         }}
         component={TipsScreen}

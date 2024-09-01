@@ -7,19 +7,19 @@ import { useTheme } from "@/theme";
 import { createStackNavigator } from "@react-navigation/stack";
 import { IconButton } from "react-native-paper";
 import { useGoBack } from "@/hooks/useGoBack";
-import { AppsStackParams } from "@/types/navigation";
+import { AppsStackParams, NavigationProps } from "@/types/navigation";
 
 const Stack = createStackNavigator<AppsStackParams>();
 
-export default function HomeStack() {
+const HomeStack = () => {
   const { schemedTheme } = useTheme();
   const openDrawer = useDrawer((state) => state.openDrawer);
   const goBack = useGoBack();
 
   return (
-    <Stack.Navigator initialRouteName="home" id="home-stack">
+    <Stack.Navigator initialRouteName="apps" id="apps-stack">
       <Stack.Screen
-        name="home"
+        name="apps"
         options={{
           headerStyle: {
             backgroundColor: schemedTheme.surfaceContainer,
@@ -46,4 +46,8 @@ export default function HomeStack() {
       />
     </Stack.Navigator>
   );
-}
+};
+
+HomeStack.displayName = "HomeStack";
+
+export default HomeStack;
