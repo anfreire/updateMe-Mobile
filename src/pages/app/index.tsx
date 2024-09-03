@@ -10,9 +10,9 @@ import AppFeatures from "@/pages/app/components/features";
 import AppProvider from "@/pages/app/components/providers";
 import { useVersions } from "@/states/computed/versions";
 import {
-  useFocusEffect,
-  useNavigation,
-  useRoute,
+	useFocusEffect,
+	useNavigation,
+	useRoute,
 } from "@react-navigation/native";
 import { useDefaultProviders } from "@/states/persistent/defaultProviders";
 import { NavigationProps, RouteProps } from "@/types/navigation";
@@ -20,88 +20,88 @@ import { useIndex } from "@/states/fetched";
 import { useCurrApp } from "@/hooks/useCurrApp";
 
 const AppScreen = () => {
-  const theme = useTheme();
-  const { setOptions } = useNavigation<NavigationProps>();
-  const { params } = useRoute<RouteProps>();
-  const index = useIndex((state) => state.index);
-  const populatedDefaultProviders = useDefaultProviders(
-    (state) => state.populatedDefaultProviders
-  );
-  const refreshVersions = useVersions((state) => state.refresh);
+	const theme = useTheme();
+	const { setOptions } = useNavigation<NavigationProps>();
+	const { params } = useRoute<RouteProps>();
+	const index = useIndex((state) => state.index);
+	const populatedDefaultProviders = useDefaultProviders(
+		(state) => state.populatedDefaultProviders,
+	);
+	const refreshVersions = useVersions((state) => state.refresh);
 
-  const appTitle = React.useMemo(() => {
-    return params && "app" in params ? params.app : null;
-  }, [params]);
+	const appTitle = React.useMemo(() => {
+		return params && "app" in params ? params.app : null;
+	}, [params]);
 
-  const refresh = React.useCallback(() => {
-    refreshVersions(index, populatedDefaultProviders);
-  }, [index, populatedDefaultProviders]);
+	const refresh = React.useCallback(() => {
+		refreshVersions(index, populatedDefaultProviders);
+	}, [index, populatedDefaultProviders]);
 
-  const currApp = useCurrApp(appTitle);
+	const currApp = useCurrApp(appTitle);
 
-  React.useEffect(() => {
-    if (!appTitle) {
-      return;
-    }
-    setOptions({ title: appTitle });
-  }, [appTitle]);
+	React.useEffect(() => {
+		if (!appTitle) {
+			return;
+		}
+		setOptions({ title: appTitle });
+	}, [appTitle, setOptions]);
 
-  useFocusEffect(
-    React.useCallback(() => {
-      const interval: NodeJS.Timeout = setInterval(refresh, 2500);
+	useFocusEffect(
+		React.useCallback(() => {
+			const interval: NodeJS.Timeout = setInterval(refresh, 2500);
 
-      return () => {
-        clearInterval(interval);
-      };
-    }, [refresh])
-  );
+			return () => {
+				clearInterval(interval);
+			};
+		}, [refresh]),
+	);
 
-  if (!currApp) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={theme.sourceColor} />
-      </View>
-    );
-  }
+	if (!currApp) {
+		return (
+			<View style={styles.loadingContainer}>
+				<ActivityIndicator size="large" color={theme.sourceColor} />
+			</View>
+		);
+	}
 
-  return (
-    <>
-      <RelatedAppsBanner currApp={currApp} />
-      <ScrollView
-        refreshControl={ThemedRefreshControl({
-          refreshing: false,
-          onRefresh: refresh,
-        })}
-      >
-        <View style={styles.contentContainer}>
-          <AppLogo title={currApp.title} icon={currApp.icon} />
-          <AppInfo currApp={currApp} />
-          <AppFeatures features={currApp.features} />
-          <AppProvider currApp={currApp} />
-        </View>
-      </ScrollView>
-    </>
-  );
+	return (
+		<>
+			<RelatedAppsBanner currApp={currApp} />
+			<ScrollView
+				refreshControl={ThemedRefreshControl({
+					refreshing: false,
+					onRefresh: refresh,
+				})}
+			>
+				<View style={styles.contentContainer}>
+					<AppLogo title={currApp.title} icon={currApp.icon} />
+					<AppInfo currApp={currApp} />
+					<AppFeatures features={currApp.features} />
+					<AppProvider currApp={currApp} />
+				</View>
+			</ScrollView>
+		</>
+	);
 };
 
 const styles = StyleSheet.create({
-  loadingContainer: {
-    width: "100%",
-    height: "100%",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  contentContainer: {
-    width: "100%",
-    height: "100%",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 20,
-    gap: 20,
-  },
+	loadingContainer: {
+		width: "100%",
+		height: "100%",
+		display: "flex",
+		flexDirection: "column",
+		alignItems: "center",
+		justifyContent: "center",
+	},
+	contentContainer: {
+		width: "100%",
+		height: "100%",
+		display: "flex",
+		alignItems: "center",
+		justifyContent: "center",
+		padding: 20,
+		gap: 20,
+	},
 });
 
 AppScreen.displayName = "AppScreen";

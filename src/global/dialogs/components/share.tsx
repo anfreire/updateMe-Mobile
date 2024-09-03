@@ -12,7 +12,7 @@ const { width } = Dimensions.get("window");
 const QR_CODE_SIZE = width * 0.55;
 
 const ShareDialog = () => {
-  const latestApp = useApp((state) => state.latest);
+  const latestAppInfo = useApp((state) => state.latest);
   const translations = useTranslations((state) => state.translations);
   const [activeDialog, closeDialog] = useDialogs((state) => [
     state.activeDialog,
@@ -22,12 +22,12 @@ const ShareDialog = () => {
   const handleShare = React.useCallback(() => {
     Share.share(
       {
-        message: latestApp.download,
+        message: latestAppInfo.download,
         title: translations["UpdateMe Download Link"],
       },
       { dialogTitle: translations["UpdateMe Download Link"] }
     );
-  }, [latestApp.download, translations]);
+  }, [latestAppInfo.download, translations]);
 
   if (activeDialog !== "share") return null;
 

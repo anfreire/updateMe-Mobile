@@ -15,140 +15,157 @@ import { Page } from "@/types/navigation";
 const AnimatedListItem = Animated.createAnimatedComponent(List.Item);
 
 interface DrawerItem {
-  title: string;
-  description: string;
-  icon: string;
-  onClick: () => void;
+	key: string;
+	title: string;
+	description: string;
+	icon: string;
+	onClick: () => void;
 }
 
 interface DrawerWrapperProps {
-  children: React.ReactNode;
+	children: React.ReactNode;
 }
 
 const DrawerWrapper = ({ children }: DrawerWrapperProps) => {
-  const { schemedTheme } = useTheme();
-  const navigate = useNavigate();
-  const [isDrawerOpen, closeDrawer] = useDrawer((state) => [
-    state.isDrawerOpen,
-    state.closeDrawer,
-  ]);
-  const downloads = useDownloads((state) => state.downloads);
-  const openDialog = useDialogs((state) => state.openDialog);
-  const translations = useTranslations((state) => state.translations);
+	const { schemedTheme } = useTheme();
+	const navigate = useNavigate();
+	const [isDrawerOpen, closeDrawer] = useDrawer((state) => [
+		state.isDrawerOpen,
+		state.closeDrawer,
+	]);
+	const downloads = useDownloads((state) => state.downloads);
+	const openDialog = useDialogs((state) => state.openDialog);
+	const translations = useTranslations((state) => state.translations);
+	const { startPulsing, cancelPulsing, pulsingStyles } = usePulsing();
 
-  const pulseSettings = React.useMemo(
-    () => isDrawerOpen && Object.keys(downloads).length > 0,
-    [isDrawerOpen, downloads]
-  );
+	const pulseSettings = React.useMemo(
+		() => isDrawerOpen && Object.keys(downloads).length > 0,
+		[isDrawerOpen, downloads],
+	);
 
-  const puslingStyles = usePulsing(pulseSettings);
+	React.useEffect(() => {
+		if (pulseSettings) {
+			startPulsing();
+		}
+	}, [pulseSettings, startPulsing]);
 
-  const navigateTo = React.useCallback(
-    (route: Page) => {
-      closeDrawer();
-      navigate(route);
-    },
-    [navigate]
-  );
+	React.useEffect(() => {
+		return () => {
+			cancelPulsing();
+		};
+	}, [cancelPulsing]);
 
-  const handleOpenDialog = React.useCallback(
-    (key: Dialog) => {
-      closeDrawer();
-      openDialog(key);
-    },
-    [openDialog]
-  );
+	const navigateTo = React.useCallback(
+		(route: Page) => {
+			closeDrawer();
+			navigate(route);
+		},
+		[navigate],
+	);
 
-  const items: Record<string, DrawerItem> = React.useMemo(
-    () => ({
-      downloads: {
-        title: translations["Downloads"],
-        description: translations["View your downloads"],
-        icon: "download",
-        onClick: () => navigateTo("downloads"),
-      },
-      updates: {
-        title: translations["Updates"],
-        description: translations["Check for updates"],
-        icon: "update",
-        onClick: () => navigateTo("updates"),
-      },
-      tips: {
-        title: translations["Tips"],
-        description: translations["Maximize your experience"],
-        icon: "star-four-points",
-        onClick: () => navigateTo("tips"),
-      },
-      settings: {
-        title: translations["Settings"],
-        description: translations["Change the app settings"],
-        icon: "cog",
-        onClick: () => navigateTo("settings"),
-      },
-      suggest: {
-        title: translations["Suggest"],
-        description: translations["Suggest a new app"],
-        icon: "lightbulb-on",
-        onClick: () => navigateTo("suggest"),
-      },
-      share: {
-        title: translations["Share"],
-        description: translations["Share the app with friends"],
-        icon: "share-variant",
-        onClick: () => handleOpenDialog("share"),
-      },
-      report: {
-        title: translations["Report"],
-        description: translations["Report a problem with the app"],
-        icon: "bug",
-        onClick: () => navigateTo("report"),
-      },
-    }),
-    [navigateTo, handleOpenDialog, translations]
-  );
+	const handleOpenDialog = React.useCallback(
+		(key: Dialog) => {
+			closeDrawer();
+			openDialog(key);
+		},
+		[openDialog],
+	);
 
-  const renderDrawerItem: ListRenderItem<[string, DrawerItem]> =
-    React.useCallback(
-      ({ item }) => (
-        <AnimatedListItem
-          title={item[1].title}
-          description={item[1].description}
-          left={(props) => <List.Icon {...props} icon={item[1].icon} />}
-          onPress={item[1].onClick}
-          style={item[0] === "downloads" ? puslingStyles : undefined}
-        />
-      ),
-      []
-    );
+	const items = React.useMemo(
+		() => [
+			{
+				key: "downloads",
+				title: translations["Downloads"],
+				description: translations["View your downloads"],
+				icon: "download",
+				onClick: () => navigateTo("downloads"),
+			},
+			{
+				key: "updates",
+				title: translations["Updates"],
+				description: translations["Check for updates"],
+				icon: "update",
+				onClick: () => navigateTo("updates"),
+			},
+			{
+				key: "tips",
+				title: translations["Tips"],
+				description: translations["Maximize your experience"],
+				icon: "star-four-points",
+				onClick: () => navigateTo("tips"),
+			},
+			{
+				key: "settings",
+				title: translations["Settings"],
+				description: translations["Change the app settings"],
+				icon: "cog",
+				onClick: () => navigateTo("settings"),
+			},
+			{
+				key: "suggest",
+				title: translations["Suggest"],
+				description: translations["Suggest a new app"],
+				icon: "lightbulb-on",
+				onClick: () => navigateTo("suggest"),
+			},
+			{
+				key: "share",
+				title: translations["Share"],
+				description: translations["Share the app with friends"],
+				icon: "share-variant",
+				onClick: () => handleOpenDialog("share"),
+			},
+			{
+				key: "report",
+				title: translations["Report"],
+				description: translations["Report a problem with the app"],
+				icon: "bug",
+				onClick: () => navigateTo("report"),
+			},
+		],
+		[navigateTo, handleOpenDialog, translations],
+	);
 
-  const renderDrawerContent = React.useCallback(() => {
-    const keyExtractor = (item: [string, DrawerItem]) => item[0];
-    return (
-      <List.Section>
-        <FlatList
-          data={Object.entries(items)}
-          renderItem={renderDrawerItem}
-          keyExtractor={keyExtractor}
-        />
-      </List.Section>
-    );
-  }, [items]);
+	const renderDrawerItem: ListRenderItem<DrawerItem> = React.useCallback(
+		({ item }) => (
+			<AnimatedListItem
+				title={item.title}
+				description={item.description}
+				left={(props) => <List.Icon {...props} icon={item.icon} />}
+				onPress={item.onClick}
+				style={item.key === "downloads" ? pulsingStyles : undefined}
+			/>
+		),
+		[],
+	);
 
-  return (
-    <Drawer
-      open={isDrawerOpen}
-      onOpen={() => {}}
-      onClose={closeDrawer}
-      drawerPosition="right"
-      swipeEnabled={false}
-      drawerStyle={{
-        backgroundColor: schemedTheme.surfaceContainer,
-      }}
-      renderDrawerContent={renderDrawerContent}
-    >
-      {children}
-    </Drawer>
-  );
+	const renderDrawerContent = React.useCallback(() => {
+		return (
+			<List.Section>
+				<FlatList
+					data={items}
+					renderItem={renderDrawerItem}
+					keyExtractor={(item: DrawerItem) => item.key}
+				/>
+			</List.Section>
+		);
+	}, [items]);
+
+	return (
+		<Drawer
+			open={isDrawerOpen}
+			onOpen={() => {}}
+			onClose={closeDrawer}
+			drawerPosition="right"
+			swipeEnabled={false}
+			drawerStyle={{
+				backgroundColor: schemedTheme.surfaceContainer,
+			}}
+			renderDrawerContent={renderDrawerContent}
+		>
+			{children}
+		</Drawer>
+	);
 };
 
 DrawerWrapper.displayName = "DrawerWrapper";

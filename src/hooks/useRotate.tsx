@@ -1,43 +1,41 @@
 import * as React from "react";
 import {
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
+	useAnimatedStyle,
+	useDerivedValue,
+	useSharedValue,
+	withSpring,
+	cancelAnimation,
 } from "react-native-reanimated";
 
-export function useRotate(animate: boolean) {
-  const rotation = useSharedValue(0);
-  const prevAnimateRef = React.useRef<boolean>(animate);
+export function useRotate() {
+	const rotation = useSharedValue(0);
 
-  React.useEffect(() => {
-    if (prevAnimateRef.current === animate) {
-      return;
-    }
+	const startRotating = React.useCallback(() => {
+		if (rotation.value !== 0) {
+			return;
+		}
+		rotation.value = withSpring(
+			360,
+			{
+				mass: 7,
+				damping: 40,
+				stiffness: 100,
+			},
+			() => {
+				rotation.value = 0;
+			},
+		);
+	}, []);
 
-    prevAnimateRef.current = animate;
-    if (!animate) {
-      rotation.value = 0;
-      return;
-    }
+	const cancelRotating = React.useCallback(() => {
+		cancelAnimation(rotation);
+	}, []);
 
-    rotation.value = withSpring(
-      360,
-      {
-        mass: 7,
-        damping: 40,
-        stiffness: 100,
-      },
-      () => {
-        rotation.value = 0;
-      }
-    );
+	const rotationDegrees = useDerivedValue(() => `${rotation.value}deg`);
 
-    return () => {
-      rotation.value = 0;
-    };
-  }, [animate]);
+	const rotatingStyles = useAnimatedStyle(() => ({
+		transform: [{ rotate: rotationDegrees.value }],
+	}));
 
-  return useAnimatedStyle(() => ({
-    transform: [{ rotate: `${rotation.value}deg` }],
-  }));
+	return { startRotating, cancelRotating, rotatingStyles };
 }

@@ -4,16 +4,16 @@ import { useNavigation } from "@react-navigation/native";
 import { NavigationProps, PREVIOUS_ROUTES } from "@/types/navigation";
 
 export function useGoBack() {
-  const navigation = useNavigation<NavigationProps>();
-  const [currPage, setCurrPage] = useSession((state) => [
-    state.currPage,
-    state.setCurrPage,
-  ]);
+	const { goBack } = useNavigation<NavigationProps>();
+	const [currPage, setCurrPage] = useSession((state) => [
+		state.currPage,
+		state.setCurrPage,
+	]);
 
-  return React.useCallback(() => {
-    const prevPage = PREVIOUS_ROUTES[currPage];
-    if (!prevPage) return;
-    navigation.goBack();
-    setCurrPage(prevPage);
-  }, [navigation.navigate, currPage]);
+	return React.useCallback(() => {
+		const prevPage = PREVIOUS_ROUTES[currPage];
+		if (!prevPage) return;
+		goBack();
+		setCurrPage(prevPage);
+	}, [goBack, currPage]);
 }
