@@ -20,7 +20,7 @@ export function usePulsing() {
 				duration: 600,
 				easing: Easing.inOut(Easing.quad),
 			}),
-			5,
+			-1,
 			true,
 		);
 	}, []);

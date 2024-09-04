@@ -33,27 +33,19 @@ const DrawerWrapper = ({ children }: DrawerWrapperProps) => {
 		state.isDrawerOpen,
 		state.closeDrawer,
 	]);
-	const downloads = useDownloads((state) => state.downloads);
+	const hasDownloads = useDownloads((state) => state.hasDownloads);
 	const openDialog = useDialogs((state) => state.openDialog);
 	const translations = useTranslations((state) => state.translations);
 	const { startPulsing, cancelPulsing, pulsingStyles } = usePulsing();
 
-	const pulseSettings = React.useMemo(
-		() => isDrawerOpen && Object.keys(downloads).length > 0,
-		[isDrawerOpen, downloads],
-	);
-
 	React.useEffect(() => {
-		if (pulseSettings) {
+		if (isDrawerOpen && hasDownloads) {
 			startPulsing();
 		}
-	}, [pulseSettings, startPulsing]);
-
-	React.useEffect(() => {
 		return () => {
 			cancelPulsing();
 		};
-	}, [cancelPulsing]);
+	}, [isDrawerOpen, hasDownloads, startPulsing, cancelPulsing]);
 
 	const navigateTo = React.useCallback(
 		(route: Page) => {
@@ -63,13 +55,10 @@ const DrawerWrapper = ({ children }: DrawerWrapperProps) => {
 		[navigate],
 	);
 
-	const handleOpenDialog = React.useCallback(
-		(key: Dialog) => {
-			closeDrawer();
-			openDialog(key);
-		},
-		[openDialog],
-	);
+	const handleOpenDialog = React.useCallback((key: Dialog) => {
+		closeDrawer();
+		openDialog(key);
+	}, []);
 
 	const items = React.useMemo(
 		() => [
