@@ -6,6 +6,7 @@ import { useDialogs } from "@/states/runtime/dialogs";
 import { useTranslations } from "@/states/persistent/translations";
 import { useApp } from "@/states/fetched/app";
 
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const QRCODE_RELEASES = require("@assets/QRCODE.png");
 
 const { width } = Dimensions.get("window");
@@ -20,6 +21,7 @@ const ShareDialog = () => {
   ]);
 
   const handleShare = React.useCallback(() => {
+    closeDialog();
     Share.share(
       {
         message: latestAppInfo.download,

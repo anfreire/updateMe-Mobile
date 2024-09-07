@@ -57,7 +57,7 @@ const HomeScreen = () => {
       return null;
     }
     return LayoutComponents[homeLayoutType];
-  }, [homeLayoutType]);
+  }, [homeLayoutType, isIndexLoaded, isCategoriesLoaded]);
 
   if (!LayoutComponent) {
     return <LoadingView />;

@@ -5,7 +5,7 @@ import { useNavigate } from "@/hooks/useNavigate";
 import { useUpdates } from "@/states/computed/updates";
 
 const makeUpdatesMessage = (updates: string[]) => {
-  let updatesCopy = [...updates];
+  const updatesCopy = [...updates];
   if (updates.length === 1) {
     return `There is an update available for ${updates[0]}`;
   } else {

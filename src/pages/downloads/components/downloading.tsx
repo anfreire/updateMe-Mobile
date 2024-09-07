@@ -6,6 +6,21 @@ import { useTheme } from "@/theme";
 import { ReactNativeBlobUtilStat } from "react-native-blob-util";
 import { useDownloads } from "@/states/runtime/downloads";
 import { useTranslations, interpolate } from "@/states/persistent/translations";
+import { Style } from "react-native-paper/lib/typescript/components/List/utils";
+
+const CancelIcon = (props: { color: string; style: Style }) => (
+  <TouchableRipple style={[styles.cancelButton, props.style]}>
+    <IconButton icon="cancel" size={25} />
+  </TouchableRipple>
+);
+
+const ProgressText = (progress: number, color: string) => () => (
+  <View style={styles.progressContainer}>
+    <Text style={[styles.progressText, { color }]}>
+      {`${(progress * 100).toFixed(0)}%`}
+    </Text>
+  </View>
+);
 
 const DownloadItem = ({
   download,
@@ -22,23 +37,8 @@ const DownloadItem = ({
     <List.Item
       onPress={() => onCancel(download)}
       title={download}
-      left={(props) => (
-        <TouchableRipple style={[styles.cancelButton, props.style]}>
-          <IconButton icon="cancel" size={25} />
-        </TouchableRipple>
-      )}
-      right={() => (
-        <View style={styles.progressContainer}>
-          <Text
-            style={[
-              styles.progressText,
-              { color: theme.schemedTheme.secondary },
-            ]}
-          >
-            {`${(progress * 100).toFixed(0)}%`}
-          </Text>
-        </View>
-      )}
+      left={CancelIcon}
+      right={ProgressText(progress, theme.schemedTheme.secondary)}
     />
   );
 };

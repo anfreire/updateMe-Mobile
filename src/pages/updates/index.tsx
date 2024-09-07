@@ -1,7 +1,6 @@
 import * as React from "react";
-import { View, FlatList, ListRenderItemInfo } from "react-native";
+import { View, FlatList, ListRenderItemInfo, StyleSheet } from "react-native";
 import { Button, Icon, Text } from "react-native-paper";
-import { useTheme } from "@/theme";
 import { useToast } from "@/states/runtime/toast";
 import { useDownloads } from "@/states/runtime/downloads";
 import { useDefaultProviders } from "@/states/persistent/defaultProviders";
@@ -16,8 +15,7 @@ import { useIndex } from "@/states/fetched";
 import { useUpdates } from "@/states/computed/updates";
 import { NavigationProps } from "@/types/navigation";
 
-export default function UpdatesScreen() {
-  const theme = useTheme();
+const UpdatesScreen = () => {
   const index = useIndex((state) => state.index);
   const populatedDefaultProviders = useDefaultProviders(
     (state) => state.populatedDefaultProviders
@@ -46,6 +44,7 @@ export default function UpdatesScreen() {
         undefined,
         (path) => {
           setUpdating((prev) => {
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const { [appName]: _, ...rest } = prev;
             return rest;
           });
@@ -115,14 +114,7 @@ export default function UpdatesScreen() {
 
   const EmptyComponent = React.useMemo(
     () => (
-      <View
-        style={{
-          flex: 1,
-          alignItems: "center",
-          justifyContent: "center",
-          gap: 10,
-        }}
-      >
+      <View style={styles.wrapper}>
         <Icon source="emoticon-sad" size={50} />
         <Text variant="bodyLarge">{translations["No updates available"]}</Text>
       </View>
@@ -141,4 +133,17 @@ export default function UpdatesScreen() {
       ListEmptyComponent={EmptyComponent}
     />
   );
-}
+};
+
+const styles = StyleSheet.create({
+  wrapper: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 10,
+  },
+});
+
+UpdatesScreen.displayName = "UpdatesScreen";
+
+export default UpdatesScreen;

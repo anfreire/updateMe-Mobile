@@ -57,14 +57,10 @@ const ThemeProvider = ({
     sourceColor: state.settings.theme.sourceColor,
   }));
   const { setSetting, resetSetting } = useSettings();
-  const { theme, updateTheme, resetTheme } = React.useMemo(
-    () =>
-      useMaterial3Theme({
-        sourceColor: sourceColor ?? undefined,
-        fallbackSourceColor,
-      }),
-    [sourceColor, fallbackSourceColor]
-  );
+  const { theme, updateTheme, resetTheme } = useMaterial3Theme({
+    sourceColor: sourceColor,
+    fallbackSourceColor,
+  });
 
   const colorScheme = React.useMemo(
     () => (rawColorScheme === "system" ? systemColorScheme : rawColorScheme),
@@ -93,20 +89,20 @@ const ThemeProvider = ({
       setSetting("theme", "sourceColor", color);
       updateTheme(color);
     },
-    [setSetting, updateTheme]
+    [updateTheme]
   );
 
   const setColorScheme = React.useCallback(
     (newColorScheme: SavedColorSchemeType) => {
       setSetting("theme", "colorScheme", newColorScheme);
     },
-    [setSetting]
+    []
   );
 
   const resetSourceColor = React.useCallback(() => {
     resetTheme();
     resetSetting("theme", "sourceColor");
-  }, [resetTheme, resetSetting]);
+  }, [resetTheme]);
 
   const contextValue = React.useMemo(
     () => ({

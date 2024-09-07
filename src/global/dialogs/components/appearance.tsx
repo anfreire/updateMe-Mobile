@@ -39,17 +39,17 @@ const SourceColorPickerDialog = () => {
   const handleCancel = React.useCallback(() => {
     setSourceColor(oldColor);
     handleClose();
-  }, [oldColor, handleClose]);
+  }, [setSourceColor, oldColor, handleClose]);
 
   const handleUseSystem = React.useCallback(() => {
     resetSourceColor();
     handleClose();
-  }, [handleClose]);
+  }, [handleClose, resetSourceColor]);
 
   const handleSave = React.useCallback(() => {
     setSourceColor(fromHsv(activeColor));
     handleClose();
-  }, [activeColor, handleClose]);
+  }, [activeColor, handleClose, setSourceColor]);
 
   React.useEffect(() => {
     if (activeDialog === "sourceColorPicker") {

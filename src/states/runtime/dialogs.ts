@@ -1,15 +1,12 @@
 import { create } from "zustand";
 import isEqual from "react-fast-compare";
 
-const DIALOGS = [
-  "sourceColorPicker",
-  "colorSchemePicker",
-  "share",
-  "homeLayoutPicker",
-  "newVersion",
-] as const;
-
-export type Dialog = (typeof DIALOGS)[number];
+export type Dialog =
+  | "sourceColorPicker"
+  | "colorSchemePicker"
+  | "share"
+  | "homeLayoutPicker"
+  | "newVersion";
 
 export type CustomDialogProps = {
   title: string;
@@ -17,7 +14,7 @@ export type CustomDialogProps = {
   actions: { title: string; action: () => void }[];
 };
 
-export type ActiveDialogType = (typeof DIALOGS)[number] | "custom" | null;
+export type ActiveDialogType = Dialog | "custom" | null;
 
 type useDialogsState = {
   activeDialog: ActiveDialogType;

@@ -14,39 +14,39 @@ interface NotificationsModuleInterface {
   ): Promise<number>;
 }
 
-namespace NotificationsModule {
-  const NotificationsNativeModule: NotificationsModuleInterface =
-    NativeModules.NotificationsModule;
+const NotificationsNativeModule: NotificationsModuleInterface =
+  NativeModules.NotificationsModule;
 
-  const ChannelsProps = {
-    "new-release": {
-      name: "New Release",
-      description: "Notifications for new releases",
-    },
-    "app-updates": {
-      name: "App Updates",
-      description: "Notifications for app updates",
-    },
-  } as const;
+const ChannelsProps = {
+  "new-release": {
+    name: "New Release",
+    description: "Notifications for new releases",
+  },
+  "app-updates": {
+    name: "App Updates",
+    description: "Notifications for app updates",
+  },
+} as const;
 
-  export async function sendNotification(
-    title: string,
-    message: string,
-    channelId: keyof typeof ChannelsProps
-  ) {
-    const translations = useTranslations.getState().translations;
+async function sendNotification(
+  title: string,
+  message: string,
+  channelId: keyof typeof ChannelsProps
+) {
+  const translations = useTranslations.getState().translations;
 
-    await NotificationsNativeModule.createChannel(
-      channelId,
-      translations[ChannelsProps[channelId].name],
-      translations[ChannelsProps[channelId].description]
-    );
-    return await NotificationsNativeModule.sendNotification(
-      channelId,
-      title,
-      message
-    );
-  }
+  await NotificationsNativeModule.createChannel(
+    channelId,
+    translations[ChannelsProps[channelId].name],
+    translations[ChannelsProps[channelId].description]
+  );
+  return await NotificationsNativeModule.sendNotification(
+    channelId,
+    title,
+    message
+  );
 }
 
-export default NotificationsModule;
+export default {
+  sendNotification,
+};

@@ -1,14 +1,40 @@
 import * as React from "react";
 import { Image, View, StyleSheet } from "react-native";
 import { Button, List, Text } from "react-native-paper";
-import { useVersions } from "@/states/computed/versions";
-import { useDefaultProviders } from "@/states/persistent/defaultProviders";
 import { interpolate, useTranslations } from "@/states/persistent/translations";
-import { useDownloads } from "@/states/runtime/downloads";
+import { useDownloads, useDownloadsProps } from "@/states/runtime/downloads";
 import { useToast } from "@/states/runtime/toast";
 import { useTheme } from "@/theme";
 import { useIndex } from "@/states/fetched";
 import { useNavigate } from "@/hooks/useNavigate";
+
+const AppIcon = (uri?: string) => () => (
+  <View style={styles.iconContainer}>
+    <Image style={styles.icon} source={{ uri }} resizeMode="contain" />
+  </View>
+);
+
+const RightItem =
+  (
+    updateTranslation: string,
+    onPress: () => void,
+    color: string,
+    downloads: useDownloadsProps["downloads"],
+    fileName: string | null = null
+  ) =>
+  () => (
+    <View style={styles.rightContainer}>
+      {fileName ? (
+        <Text style={[styles.progressText, { color }]}>
+          {`${(downloads[fileName].progress * 100).toFixed(0)}%`}
+        </Text>
+      ) : (
+        <Button mode="contained-tonal" onPress={onPress}>
+          {updateTranslation}
+        </Button>
+      )}
+    </View>
+  );
 
 export default function UpdateItem({
   appName,
@@ -25,51 +51,28 @@ export default function UpdateItem({
   const theme = useTheme();
   const openToast = useToast((state) => state.openToast);
   const navigate = useNavigate();
-  const defaultProviders = useDefaultProviders(
-    (state) => state.defaultProviders
-  );
-  const versions = useVersions((state) => state.versions);
 
   const handlePress = React.useCallback(() => {
     openToast(
       interpolate(translations["Long press to enter $1 page"], appName)
     );
-  }, [openToast, translations, appName]);
+  }, [translations, appName]);
 
   const handleLongPress = React.useCallback(() => {
     navigate("app", { params: { app: appName } });
-  }, [appName, index, defaultProviders, versions, navigate]);
+  }, [appName, navigate]);
 
   return (
     <List.Item
       title={appName}
       titleStyle={styles.title}
-      left={() => (
-        <View style={styles.iconContainer}>
-          <Image
-            style={styles.icon}
-            source={{ uri: index[appName].icon }}
-            resizeMode="contain"
-          />
-        </View>
-      )}
-      right={() => (
-        <View style={styles.rightContainer}>
-          {fileName ? (
-            <Text
-              style={[
-                styles.progressText,
-                { color: theme.schemedTheme.secondary },
-              ]}
-            >
-              {`${(downloads[fileName].progress * 100).toFixed(0)}%`}
-            </Text>
-          ) : (
-            <Button mode="contained-tonal" onPress={() => updateApp(appName)}>
-              {translations["Update"]}
-            </Button>
-          )}
-        </View>
+      left={AppIcon(index[appName].icon)}
+      right={RightItem(
+        translations["Update"],
+        () => updateApp(appName),
+        theme.schemedTheme.secondary,
+        downloads,
+        fileName
       )}
       onPress={handlePress}
       onLongPress={handleLongPress}

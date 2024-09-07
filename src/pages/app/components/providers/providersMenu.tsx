@@ -89,12 +89,7 @@ const ProvidersMenu = ({ currApp }: ProvidersMenuProps) => {
         title={item}
       />
     ),
-    [
-      currApp.providers,
-      currApp.defaultProvider,
-      schemedTheme,
-      handleProviderChange,
-    ]
+    [currApp.defaultProviderTitle, schemedTheme, handleProviderChange]
   );
 
   if (Object.keys(currApp.providers).length < 2) return null;

@@ -52,6 +52,7 @@ const HomeSearchFAB = ({ search, setSearch }: HomeSearchFABProps) => {
       setSearch("");
       close();
     }
+  // eslint-disable-next-line local-rules/exhaustive-deps
   }, [open, close]);
 
   const handleOnFocus = React.useCallback(() => {

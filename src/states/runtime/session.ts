@@ -1,4 +1,4 @@
-import { INITIAL_PAGE, Page } from "@/types/navigation";
+import { _Page, INITIAL_PAGE } from "@/types/navigation";
 import {
   INITIAL_SESSION_FLAGS,
   INITIAL_SESSION_TRACKERS,
@@ -22,16 +22,16 @@ const zustandStorage: StateStorage = {
 
 type useSessionState = {
   token: string | null;
-  currPage: Page;
+  currPage: _Page;
   flags: SessionFlags;
   trackers: SessionTrackers;
 };
 
 type useSessionActions = {
-  setCurrPage: (page: Page) => void;
+  setCurrPage: (page: _Page) => void;
   activateFlag: (key: keyof SessionFlags) => void;
   addTracker: (key: keyof SessionTrackers, value: string) => void;
-  geenrateToken: () => void;
+  generateToken: () => void;
 };
 
 export type useSessionProps = useSessionState & useSessionActions;
@@ -63,7 +63,7 @@ export const useSession = create<useSessionProps>()(
               }
         );
       },
-      geenrateToken: () => {
+      generateToken: () => {
         const timestamp = Date.now().toString(36);
         const randomString = Math.random().toString(36).substring(2, 15);
         set({ token: `${timestamp}-${randomString}` });
@@ -73,20 +73,18 @@ export const useSession = create<useSessionProps>()(
       name: STORAGE_ID,
       storage: createJSONStorage(() => zustandStorage),
       partialize: (state) => ({ token: state.token }),
-      onRehydrateStorage: (state) => {
-        return (state, error) => {
-          if (error) {
-            Logger.error(`Failed to rehydrate ${STORAGE_ID} state: ${error}`);
-          }
-          if (!state?.token) {
-            useSession.getState().geenrateToken();
-          }
-          useSession.setState({
-            currPage: INITIAL_PAGE,
-            flags: INITIAL_SESSION_FLAGS,
-            trackers: INITIAL_SESSION_TRACKERS,
-          });
-        };
+      onRehydrateStorage: () => (state, error) => {
+        if (error) {
+          Logger.error(`Failed to rehydrate ${STORAGE_ID} state: ${error}`);
+        }
+        if (!state?.token) {
+          useSession.getState().generateToken();
+        }
+        useSession.setState({
+          currPage: INITIAL_PAGE,
+          flags: INITIAL_SESSION_FLAGS,
+          trackers: INITIAL_SESSION_TRACKERS,
+        });
       },
     }
   )

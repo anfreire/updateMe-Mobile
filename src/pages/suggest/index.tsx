@@ -1,14 +1,14 @@
 import * as React from "react";
 import FormScreen from "@/components/form";
 import { useFeedback } from "@/states/persistent/feedback";
-import { useToken } from "@/states/persistent/session";
 import { useToast } from "@/states/runtime/toast";
 import SuggestionsStats from "./stats";
 import { useTranslations } from "@/states/persistent/translations";
 import { Logger } from "@/states/persistent/logs";
+import { useSession } from "@/states/runtime/session";
 
 export default function SuggestScreen() {
-  const openToast = useToast().openToast;
+  const openToast = useToast((state) => state.openToast);
   const [didSuggest, registerSuggestion] = useFeedback((state) => [
     state.didSuggest,
     state.registerSuggestion,
@@ -16,7 +16,7 @@ export default function SuggestScreen() {
   const [appsSuggestions, setAppsSuggestions] = React.useState<string[]>([]);
   const [suggested, setSuggested] = React.useState(false);
   const translations = useTranslations((state) => state.translations);
-  const getToken = useToken((state) => state.getToken);
+  const token = useSession((state) => state.token);
 
   const FieldsData: Record<string, { label: string; errorMessage: string }> =
     React.useMemo(
@@ -61,7 +61,7 @@ export default function SuggestScreen() {
         },
         body: JSON.stringify({
           ...data,
-          token: getToken(),
+          token,
         }),
       })
         .then((response) => {
@@ -73,12 +73,12 @@ export default function SuggestScreen() {
             });
             return;
           }
-          response.json().then((data) => {
-            if (data.apps) {
-              setAppsSuggestions(data.apps);
+          response.json().then((res) => {
+            if (res.apps) {
+              setAppsSuggestions(res.apps);
             }
             const message =
-              data.message ?? translations["Failed to submit suggestion"];
+              res.message ?? translations["Failed to submit suggestion"];
             openToast(message, { type: "error" });
             setDisabled(false);
             Logger.error(message);
@@ -92,7 +92,7 @@ export default function SuggestScreen() {
           Logger.error(`Failed to submit suggestion: ${e}`);
         });
     },
-    [translations]
+    [translations, token]
   );
 
   if (suggested) {

@@ -1,31 +1,20 @@
 import * as React from "react";
-import { useTips } from "@/states/fetched/tips";
 import { useTheme } from "@/theme";
 import { createStackNavigator } from "@react-navigation/stack";
 import { IconButton } from "react-native-paper";
 import TipsScreen from "@/pages/tips";
 import TipScreen from "@/pages/tips/tip";
-import { useSession } from "@/states/runtime/session";
 import { useGoBack } from "@/hooks/useGoBack";
-import { Page, TipsStackParams } from "@/types/navigation";
+import { TipsStackParams } from "@/types/navigation";
 
 const Stack = createStackNavigator<TipsStackParams>();
 
 export default function TipsStack() {
   const { schemedTheme } = useTheme();
-  const setCurrPage = useSession((state) => state.setCurrPage);
   const goBack = useGoBack();
 
   const headerLeft = React.useCallback(
-    (page: Page) => (
-      <IconButton
-        icon="arrow-left"
-        onPress={() => {
-          setCurrPage(page);
-          goBack();
-        }}
-      />
-    ),
+    () => <IconButton icon="arrow-left" onPress={goBack} />,
     [goBack]
   );
 
@@ -47,7 +36,7 @@ export default function TipsStack() {
         name="tips"
         options={{
           headerTitle: "Tips",
-          headerLeft: (_) => headerLeft("apps"),
+          headerLeft: headerLeft,
           ...themeOptions,
         }}
         component={TipsScreen}
@@ -56,7 +45,7 @@ export default function TipsStack() {
         name="tip"
         options={{
           headerTitle: "",
-          headerLeft: (_) => headerLeft("tips"),
+          headerLeft: headerLeft,
           ...themeOptions,
         }}
         component={TipScreen}

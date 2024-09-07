@@ -109,3 +109,4 @@ export type RouteProps = RouteProp<PagesParams>;
 export const STACK_PAGES = ["apps-stack", "tips-stack"] as const;
 
 export type Page = Exclude<_Page, (typeof STACK_PAGES)[number]>;
+

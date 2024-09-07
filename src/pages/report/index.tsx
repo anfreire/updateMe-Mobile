@@ -67,9 +67,9 @@ export default function ReportScreen() {
             return;
           }
 
-          response.json().then((data) => {
+          response.json().then((res) => {
             const message =
-              data.message ?? translations["Failed to submit report"];
+              res.message ?? translations["Failed to submit report"];
             openToast(message, { type: "error" });
             setDisabled(false);
             Logger.error(message);

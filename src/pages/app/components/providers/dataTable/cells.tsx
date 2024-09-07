@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Linking, ScrollView, View } from "react-native";
+import { Linking, ScrollView, StyleSheet, View } from "react-native";
 import { DataTable, Icon, Text } from "react-native-paper";
 import Clipboard from "@react-native-clipboard/clipboard";
 import MultiIcon from "@/components/multiIcon";
@@ -51,12 +51,12 @@ export const WebsiteCell = React.memo(
           )
         }
         onLongPress={() => Linking.openURL(currApp.providers[provider].source)}
-        style={{ width: size, justifyContent: "flex-start" }}
+        style={[styles.websiteWrapper, { width: size }]}
       >
-        <View style={{ position: "relative" }}>
+        <View style={styles.websiteView}>
           <Text>{provider}</Text>
           <MultiIcon
-            style={{ position: "absolute", top: -8, right: -12 }}
+            style={styles.websiteIcon}
             size={10}
             type="material-icons"
             name="open-in-new"
@@ -79,12 +79,12 @@ export const SecureCell = React.memo(
         onLongPress={() =>
           Linking.openURL(`https://www.virustotal.com/gui/file/${sha256}`)
         }
-        style={{ width: 70, justifyContent: "center" }}
+        style={styles.secureWrapper}
       >
-        <View style={{ position: "relative", width: 18, height: 18 }}>
+        <View style={styles.secureView}>
           <Icon size={18} source={sha256 ? "check" : "close"} />
           <MultiIcon
-            style={{ position: "absolute", top: -8, right: -10 }}
+            style={styles.secureIcon}
             size={10}
             type="material-icons"
             name="open-in-new"
@@ -111,7 +111,7 @@ export const CopiableCell = React.memo(
           Clipboard.setString(toCopy);
           openToast(onLongPressMessage);
         }}
-        style={{ width, justifyContent: "center" }}
+        style={[{ width }, styles.copiableWrapper]}
       >
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           <Text>{toCopy}</Text>
@@ -120,3 +120,34 @@ export const CopiableCell = React.memo(
     );
   }
 );
+
+const styles = StyleSheet.create({
+  websiteWrapper: {
+    justifyContent: "flex-start",
+  },
+  websiteView: {
+    position: "relative",
+  },
+  websiteIcon: {
+    position: "absolute",
+    top: -8,
+    right: -12,
+  },
+  secureWrapper: {
+    justifyContent: "center",
+    width: 70,
+  },
+  secureView: {
+    position: "relative",
+    width: 18,
+    height: 18,
+  },
+  secureIcon: {
+    position: "absolute",
+    top: -8,
+    right: -10,
+  },
+  copiableWrapper: {
+    justifyContent: "center",
+  },
+});

@@ -7,7 +7,7 @@ import { useTheme } from "@/theme";
 import { createStackNavigator } from "@react-navigation/stack";
 import { IconButton } from "react-native-paper";
 import { useGoBack } from "@/hooks/useGoBack";
-import { AppsStackParams, NavigationProps } from "@/types/navigation";
+import { AppsStackParams } from "@/types/navigation";
 
 const Stack = createStackNavigator<AppsStackParams>();
 
@@ -15,6 +15,16 @@ const HomeStack = () => {
   const { schemedTheme } = useTheme();
   const openDrawer = useDrawer((state) => state.openDrawer);
   const goBack = useGoBack();
+
+  const headerRight = React.useCallback(
+    () => <IconButton icon="menu" onPress={openDrawer} />,
+    []
+  );
+
+  const headerLeft = React.useCallback(
+    () => <IconButton icon="arrow-left" onPress={goBack} />,
+    [goBack]
+  );
 
   return (
     <Stack.Navigator initialRouteName="apps" id="apps-stack">
@@ -24,8 +34,8 @@ const HomeStack = () => {
           headerStyle: {
             backgroundColor: schemedTheme.surfaceContainer,
           },
-          headerTitle: (_) => <HomeLogo />,
-          headerRight: () => <IconButton icon="menu" onPress={openDrawer} />,
+          headerTitle: HomeLogo,
+          headerRight,
         }}
         component={HomeScreen}
       />
@@ -39,8 +49,8 @@ const HomeStack = () => {
             color: schemedTheme.onSurface,
           },
           headerTitle: "",
-          headerLeft: (_) => <IconButton icon="arrow-left" onPress={goBack} />,
-          headerRight: () => <IconButton icon="menu" onPress={openDrawer} />,
+          headerLeft,
+          headerRight,
         }}
         component={AppScreen}
       />

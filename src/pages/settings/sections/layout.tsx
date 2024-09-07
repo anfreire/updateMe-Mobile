@@ -3,6 +3,15 @@ import MultiIcon from "@/components/multiIcon";
 import { useNavigate } from "@/hooks/useNavigate";
 import { useDialogs } from "@/states/runtime/dialogs";
 import { List } from "react-native-paper";
+import { Style } from "react-native-paper/lib/typescript/components/List/utils";
+
+const FeelsLikeHomeIcon = (props: { color: string; style: Style }) => (
+  <MultiIcon {...props} size={20} type="feather" name="layout" />
+);
+
+const ChevronRightIcon = (props: { color: string; style?: Style }) => (
+  <MultiIcon {...props} size={20} type="material-icons" name="chevron-right" />
+);
 
 const SettingsLayout = () => {
   const navigate = useNavigate();
@@ -12,12 +21,10 @@ const SettingsLayout = () => {
       <List.Item
         title="Feels like home"
         description="Change the layout of the home screen"
-        left={(props) => (
-          <MultiIcon {...props} size={20} type="feather" name="layout" />
-        )}
-        right={(props) => <List.Icon {...props} icon="chevron-right" />}
+        left={FeelsLikeHomeIcon}
+        right={ChevronRightIcon}
         onPress={() => {
-          navigate("Home", undefined, true);
+          navigate("apps", { silent: true });
           openDialog("homeLayoutPicker");
         }}
       />

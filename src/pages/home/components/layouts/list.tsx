@@ -7,6 +7,10 @@ import { useShallow } from "zustand/react/shallow";
 import { useIndex } from "@/states/fetched";
 import { useNavigate } from "@/hooks/useNavigate";
 
+const AppIcon = (uri?: string) => () => (
+  <Image resizeMode="contain" style={styles.listItemIcon} source={{ uri }} />
+);
+
 const HomeList = ({ apps }: { apps: string[] }) => {
   const theme = useTheme();
   const [index, isIndexFetched, fetchIndex] = useIndex(
@@ -21,6 +25,10 @@ const HomeList = ({ apps }: { apps: string[] }) => {
     [theme]
   );
 
+  const getDynamicListItemStyle = (i: number) => ({
+    marginBottom: i === apps.length - 1 ? 10 : 5,
+  });
+
   return (
     <FlatList
       data={apps}
@@ -30,19 +38,9 @@ const HomeList = ({ apps }: { apps: string[] }) => {
           key={app}
           onPress={() => navigate("app", { params: { app } })}
           title={app}
-          style={[
-            styles.listItem,
-            themeStyles,
-            { marginBottom: i === apps.length - 1 ? 10 : 5 },
-          ]}
+          style={[styles.listItem, themeStyles, getDynamicListItemStyle(i)]}
           titleStyle={styles.listItemTitle}
-          left={(_) => (
-            <Image
-              resizeMode="contain"
-              style={styles.listItemIcon}
-              source={{ uri: index[app].icon }}
-            />
-          )}
+          left={AppIcon(index[app].icon)}
         />
       )}
       refreshControl={ThemedRefreshControl({

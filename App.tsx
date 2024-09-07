@@ -11,11 +11,11 @@ import { useTheme } from "@/theme";
 import DrawerWrapper from "@/global/drawer";
 import { useSettings } from "@/states/persistent/settings";
 import { useDialogs } from "@/states/runtime/dialogs";
-import { useApp } from "@/states/temporary/app";
 import { useTips } from "@/states/fetched/tips";
 import PermissionsModule from "@/lib/permissions";
 import BackgroundTasksModule from "@/lib/backgroundTasks";
 import MainStack from "@/navigation";
+import { useApp } from "@/states/fetched/app";
 
 function App(): React.JSX.Element {
   const theme = useTheme();
@@ -23,9 +23,9 @@ function App(): React.JSX.Element {
     (state) => state.settings.downloads.deleteOnLeave
   );
   const openDialog = useDialogs((state) => state.openDialog);
-  const fetchTips = useTips((state) => state.fetchTips);
+  const fetchTips = useTips((state) => state.fetch);
   const [info, localVersion] = useApp((state) => [
-    state.info,
+    state.latest,
     state.localVersion,
   ]);
   const [releaseNotification, updateNotification] = useSettings((state) => [
@@ -36,7 +36,7 @@ function App(): React.JSX.Element {
   React.useEffect(() => {
     if (localVersion && info.version && info.version > localVersion)
       openDialog("newVersion");
-  }, [info, localVersion, openDialog]);
+  }, [info, localVersion]);
 
   React.useEffect(() => {
     if (releaseNotification || updateNotification) {
@@ -49,12 +49,11 @@ function App(): React.JSX.Element {
   React.useEffect(() => {
     fetchTips(); // Fetch tips from the server
 
-    if (deleteOnLeave) FilesModule.deleteAllFiles(); // Clean up files on app enter (In case it didn't clean up on exit)
-
-    return () => {
-      if (deleteOnLeave) FilesModule.deleteAllFiles(); // Clean up files on app exit
-    };
-  }, []); // It must run only at the start and end of the app
+    if (deleteOnLeave)
+      return () => {
+        FilesModule.deleteAllFiles();
+      }; // Clean up files on app enter (In case it didn't clean up on exit)
+  }, [deleteOnLeave]);
 
   const statusBarProps: {
     backgroundColor: string;

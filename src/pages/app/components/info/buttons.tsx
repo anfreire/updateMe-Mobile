@@ -4,7 +4,6 @@ import { useInstall } from "@/hooks/useInstall";
 import { useTranslations } from "@/states/persistent/translations";
 import AppsModule from "@/lib/apps";
 import { Button } from "react-native-paper";
-import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { CurrAppProps } from "@/hooks/useCurrApp";
 
 interface AppInfoButtonsProps {
@@ -38,6 +37,7 @@ const AppInfoButtons = ({ currApp }: AppInfoButtonsProps) => {
   }, [
     currApp.version,
     currApp.defaultProvider.version,
+    currApp.defaultProvider.packageName,
     translations,
     handleInstall,
   ]);
@@ -46,7 +46,7 @@ const AppInfoButtons = ({ currApp }: AppInfoButtonsProps) => {
     <View style={styles.buttonWrapper}>
       <Button
         onPress={buttonProps.action}
-        icon={(props) => <MaterialIcons {...props} name={buttonProps.icon} />}
+        icon={buttonProps.icon}
         mode="contained-tonal"
       >
         {buttonProps.label}

@@ -28,30 +28,42 @@ const renderCarouselItem: CarouselRenderItem<{
   </View>
 );
 
+const useDownloadAnimation = () => {
+  const latestApp = useApp((state) => state.latest);
+  const [downloadProgress, setDownloadProgress] = React.useState(0);
+  const downloadProgressBarHeight = useSharedValue(0);
+
+  const handleUpdate = React.useCallback(async () => {
+    downloadProgressBarHeight.value = withTiming(10, { duration: 500 });
+    setDownloadProgress(0);
+    const fileName = `UpdateMe_v${latestApp.version}.apk`;
+    const path = FilesModule.buildAbsolutePath(fileName);
+    await ReactNativeBlobUtil.fs.unlink(path).catch(() => {});
+    FilesModule.downloadFile(latestApp.download, fileName, path, (progress) => {
+      setDownloadProgress(progress);
+    }).then((res) => {
+      setDownloadProgress(1);
+      FilesModule.installApk(res.path());
+      downloadProgressBarHeight.value = withTiming(0, { duration: 500 }, () => {
+        setDownloadProgress(0);
+      });
+    });
+  }, [latestApp.download, latestApp.version]);
+
+  return {
+    downloadProgress,
+    downloadProgressBarHeight,
+    handleUpdate,
+  }; // ❌ useMemo: downloadProgress will change frequently
+};
+
 const NewVersionDialog = () => {
   const activeDialog = useDialogs((state) => state.activeDialog);
   const latestApp = useApp((state) => state.latest);
   const translations = useTranslations((state) => state.translations);
   const { schemedTheme } = useTheme();
-  const [progress, setProgress] = React.useState(0);
-  const progressHeight = useSharedValue(0);
-
-  const handleUpdate = React.useCallback(async () => {
-    progressHeight.value = withTiming(10, { duration: 500 });
-    setProgress(0);
-    const fileName = `UpdateMe_v${latestApp.version}.apk`;
-    const path = FilesModule.buildAbsolutePath(fileName);
-    await ReactNativeBlobUtil.fs.unlink(path).catch(() => {});
-    FilesModule.downloadFile(latestApp.download, fileName, path, (progress) => {
-      setProgress(progress);
-    }).then((res) => {
-      setProgress(1);
-      FilesModule.installApk(res.path());
-      progressHeight.value = withTiming(0, { duration: 500 }, () => {
-        setProgress(0);
-      });
-    });
-  }, [latestApp.download, latestApp.version]);
+  const { downloadProgress, downloadProgressBarHeight, handleUpdate } =
+    useDownloadAnimation();
 
   const handleManualUpdate = React.useCallback(() => {
     Linking.openURL(latestApp.download);
@@ -60,7 +72,7 @@ const NewVersionDialog = () => {
   const progressBarStyle = useAnimatedStyle(() => ({
     width: 300,
     marginBottom: -25,
-    height: progressHeight.value,
+    height: downloadProgressBarHeight.value,
     overflow: "hidden",
   }));
 
@@ -97,7 +109,7 @@ const NewVersionDialog = () => {
           />
           <Animated.View style={progressBarStyle}>
             <ProgressBar
-              animatedValue={progress}
+              animatedValue={downloadProgress}
               color={schemedTheme.primary}
               style={styles.progressBar}
             />

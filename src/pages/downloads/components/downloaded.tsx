@@ -1,5 +1,5 @@
 import * as React from "react";
-import { FlatList, View } from "react-native";
+import { FlatList, StyleSheet, View } from "react-native";
 import { Checkbox, IconButton, List } from "react-native-paper";
 import Share from "react-native-share";
 import { useTheme } from "@/theme";
@@ -8,6 +8,7 @@ import MultiIcon from "@/components/multiIcon";
 import { ReactNativeBlobUtilStat } from "react-native-blob-util";
 import { useNavigation } from "@react-navigation/native";
 import { NavigationProps } from "@/types/navigation";
+import { Style } from "react-native-paper/lib/typescript/components/List/utils";
 
 function renderKeyExtractor(item: [string, ReactNativeBlobUtilStat]) {
   return item[0];
@@ -34,7 +35,7 @@ const getHeaderRight = (
       .then(() => setSelectedFiles([]));
 
   return () => (
-    <View style={{ flexDirection: "row" }}>
+    <View style={styles.headerRightWrapper}>
       <IconButton icon="share" onPress={handleShare} />
       <IconButton
         icon={
@@ -52,6 +53,20 @@ const getHeaderRight = (
     </View>
   );
 };
+
+const AndroidIcon = (props: { color: string; style: Style }) => (
+  <MultiIcon {...props} size={25} type="font-awesome" name="android" />
+);
+
+const getRightCheckbox = (selectedFiles: string[], file: string) =>
+  !selectedFiles.length
+    ? undefined
+    : (props: { color: string; style?: Style }) => (
+        <Checkbox
+          {...props}
+          status={selectedFiles.includes(file) ? "checked" : "unchecked"}
+        />
+      );
 
 const Downloaded = ({
   files,
@@ -94,9 +109,8 @@ const Downloaded = ({
             title={file}
             description={`${(fileStats.size / 1024 / 1024).toFixed(2)} MB`}
             onPress={() => {
-              selectedFiles.length === 0
-                ? FilesModule.installApk(file)
-                : selectFile(file);
+              if (selectedFiles.length === 0) FilesModule.installApk(file);
+              else selectFile(file);
             }}
             onLongPress={() => selectFile(file)}
             style={{
@@ -104,24 +118,8 @@ const Downloaded = ({
                 ? theme.schemedTheme.surfaceBright
                 : theme.schemedTheme.surface,
             }}
-            left={(props) => (
-              <MultiIcon
-                {...props}
-                size={25}
-                type="font-awesome"
-                name="android"
-              />
-            )}
-            right={(props) =>
-              selectedFiles.length > 0 && (
-                <Checkbox
-                  {...props}
-                  status={
-                    selectedFiles.includes(file) ? "checked" : "unchecked"
-                  }
-                />
-              )
-            }
+            left={AndroidIcon}
+            right={getRightCheckbox(selectedFiles, file)}
           />
         )}
         keyExtractor={renderKeyExtractor}
@@ -133,3 +131,7 @@ const Downloaded = ({
 Downloaded.displayName = "Downloaded";
 
 export default React.memo(Downloaded);
+
+const styles = StyleSheet.create({
+  headerRightWrapper: { flexDirection: "row" },
+});

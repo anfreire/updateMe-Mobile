@@ -10,42 +10,20 @@ const SuggestionStat = ({
 }: {
   value: { app: string; count: number; percentage: number };
 }) => (
-  <View
-    key={value.app}
-    style={{
-      width: "100%",
-      display: "flex",
-      flexDirection: "row",
-      alignItems: "center",
-      justifyContent: "center",
-      gap: 10,
-      padding: 10,
-      margin: 10,
-    }}
-  >
-    <View
-      style={{
-        flex: 1,
-        flexDirection: "row",
-        gap: 10,
-        paddingRight: 20,
-      }}
-    >
-      <Text variant="titleSmall" style={{ width: "100%", textAlign: "center" }}>
+  <View key={value.app} style={styles.suggestionStatContainer}>
+    <View style={styles.suggestionStatWrapper}>
+      <Text variant="titleSmall" style={styles.suggestionStatTitle}>
         {value.app}
       </Text>
-      <View style={{ display: "flex", justifyContent: "center" }}>
-        <Text
-          style={{
-            color: "grey",
-          }}
-        >
-          {value.count}
-        </Text>
+      <View style={styles.suggestionStatTextWrapper}>
+        <Text style={styles.suggestionStatText}>{value.count}</Text>
       </View>
     </View>
-    <View style={{ flex: 2, width: "100%" }}>
-      <ProgressBar style={{ height: 6 }} animatedValue={value.percentage} />
+    <View style={styles.suggestionStatProgressBarWrapper}>
+      <ProgressBar
+        style={styles.suggestionStatProgressBar}
+        animatedValue={value.percentage}
+      />
     </View>
   </View>
 );
@@ -55,7 +33,7 @@ export default function SuggestionsStats() {
     { app: string; count: number; percentage: number }[]
   >([]);
   const openToast = useToast((state) => state.openToast);
-  const showDialog = useDialogs((state) => state.openDialog);
+  const openDialog = useDialogs((state) => state.openDialog);
   const translations = useTranslations((state) => state.translations);
 
   React.useEffect(() => {
@@ -79,10 +57,10 @@ export default function SuggestionsStats() {
     return () => {
       setStats([]);
     };
-  }, []);
+  }, [translations]);
 
   const handleInfo = React.useCallback(() => {
-    showDialog({
+    openDialog({
       title: translations["App Suggestions"],
       content:
         translations[
@@ -104,7 +82,7 @@ export default function SuggestionsStats() {
           <Text variant="titleLarge">{translations["App Suggestions"]}</Text>
         </Card>
 
-        <Card mode="elevated" style={{ width: "80%" }} elevation={2}>
+        <Card mode="elevated" style={styles.cardContent} elevation={2}>
           <View style={styles.suggestionView}>
             <IconButton
               icon="information"
@@ -115,7 +93,7 @@ export default function SuggestionsStats() {
               data={stats}
               keyExtractor={(item) => item.app}
               renderItem={({ item }) => <SuggestionStat value={item} />}
-              contentContainerStyle={{ width: "100%" }}
+              contentContainerStyle={styles.flatListContainer}
             />
             {stats.map((value) => (
               <SuggestionStat value={value} />
@@ -156,6 +134,9 @@ const styles = StyleSheet.create({
     marginTop: -10,
     paddingBottom: 20,
   },
+  cardContent: {
+    width: "80%",
+  },
   suggestionView: {
     display: "flex",
     flexDirection: "column",
@@ -170,5 +151,42 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: -5,
     right: -5,
+  },
+  suggestionStatContainer: {
+    width: "100%",
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 10,
+    padding: 10,
+    margin: 10,
+  },
+  suggestionStatWrapper: {
+    flex: 1,
+    flexDirection: "row",
+    gap: 10,
+    paddingRight: 20,
+  },
+  suggestionStatTitle: {
+    width: "100%",
+    textAlign: "center",
+  },
+  suggestionStatTextWrapper: {
+    display: "flex",
+    justifyContent: "center",
+  },
+  suggestionStatText: {
+    color: "grey",
+  },
+  suggestionStatProgressBarWrapper: {
+    flex: 2,
+    width: "100%",
+  },
+  suggestionStatProgressBar: {
+    height: 6,
+  },
+  flatListContainer: {
+    width: "100%",
   },
 });

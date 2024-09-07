@@ -1,3 +1,4 @@
+import * as React from "react";
 import { AppRegistry } from "react-native";
 import App from "./App";
 import { name as appName } from "./app.json";
@@ -11,14 +12,14 @@ import BackgroundTasksModule from "@/lib/backgroundTasks";
 
 BackgroundFetch.registerHeadlessTask(BackgroundTasksModule.headlessTask);
 function Root() {
-	return (
-		<ThemeProvider>
-			<Toast />
-			<Dialogs />
-			<App />
-			<StatesBridgeManager />
-		</ThemeProvider>
-	);
+  return (
+    <ThemeProvider>
+      <Toast />
+      <Dialogs />
+      <App />
+      <StatesBridgeManager />
+    </ThemeProvider>
+  );
 }
 
 AppRegistry.registerComponent(appName, () => Root);

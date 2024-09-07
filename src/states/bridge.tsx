@@ -3,18 +3,23 @@ import { useDefaultProviders } from "@/states/persistent/defaultProviders";
 import { useIndex } from "@/states/fetched/index";
 import { useVersions } from "@/states/computed/versions";
 import { useUpdates } from "@/states/computed/updates";
+import { useShallow } from "zustand/react/shallow";
 
 function useStatesBridge() {
   const index = useIndex((state) => state.index);
   const [
+    defaultProviders,
     populatedDefaultProviders,
     sanitizeDefaultProviders,
     populateDefaultProviders,
-  ] = useDefaultProviders((state) => [
-    state.populatedDefaultProviders,
-    state.sanitize,
-    state.populate,
-  ]);
+  ] = useDefaultProviders(
+    useShallow((state) => [
+      state.defaultProviders,
+      state.populatedDefaultProviders,
+      state.sanitize,
+      state.populate,
+    ])
+  );
   const [versions, refreshVersions] = useVersions((state) => [
     state.versions,
     state.refresh,
@@ -23,8 +28,11 @@ function useStatesBridge() {
 
   React.useEffect(() => {
     sanitizeDefaultProviders(index);
-    populateDefaultProviders(index);
   }, [index]);
+
+  React.useEffect(() => {
+    populateDefaultProviders(index);
+  }, [defaultProviders, index]);
 
   React.useEffect(() => {
     refreshVersions(index, populatedDefaultProviders);

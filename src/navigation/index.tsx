@@ -20,6 +20,12 @@ export default function MainStack() {
   const { schemedTheme } = useTheme();
   const goBack = useGoBack();
   const translations = useTranslations((state) => state.translations);
+
+  const headerLeft = React.useCallback(
+    () => <IconButton icon="arrow-left" onPress={goBack} />,
+    [goBack]
+  );
+
   return (
     <Stack.Navigator id="main-stack" initialRouteName="loading">
       <Stack.Screen
@@ -46,7 +52,7 @@ export default function MainStack() {
             color: schemedTheme.onSurface,
           },
           headerTitle: translations["Downloads"],
-          headerLeft: (_) => <IconButton icon="arrow-left" onPress={goBack} />,
+          headerLeft,
         }}
         component={DownloadsScreen}
       />
@@ -60,7 +66,7 @@ export default function MainStack() {
             color: schemedTheme.onSurface,
           },
           headerTitle: translations["Report"],
-          headerLeft: (_) => <IconButton icon="arrow-left" onPress={goBack} />,
+          headerLeft,
         }}
         component={ReportScreen}
       />
@@ -74,7 +80,7 @@ export default function MainStack() {
             color: schemedTheme.onSurface,
           },
           headerTitle: translations["Settings"],
-          headerLeft: (_) => <IconButton icon="arrow-left" onPress={goBack} />,
+          headerLeft,
         }}
         component={SettingsScreen}
       />
@@ -88,7 +94,7 @@ export default function MainStack() {
             color: schemedTheme.onSurface,
           },
           headerTitle: translations["Updates"],
-          headerLeft: (_) => <IconButton icon="arrow-left" onPress={goBack} />,
+          headerLeft,
         }}
         component={UpdatesScreen}
       />
@@ -109,7 +115,7 @@ export default function MainStack() {
             color: schemedTheme.onSurface,
           },
           headerTitle: translations["Suggest an App"],
-          headerLeft: (_) => <IconButton icon="arrow-left" onPress={goBack} />,
+          headerLeft,
         }}
         component={SuggestScreen}
       />

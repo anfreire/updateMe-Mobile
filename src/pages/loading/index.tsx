@@ -36,7 +36,7 @@ const LoadingScreen = () => {
 
       reset({
         index: 0,
-        routes: [{ name: "home" }],
+        routes: [{ name: "apps" }],
       });
     },
     [reset]
@@ -44,7 +44,7 @@ const LoadingScreen = () => {
 
   React.useEffect(() => {
     getLocalVersion().then(() => fetchData());
-  }, []);
+  }, [fetchData]);
 
   return (
     <View style={styles.container}>

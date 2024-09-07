@@ -1,12 +1,28 @@
 import * as React from "react";
 import { FlatList, Image, ListRenderItem, StyleSheet } from "react-native";
 import { List } from "react-native-paper";
-import MultiIcon from "@/components/multiIcon";
+import MultiIcon, { MultiIconType } from "@/components/multiIcon";
 import ThemedRefreshControl from "@/components/refreshControl";
 import { useIndex } from "@/states/fetched";
 import { Categories, useCategories } from "@/states/fetched/categories";
 import { useNavigate } from "@/hooks/useNavigate";
 import { useShallow } from "zustand/react/shallow";
+import { Style } from "react-native-paper/lib/typescript/components/List/utils";
+
+const AppIcon = (uri?: string) => () => (
+  <Image resizeMode="contain" style={styles.appIcon} source={{ uri }} />
+);
+
+const CategoryIcon =
+  (name: string, type?: MultiIconType) =>
+  (props: { color: string; style: Style }) => (
+    <MultiIcon
+      {...props}
+      size={20}
+      type={type ?? "material-community"}
+      name={name}
+    />
+  );
 
 const HomeCategories = ({ apps }: { apps: string[] }) => {
   const [index, isIndexFetched, fetchIndex] = useIndex(
@@ -36,7 +52,8 @@ const HomeCategories = ({ apps }: { apps: string[] }) => {
   const toggleCategory = React.useCallback((category: string) => {
     setOpenCategories((prev) => {
       const newSet = new Set(prev);
-      newSet.has(category) ? newSet.delete(category) : newSet.add(category);
+      if (newSet.has(category)) newSet.delete(category);
+      else newSet.add(category);
       return newSet;
     });
   }, []);
@@ -80,13 +97,7 @@ const HomeCategories = ({ apps }: { apps: string[] }) => {
         onPress={() => navigate("app", { params: { app } })}
         title={app}
         style={styles.appItem}
-        left={() => (
-          <Image
-            resizeMode="contain"
-            style={styles.appIcon}
-            source={{ uri: index[app]?.icon }}
-          />
-        )}
+        left={AppIcon(index[app]?.icon)}
       />
     ),
     [index, navigate]
@@ -106,13 +117,9 @@ const HomeCategories = ({ apps }: { apps: string[] }) => {
             title={category}
             expanded={isCategoryOpen(category)}
             onPress={() => toggleCategory(category)}
-            left={(props) => (
-              <MultiIcon
-                {...props}
-                size={20}
-                type={categories[category].type ?? "material-community"}
-                name={categories[category].icon}
-              />
+            left={CategoryIcon(
+              categories[category].icon,
+              categories[category].type
             )}
           >
             <FlatList

@@ -3,6 +3,24 @@ import MultiIcon from "@/components/multiIcon";
 import { useTranslations } from "@/states/persistent/translations";
 import { useDialogs } from "@/states/runtime/dialogs";
 import { List } from "react-native-paper";
+import { Style } from "react-native-paper/lib/typescript/components/List/utils";
+
+const ChromaticShiftIcon = (props: { color: string; style: Style }) => (
+  <MultiIcon {...props} size={20} type="material-icons" name="palette" />
+);
+
+const DuskTillDawnIcon = (props: { color: string; style: Style }) => (
+  <MultiIcon
+    {...props}
+    size={20}
+    type="material-community"
+    name="theme-light-dark"
+  />
+);
+
+const ChevronRightIcon = (props: { color: string; style?: Style }) => (
+  <MultiIcon {...props} size={20} type="material-icons" name="chevron-right" />
+);
 
 export default function SettingsAppearance() {
   const openDialog = useDialogs((state) => state.openDialog);
@@ -12,29 +30,15 @@ export default function SettingsAppearance() {
       <List.Item
         title={translations["Chromatic Shift"]}
         description={translations["Change the source color of the app"]}
-        left={(props) => (
-          <MultiIcon
-            {...props}
-            size={20}
-            type="material-icons"
-            name="palette"
-          />
-        )}
-        right={(props) => <List.Icon {...props} icon="chevron-right" />}
+        left={ChromaticShiftIcon}
+        right={ChevronRightIcon}
         onPress={() => openDialog("sourceColorPicker")}
       />
       <List.Item
         title={translations["Dusk till Dawn"]}
         description={translations["Change the color scheme of the app"]}
-        left={(props) => (
-          <MultiIcon
-            {...props}
-            size={20}
-            type="material-community"
-            name="theme-light-dark"
-          />
-        )}
-        right={(props) => <List.Icon {...props} icon="chevron-right" />}
+        left={DuskTillDawnIcon}
+        right={ChevronRightIcon}
         onPress={() => openDialog("colorSchemePicker")}
       />
     </List.Section>

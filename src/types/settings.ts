@@ -3,7 +3,7 @@ export interface Settings {
     homeStyle: "categories" | "list" | "grid";
   };
   theme: {
-    sourceColor: string | null;
+    sourceColor?: string;
     colorScheme: "system" | "light" | "dark";
   };
   notifications: {
@@ -24,7 +24,7 @@ export const DEFAULT_SETTINGS: Settings = {
     homeStyle: "categories",
   },
   theme: {
-    sourceColor: null,
+    sourceColor: undefined,
     colorScheme: "system",
   },
   notifications: {
