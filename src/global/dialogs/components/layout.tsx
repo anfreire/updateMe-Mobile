@@ -79,7 +79,7 @@ const HomeLayoutPickerDialog = () => {
     } else {
       previousLayout.current = null;
     }
-  }, [activeDialog, layout]);
+  }, [activeDialog, layout, navigate]);
 
   const handleLayoutChange = React.useCallback((value: string) => {
     setSetting("layout", "homeStyle", value as HomeLayoutType);

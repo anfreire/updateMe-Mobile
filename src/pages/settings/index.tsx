@@ -4,12 +4,12 @@ import SettingsAppearance from "./sections/appearance";
 import SettingsLayout from "./sections/layout";
 import SettingsCheckboxes from "./sections/checkboxes";
 import { Page } from "@/types/navigation";
-import { updateCurrPage } from "@/hooks/updateCurrPage";
+import { useCurrPageEffect } from "@/hooks/useCurrPageEffect";
 
 const CURR_PAGE: Page = "settings";
 
 const SettingsScreen = () => {
-  updateCurrPage(CURR_PAGE);
+  useCurrPageEffect(CURR_PAGE);
 
   return (
     <ScrollView>

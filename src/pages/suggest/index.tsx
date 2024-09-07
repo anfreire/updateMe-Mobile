@@ -7,7 +7,7 @@ import { useTranslations } from "@/states/persistent/translations";
 import { Logger } from "@/states/persistent/logs";
 import { useSession } from "@/states/runtime/session";
 import { Page } from "@/types/navigation";
-import { updateCurrPage } from "@/hooks/updateCurrPage";
+import { useCurrPageEffect } from "@/hooks/useCurrPageEffect";
 
 const CURR_PAGE: Page = "suggest";
 
@@ -99,7 +99,7 @@ export default function SuggestScreen() {
     [translations, token]
   );
 
-  updateCurrPage(CURR_PAGE);
+  useCurrPageEffect(CURR_PAGE);
 
   if (suggested) {
     return <SuggestionsStats />;

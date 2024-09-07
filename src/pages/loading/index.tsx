@@ -7,7 +7,7 @@ import { useApp } from "@/states/fetched/app";
 import { useCategories } from "@/states/fetched/categories";
 import { NavigationProps, Page } from "@/types/navigation";
 import LoadingIcon from "./icon";
-import { updateCurrPage } from "@/hooks/updateCurrPage";
+import { useCurrPageEffect } from "@/hooks/useCurrPageEffect";
 
 const CURR_PAGE: Page = "loading";
 
@@ -49,7 +49,7 @@ const LoadingScreen = () => {
     getLocalVersion().then(() => fetchData());
   }, [fetchData]);
 
-  updateCurrPage(CURR_PAGE);
+  useCurrPageEffect(CURR_PAGE);
 
   return (
     <View style={styles.container}>

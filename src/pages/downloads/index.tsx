@@ -10,7 +10,7 @@ import Downloaded from "./components/downloaded";
 import { useDownloads } from "@/states/runtime/downloads";
 import { useTranslations } from "@/states/persistent/translations";
 import { Page } from "@/types/navigation";
-import { updateCurrPage } from "@/hooks/updateCurrPage";
+import { useCurrPageEffect } from "@/hooks/useCurrPageEffect";
 
 const CURR_PAGE: Page = "downloads";
 
@@ -60,7 +60,7 @@ const DownloadsScreen = () => {
     {} as Record<string, ReactNativeBlobUtilStat>
   );
 
-  updateCurrPage(CURR_PAGE);
+  useCurrPageEffect(CURR_PAGE);
 
   if (Object.keys(files).length === 0) {
     return (

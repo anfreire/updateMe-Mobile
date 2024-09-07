@@ -8,7 +8,7 @@ import { NavigationProps } from "@/types/navigation";
 import LoadingView from "@/components/loadingView";
 import { Style } from "react-native-paper/lib/typescript/components/List/utils";
 import { Page } from "@/types/navigation";
-import { updateCurrPage } from "@/hooks/updateCurrPage";
+import { useCurrPageEffect } from "@/hooks/useCurrPageEffect";
 
 const CURR_PAGE: Page = "tips";
 
@@ -37,7 +37,7 @@ const TipsScreen = () => {
     [tips, navigate]
   );
 
-  updateCurrPage(CURR_PAGE);
+  useCurrPageEffect(CURR_PAGE);
 
   if (!isfetched) {
     return <LoadingView />;

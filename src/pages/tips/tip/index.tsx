@@ -7,7 +7,7 @@ import FastImage from "react-native-fast-image";
 import { Text } from "react-native-paper";
 import { useRoute } from "@react-navigation/native";
 import { Page, RouteProps } from "@/types/navigation";
-import { updateCurrPage } from "@/hooks/updateCurrPage";
+import { useCurrPageEffect } from "@/hooks/useCurrPageEffect";
 
 const CURR_PAGE: Page = "tip";
 
@@ -49,7 +49,7 @@ const TipScreen = () => {
   const tips = useTips((state) => state.tips);
   const { params } = useRoute<RouteProps>();
 
-  updateCurrPage(CURR_PAGE);
+  useCurrPageEffect(CURR_PAGE);
 
   if (!params || !("tip" in params)) {
     return <LoadingView />;

@@ -10,7 +10,7 @@ import { useIndex } from "@/states/fetched";
 import { useShallow } from "zustand/react/shallow";
 import { useCategories } from "@/states/fetched/categories";
 import { Page } from "@/types/navigation";
-import { updateCurrPage } from "@/hooks/updateCurrPage";
+import { useCurrPageEffect } from "@/hooks/useCurrPageEffect";
 
 const CURR_PAGE: Page = "app";
 
@@ -63,7 +63,7 @@ const HomeScreen = () => {
     return LayoutComponents[homeLayoutType];
   }, [homeLayoutType, isIndexLoaded, isCategoriesLoaded]);
 
-  updateCurrPage(CURR_PAGE);
+  useCurrPageEffect(CURR_PAGE);
 
   if (!LayoutComponent) {
     return <LoadingView />;

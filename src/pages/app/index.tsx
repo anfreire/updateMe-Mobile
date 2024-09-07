@@ -18,7 +18,7 @@ import { useDefaultProviders } from "@/states/persistent/defaultProviders";
 import { NavigationProps, Page, RouteProps } from "@/types/navigation";
 import { useIndex } from "@/states/fetched";
 import { useCurrApp } from "@/hooks/useCurrApp";
-import { updateCurrPage } from "@/hooks/updateCurrPage";
+import { useCurrPageEffect } from "@/hooks/useCurrPageEffect";
 
 const CURR_PAGE: Page = "app";
 
@@ -59,7 +59,7 @@ const AppScreen = () => {
     }, [refresh])
   );
 
-  updateCurrPage(CURR_PAGE);
+  useCurrPageEffect(CURR_PAGE);
 
   if (!currApp) {
     return (

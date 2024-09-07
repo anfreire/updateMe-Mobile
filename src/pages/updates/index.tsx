@@ -14,7 +14,7 @@ import UpdateItem from "./item";
 import { useIndex } from "@/states/fetched";
 import { useUpdates } from "@/states/computed/updates";
 import { NavigationProps, Page } from "@/types/navigation";
-import { updateCurrPage } from "@/hooks/updateCurrPage";
+import { useCurrPageEffect } from "@/hooks/useCurrPageEffect";
 
 const CURR_PAGE: Page = "updates";
 
@@ -103,7 +103,7 @@ const UpdatesScreen = () => {
     });
   }, [updates, updateApp, translations, setOptions]);
 
-  updateCurrPage(CURR_PAGE);
+  useCurrPageEffect(CURR_PAGE);
 
   const renderItem = React.useCallback(
     (item: ListRenderItemInfo<string>) => (
