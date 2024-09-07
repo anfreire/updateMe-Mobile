@@ -5,7 +5,8 @@ import MultiIcon, { MultiIconType } from "@/components/multiIcon";
 import ThemedRefreshControl from "@/components/refreshControl";
 import { useIndex } from "@/states/fetched";
 import { Categories, useCategories } from "@/states/fetched/categories";
-import { useNavigate } from "@/hooks/useNavigate";
+import { useNavigation } from "@react-navigation/native";
+import { NavigationProps } from "@/types/navigation";
 import { useShallow } from "zustand/react/shallow";
 import { Style } from "react-native-paper/lib/typescript/components/List/utils";
 
@@ -36,7 +37,7 @@ const HomeCategories = ({ apps }: { apps: string[] }) => {
   const [openCategories, setOpenCategories] = React.useState<Set<string>>(
     new Set()
   );
-  const navigate = useNavigate();
+  const { navigate } = useNavigation<NavigationProps>();
 
   const refresh = React.useCallback(() => {
     fetchIndex();
@@ -94,7 +95,7 @@ const HomeCategories = ({ apps }: { apps: string[] }) => {
   const renderApp: ListRenderItem<string> = React.useCallback(
     ({ item: app }) => (
       <List.Item
-        onPress={() => navigate("app", { params: { app } })}
+        onPress={() => navigate("app", { app })}
         title={app}
         style={styles.appItem}
         left={AppIcon(index[app]?.icon)}

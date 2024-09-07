@@ -8,8 +8,10 @@ import { useTheme } from "@/theme";
 import MultiIcon from "@/components/multiIcon";
 import { IconSource } from "react-native-paper/lib/typescript/components/Icon";
 import { useTranslations } from "@/states/persistent/translations";
-import { useNavigate } from "@/hooks/useNavigate";
+import { useNavigation } from "@react-navigation/native";
+import { NavigationProps } from "@/types/navigation";
 import { Settings } from "@/types/settings";
+import { Logger } from "@/states/persistent/logs";
 
 type HomeLayoutType = Settings["layout"]["homeStyle"];
 
@@ -62,14 +64,20 @@ const HomeLayoutPickerDialog = () => {
 
   const { schemedTheme } = useTheme();
 
-  const navigate = useNavigate();
+  const { navigate } = useNavigation<NavigationProps>();
 
-  const previousLayout = React.useRef<HomeLayoutType>(layout);
+  const previousLayout = React.useRef<HomeLayoutType | null>(null);
   const [opacity, setOpacity] = React.useState(1);
 
   React.useEffect(() => {
-    if (activeDialog === "homeLayoutPicker") {
+    if (
+      activeDialog === "homeLayoutPicker" &&
+      previousLayout.current === null
+    ) {
       previousLayout.current = layout;
+      navigate("apps");
+    } else {
+      previousLayout.current = null;
     }
   }, [activeDialog, layout]);
 
@@ -78,14 +86,18 @@ const HomeLayoutPickerDialog = () => {
   }, []);
 
   const handleCancel = React.useCallback(() => {
+    if (previousLayout.current === null) {
+      Logger.error("Previous layout is null. Can't revert to previous layout");
+      return;
+    }
     setSetting("layout", "homeStyle", previousLayout.current);
     closeDialog();
-    navigate("settings", { silent: true });
+    navigate("settings");
   }, [navigate]);
 
   const handleApply = React.useCallback(() => {
     closeDialog();
-    navigate("settings", { silent: true });
+    navigate("settings");
   }, [navigate]);
 
   if (activeDialog !== "homeLayoutPicker") return null;

@@ -1,7 +1,8 @@
 import * as React from "react";
 import { Banner } from "react-native-paper";
 import { useSession } from "@/states/runtime/session";
-import { useNavigate } from "@/hooks/useNavigate";
+import { useNavigation } from "@react-navigation/native";
+import { NavigationProps } from "@/types/navigation";
 import { useUpdates } from "@/states/computed/updates";
 
 const makeUpdatesMessage = (updates: string[]) => {
@@ -23,7 +24,7 @@ const HomeBanner = () => {
     state.activateFlag,
   ]);
   const updates = useUpdates((state) => state.updates);
-  const navigate = useNavigate();
+  const { navigate } = useNavigation<NavigationProps>();
 
   const updatesMessage = React.useMemo(
     () => makeUpdatesMessage(updates),

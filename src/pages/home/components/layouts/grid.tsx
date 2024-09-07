@@ -11,7 +11,8 @@ import { useTheme } from "@/theme";
 import ThemedRefreshControl from "@/components/refreshControl";
 import { useShallow } from "zustand/react/shallow";
 import { useIndex } from "@/states/fetched";
-import { useNavigate } from "@/hooks/useNavigate";
+import { useNavigation } from "@react-navigation/native";
+import { NavigationProps } from "@/types/navigation";
 
 const ITEM_MARGIN = 10;
 const MIN_ITEM_WIDTH = 125;
@@ -32,7 +33,7 @@ const HomeGrid = ({ apps }: { apps: string[] }) => {
   );
 
   const [layout, setLayout] = React.useState(calculateLayout);
-  const navigate = useNavigate();
+  const { navigate } = useNavigation<NavigationProps>();
 
   const themedStyles = React.useMemo(
     () => ({
@@ -59,7 +60,7 @@ const HomeGrid = ({ apps }: { apps: string[] }) => {
   const renderItem: ListRenderItem<string> = React.useCallback(
     ({ item: app }) => (
       <TouchableRipple
-        onPress={() => navigate("app", { params: { app } })}
+        onPress={() => navigate("app", { app })}
         style={[styles.item, themedStyles, { width: layout.itemWidth }]}
       >
         <>

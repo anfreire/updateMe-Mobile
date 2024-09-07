@@ -13,7 +13,10 @@ import { useSettings } from "@/states/persistent/settings";
 import UpdateItem from "./item";
 import { useIndex } from "@/states/fetched";
 import { useUpdates } from "@/states/computed/updates";
-import { NavigationProps } from "@/types/navigation";
+import { NavigationProps, Page } from "@/types/navigation";
+import { updateCurrPage } from "@/hooks/updateCurrPage";
+
+const CURR_PAGE: Page = "updates";
 
 const UpdatesScreen = () => {
   const index = useIndex((state) => state.index);
@@ -99,6 +102,8 @@ const UpdatesScreen = () => {
         : filtered;
     });
   }, [updates, updateApp, translations, setOptions]);
+
+  updateCurrPage(CURR_PAGE);
 
   const renderItem = React.useCallback(
     (item: ListRenderItemInfo<string>) => (

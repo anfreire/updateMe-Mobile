@@ -6,7 +6,10 @@ import { FlatList, Dimensions, View, StyleSheet } from "react-native";
 import FastImage from "react-native-fast-image";
 import { Text } from "react-native-paper";
 import { useRoute } from "@react-navigation/native";
-import { RouteProps } from "@/types/navigation";
+import { Page, RouteProps } from "@/types/navigation";
+import { updateCurrPage } from "@/hooks/updateCurrPage";
+
+const CURR_PAGE: Page = "tip";
 
 const HEIGHT = 0.65 * Dimensions.get("window").height;
 const WIDTH = (320 / 711) * HEIGHT;
@@ -45,6 +48,8 @@ function Step({
 const TipScreen = () => {
   const tips = useTips((state) => state.tips);
   const { params } = useRoute<RouteProps>();
+
+  updateCurrPage(CURR_PAGE);
 
   if (!params || !("tip" in params)) {
     return <LoadingView />;

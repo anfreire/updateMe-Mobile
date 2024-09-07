@@ -11,14 +11,14 @@ import SettingsScreen from "@/pages/settings";
 import UpdatesScreen from "@/pages/updates";
 import TipsStack from "./tips";
 import SuggestScreen from "@/pages/suggest";
-import { useGoBack } from "@/hooks/useGoBack";
-import { MainStackParams } from "@/types/navigation";
+import { MainStackParams, NavigationProps } from "@/types/navigation";
+import { useNavigation } from "@react-navigation/native";
 
 const Stack = createStackNavigator<MainStackParams>();
 
 export default function MainStack() {
   const { schemedTheme } = useTheme();
-  const goBack = useGoBack();
+  const { goBack } = useNavigation<NavigationProps>();
   const translations = useTranslations((state) => state.translations);
 
   const headerLeft = React.useCallback(

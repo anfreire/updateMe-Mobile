@@ -6,15 +6,15 @@ import { useDrawer } from "@/states/runtime/drawer";
 import { useTheme } from "@/theme";
 import { createStackNavigator } from "@react-navigation/stack";
 import { IconButton } from "react-native-paper";
-import { useGoBack } from "@/hooks/useGoBack";
-import { AppsStackParams } from "@/types/navigation";
+import { AppsStackParams, NavigationProps } from "@/types/navigation";
+import { useNavigation } from "@react-navigation/native";
 
 const Stack = createStackNavigator<AppsStackParams>();
 
 const HomeStack = () => {
   const { schemedTheme } = useTheme();
   const openDrawer = useDrawer((state) => state.openDrawer);
-  const goBack = useGoBack();
+  const { goBack } = useNavigation<NavigationProps>();
 
   const headerRight = React.useCallback(
     () => <IconButton icon="menu" onPress={openDrawer} />,

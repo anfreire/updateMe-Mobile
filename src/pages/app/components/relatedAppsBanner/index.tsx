@@ -6,7 +6,6 @@ import { useRelatedAppsBanner } from "./useRelatedAppsBanner";
 import { useTranslations } from "@/states/persistent/translations";
 import { useNavigation } from "@react-navigation/native";
 import { NavigationProps } from "@/types/navigation";
-import { useNavigate } from "@/hooks/useNavigate";
 
 export default function RelatedAppsBanner({
   currApp,
@@ -15,8 +14,7 @@ export default function RelatedAppsBanner({
 }) {
   const addTracker = useSession((state) => state.addTracker);
   const translations = useTranslations((state) => state.translations);
-  const { setParams } = useNavigation<NavigationProps>();
-  const navigate = useNavigate();
+  const { navigate, setParams } = useNavigation<NavigationProps>();
 
   const { message, data } = useRelatedAppsBanner(currApp);
 

@@ -5,8 +5,11 @@ import { Logger } from "@/states/persistent/logs";
 import { useIndex } from "@/states/fetched";
 import { useApp } from "@/states/fetched/app";
 import { useCategories } from "@/states/fetched/categories";
-import { NavigationProps } from "@/types/navigation";
+import { NavigationProps, Page } from "@/types/navigation";
 import LoadingIcon from "./icon";
+import { updateCurrPage } from "@/hooks/updateCurrPage";
+
+const CURR_PAGE: Page = "loading";
 
 const LoadingScreen = () => {
   const { reset } = useNavigation<NavigationProps>();
@@ -45,6 +48,8 @@ const LoadingScreen = () => {
   React.useEffect(() => {
     getLocalVersion().then(() => fetchData());
   }, [fetchData]);
+
+  updateCurrPage(CURR_PAGE);
 
   return (
     <View style={styles.container}>

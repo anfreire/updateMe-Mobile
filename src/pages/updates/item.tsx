@@ -6,7 +6,8 @@ import { useDownloads, useDownloadsProps } from "@/states/runtime/downloads";
 import { useToast } from "@/states/runtime/toast";
 import { useTheme } from "@/theme";
 import { useIndex } from "@/states/fetched";
-import { useNavigate } from "@/hooks/useNavigate";
+import { useNavigation } from "@react-navigation/native";
+import { NavigationProps } from "@/types/navigation";
 
 const AppIcon = (uri?: string) => () => (
   <View style={styles.iconContainer}>
@@ -50,7 +51,7 @@ export default function UpdateItem({
   const downloads = useDownloads((state) => state.downloads);
   const theme = useTheme();
   const openToast = useToast((state) => state.openToast);
-  const navigate = useNavigate();
+  const { navigate } = useNavigation<NavigationProps>();
 
   const handlePress = React.useCallback(() => {
     openToast(
@@ -59,7 +60,7 @@ export default function UpdateItem({
   }, [translations, appName]);
 
   const handleLongPress = React.useCallback(() => {
-    navigate("app", { params: { app: appName } });
+    navigate("app", { app: appName });
   }, [appName, navigate]);
 
   return (

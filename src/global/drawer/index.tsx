@@ -7,10 +7,10 @@ import { useDrawer } from "@/states/runtime/drawer";
 import { Dialog, useDialogs } from "@/states/runtime/dialogs";
 import { useDownloads } from "@/states/runtime/downloads";
 import { useTranslations } from "@/states/persistent/translations";
-import { useNavigate } from "@/hooks/useNavigate";
+import { useNavigation } from "@react-navigation/native";
+import { NavigationProps } from "@/types/navigation";
 import { usePulsing } from "@/hooks/usePulsing";
 import { ListRenderItem, FlatList } from "react-native";
-import { Page } from "@/types/navigation";
 import { Style } from "react-native-paper/lib/typescript/components/List/utils";
 
 const AnimatedListItem = Animated.createAnimatedComponent(List.Item);
@@ -34,7 +34,7 @@ interface DrawerWrapperProps {
 
 const DrawerWrapper = ({ children }: DrawerWrapperProps) => {
   const { schemedTheme } = useTheme();
-  const navigate = useNavigate();
+  const { navigate } = useNavigation<NavigationProps>();
   const [isDrawerOpen, closeDrawer] = useDrawer((state) => [
     state.isDrawerOpen,
     state.closeDrawer,
@@ -54,7 +54,15 @@ const DrawerWrapper = ({ children }: DrawerWrapperProps) => {
   }, [isDrawerOpen, hasDownloads, startPulsing, cancelPulsing]);
 
   const navigateTo = React.useCallback(
-    (route: Page) => {
+    (
+      route:
+        | "downloads"
+        | "updates"
+        | "tips"
+        | "settings"
+        | "suggest"
+        | "report"
+    ) => {
       closeDrawer();
       navigate(route);
     },

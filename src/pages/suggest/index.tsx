@@ -6,6 +6,10 @@ import SuggestionsStats from "./stats";
 import { useTranslations } from "@/states/persistent/translations";
 import { Logger } from "@/states/persistent/logs";
 import { useSession } from "@/states/runtime/session";
+import { Page } from "@/types/navigation";
+import { updateCurrPage } from "@/hooks/updateCurrPage";
+
+const CURR_PAGE: Page = "suggest";
 
 export default function SuggestScreen() {
   const openToast = useToast((state) => state.openToast);
@@ -94,6 +98,8 @@ export default function SuggestScreen() {
     },
     [translations, token]
   );
+
+  updateCurrPage(CURR_PAGE);
 
   if (suggested) {
     return <SuggestionsStats />;

@@ -9,6 +9,10 @@ import Downloading from "./components/downloading";
 import Downloaded from "./components/downloaded";
 import { useDownloads } from "@/states/runtime/downloads";
 import { useTranslations } from "@/states/persistent/translations";
+import { Page } from "@/types/navigation";
+import { updateCurrPage } from "@/hooks/updateCurrPage";
+
+const CURR_PAGE: Page = "downloads";
 
 const REFRESH_INTERVAL = 2500;
 
@@ -55,6 +59,8 @@ const DownloadsScreen = () => {
     },
     {} as Record<string, ReactNativeBlobUtilStat>
   );
+
+  updateCurrPage(CURR_PAGE);
 
   if (Object.keys(files).length === 0) {
     return (

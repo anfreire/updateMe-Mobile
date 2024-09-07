@@ -1,6 +1,7 @@
 import * as React from "react";
 import MultiIcon from "@/components/multiIcon";
-import { useNavigate } from "@/hooks/useNavigate";
+import { useNavigation } from "@react-navigation/native";
+import { NavigationProps } from "@/types/navigation";
 import { useDialogs } from "@/states/runtime/dialogs";
 import { List } from "react-native-paper";
 import { Style } from "react-native-paper/lib/typescript/components/List/utils";
@@ -14,7 +15,7 @@ const ChevronRightIcon = (props: { color: string; style?: Style }) => (
 );
 
 const SettingsLayout = () => {
-  const navigate = useNavigate();
+  const { navigate } = useNavigation<NavigationProps>();
   const openDialog = useDialogs((state) => state.openDialog);
   return (
     <List.Section title="Layout">
@@ -24,7 +25,7 @@ const SettingsLayout = () => {
         left={FeelsLikeHomeIcon}
         right={ChevronRightIcon}
         onPress={() => {
-          navigate("apps", { silent: true });
+          navigate("apps");
           openDialog("homeLayoutPicker");
         }}
       />

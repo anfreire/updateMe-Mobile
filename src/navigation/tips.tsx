@@ -4,14 +4,14 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { IconButton } from "react-native-paper";
 import TipsScreen from "@/pages/tips";
 import TipScreen from "@/pages/tips/tip";
-import { useGoBack } from "@/hooks/useGoBack";
-import { TipsStackParams } from "@/types/navigation";
+import { NavigationProps, TipsStackParams } from "@/types/navigation";
+import { useNavigation } from "@react-navigation/native";
 
 const Stack = createStackNavigator<TipsStackParams>();
 
 export default function TipsStack() {
   const { schemedTheme } = useTheme();
-  const goBack = useGoBack();
+  const { goBack } = useNavigation<NavigationProps>();
 
   const headerLeft = React.useCallback(
     () => <IconButton icon="arrow-left" onPress={goBack} />,

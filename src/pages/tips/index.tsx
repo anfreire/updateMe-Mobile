@@ -3,9 +3,14 @@ import ThemedRefreshControl from "@/components/refreshControl";
 import { useTips } from "@/states/fetched/tips";
 import { FlatList, ListRenderItem, StyleSheet } from "react-native";
 import { List } from "react-native-paper";
-import { useNavigate } from "@/hooks/useNavigate";
+import { useNavigation } from "@react-navigation/native";
+import { NavigationProps } from "@/types/navigation";
 import LoadingView from "@/components/loadingView";
 import { Style } from "react-native-paper/lib/typescript/components/List/utils";
+import { Page } from "@/types/navigation";
+import { updateCurrPage } from "@/hooks/updateCurrPage";
+
+const CURR_PAGE: Page = "tips";
 
 const chevronRightIcon = (props: { color: string; style?: Style }) => (
   <List.Icon {...props} icon="chevron-right" />
@@ -17,7 +22,7 @@ const TipsScreen = () => {
     state.isFetched,
     state.fetch,
   ]);
-  const navigate = useNavigate();
+  const { navigate } = useNavigation<NavigationProps>();
 
   const renderItem: ListRenderItem<string> = React.useCallback(
     ({ item: tip }) => (
@@ -26,11 +31,13 @@ const TipsScreen = () => {
         right={chevronRightIcon}
         description={tips[tip].description}
         descriptionStyle={styles.listItem}
-        onPress={() => navigate("tip", { params: { tip } })}
+        onPress={() => navigate("tip", { tip })}
       />
     ),
     [tips, navigate]
   );
+
+  updateCurrPage(CURR_PAGE);
 
   if (!isfetched) {
     return <LoadingView />;

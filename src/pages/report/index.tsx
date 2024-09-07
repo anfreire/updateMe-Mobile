@@ -5,6 +5,11 @@ import { Logger } from "@/states/persistent/logs";
 import { useTranslations } from "@/states/persistent/translations";
 import { useToast } from "@/states/runtime/toast";
 import { useSession } from "@/states/runtime/session";
+import { updateCurrPage } from "@/hooks/updateCurrPage";
+import { Page } from "@/types/navigation";
+
+const CURR_PAGE: Page = "report";
+
 export default function ReportScreen() {
   const openToast = useToast((state) => state.openToast);
   const [didReport, registerReport] = useFeedback((state) => [
@@ -83,6 +88,8 @@ export default function ReportScreen() {
     },
     [translations, token]
   );
+
+  updateCurrPage(CURR_PAGE);
 
   return (
     <FormScreen fieldsData={FieldsData} init={onMount} submit={onSubmit} />

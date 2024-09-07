@@ -5,7 +5,8 @@ import { useTheme } from "@/theme";
 import ThemedRefreshControl from "@/components/refreshControl";
 import { useShallow } from "zustand/react/shallow";
 import { useIndex } from "@/states/fetched";
-import { useNavigate } from "@/hooks/useNavigate";
+import { useNavigation } from "@react-navigation/native";
+import { NavigationProps } from "@/types/navigation";
 
 const AppIcon = (uri?: string) => () => (
   <Image resizeMode="contain" style={styles.listItemIcon} source={{ uri }} />
@@ -16,7 +17,7 @@ const HomeList = ({ apps }: { apps: string[] }) => {
   const [index, isIndexFetched, fetchIndex] = useIndex(
     useShallow((state) => [state.index, state.isFetched, state.fetch])
   );
-  const navigate = useNavigate();
+  const { navigate } = useNavigation<NavigationProps>();
   const themeStyles = React.useMemo(
     () => ({
       borderColor: theme.schemedTheme.outlineVariant,
@@ -36,7 +37,7 @@ const HomeList = ({ apps }: { apps: string[] }) => {
       renderItem={({ item: app, index: i }) => (
         <List.Item
           key={app}
-          onPress={() => navigate("app", { params: { app } })}
+          onPress={() => navigate("app", { app })}
           title={app}
           style={[styles.listItem, themeStyles, getDynamicListItemStyle(i)]}
           titleStyle={styles.listItemTitle}
