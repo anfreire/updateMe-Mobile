@@ -1,6 +1,6 @@
 {
   "name": "updateme",
-  "version": "2.2.1",
+  "version": "3.0.0",
   "private": true,
   "scripts": {
     "android": "env PATH=\"/home/linuxbrew/.linuxbrew/opt/openjdk@17/bin:/home/linuxbrew/.linuxbrew/bin:$PATH\" react-native run-android --active-arch-only",

@@ -112,6 +112,8 @@ android {
     packagingOptions {
         exclude 'lib/x86/*'
         exclude 'lib/x86_64/*'
+        exclude 'lib/armeabi-v7a/*'
+
     }
 
 }
