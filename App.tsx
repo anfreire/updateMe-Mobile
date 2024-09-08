@@ -1,47 +1,47 @@
-import * as React from "react";
+import * as React from 'react';
 import {
   SafeAreaView,
   StatusBar,
   StatusBarStyle,
   StyleSheet,
   View,
-} from "react-native";
-import FilesModule from "@/lib/files";
-import { useTheme } from "@/theme";
-import DrawerWrapper from "@/global/drawer";
-import { useSettings } from "@/states/persistent/settings";
-import { useDialogs } from "@/states/runtime/dialogs";
-import { useTips } from "@/states/fetched/tips";
-import PermissionsModule from "@/lib/permissions";
-import BackgroundTasksModule from "@/lib/backgroundTasks";
-import MainStack from "@/navigation";
-import { useApp } from "@/states/fetched/app";
+} from 'react-native';
+import FilesModule from '@/lib/files';
+import {useTheme} from '@/theme';
+import DrawerWrapper from '@/global/drawer';
+import {useSettings} from '@/states/persistent/settings';
+import {useDialogs} from '@/states/runtime/dialogs';
+import {useTips} from '@/states/fetched/tips';
+import PermissionsModule from '@/lib/permissions';
+import BackgroundTasksModule from '@/lib/backgroundTasks';
+import MainStack from '@/navigation';
+import {useApp} from '@/states/fetched/app';
 
 function App(): React.JSX.Element {
   const theme = useTheme();
   const deleteOnLeave = useSettings(
-    (state) => state.settings.downloads.deleteOnLeave
+    state => state.settings.downloads.deleteOnLeave,
   );
-  const openDialog = useDialogs((state) => state.openDialog);
-  const fetchTips = useTips((state) => state.fetch);
-  const [info, localVersion] = useApp((state) => [
+  const openDialog = useDialogs(state => state.openDialog);
+  const fetchTips = useTips(state => state.fetch);
+  const [info, localVersion] = useApp(state => [
     state.latest,
     state.localVersion,
   ]);
-  const [releaseNotification, updateNotification] = useSettings((state) => [
+  const [releaseNotification, updateNotification] = useSettings(state => [
     state.settings.notifications.newReleaseNotification,
     state.settings.notifications.updatesNotification,
   ]);
 
   React.useEffect(() => {
     if (localVersion && info.version && info.version > localVersion)
-      openDialog("newVersion");
+      openDialog('newVersion');
   }, [info, localVersion]);
 
   React.useEffect(() => {
     if (releaseNotification || updateNotification) {
-      PermissionsModule.grantPostNotification().then((_) =>
-        BackgroundTasksModule.initBackgroundTasks()
+      PermissionsModule.grantPostNotification().then(_ =>
+        BackgroundTasksModule.initBackgroundTasks(),
       );
     }
   }, [releaseNotification, updateNotification]);
@@ -61,9 +61,9 @@ function App(): React.JSX.Element {
   } = React.useMemo(
     () => ({
       backgroundColor: theme.schemedTheme.surfaceContainer,
-      barStyle: theme.colorScheme === "dark" ? "light-content" : "dark-content",
+      barStyle: theme.colorScheme === 'dark' ? 'light-content' : 'dark-content',
     }),
-    [theme.schemedTheme, theme.colorScheme]
+    [theme.schemedTheme, theme.colorScheme],
   );
 
   return (
@@ -82,8 +82,8 @@ function App(): React.JSX.Element {
 
 const styles = StyleSheet.create({
   appWrapper: {
-    width: "100%",
-    height: "100%",
+    width: '100%',
+    height: '100%',
   },
 });
 
