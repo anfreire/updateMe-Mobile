@@ -1,14 +1,14 @@
-import * as React from "react";
-import { Button, Dialog, SegmentedButtons } from "react-native-paper";
-import { useDialogs } from "@/states/runtime/dialogs";
-import { SavedColorSchemeType, useTheme } from "@/theme";
-import MultiIcon from "@/components/multiIcon";
-import { useSettings } from "@/states/persistent/settings";
-import { IconSource } from "react-native-paper/lib/typescript/components/Icon";
-import { StyleSheet } from "react-native";
-import { useTranslations } from "@/states/persistent/translations";
-import { Logger } from "@/states/persistent/logs";
-import { Translation } from "@/types/translations";
+import * as React from 'react';
+import {Button, Dialog, SegmentedButtons} from 'react-native-paper';
+import {useDialogs} from '@/states/runtime/dialogs';
+import {SavedColorSchemeType, useTheme} from '@/theme';
+import MultiIcon from '@/components/multiIcon';
+import {useSettings} from '@/states/persistent/settings';
+import {IconSource} from 'react-native-paper/lib/typescript/components/Icon';
+import {StyleSheet} from 'react-native';
+import {useTranslations} from '@/states/persistent/translations';
+import {Logger} from '@/states/persistent/logs';
+import {Translation} from '@/types/translations';
 
 const colorSchemeOptions: {
   label: Translation;
@@ -16,40 +16,40 @@ const colorSchemeOptions: {
   icon: IconSource;
 }[] = [
   {
-    label: "System",
-    value: "system",
-    icon: (props) => (
-      <MultiIcon {...props} type="material-icons" name="memory" />
-    ),
+    label: 'System',
+    value: 'system',
+    icon: props => <MultiIcon {...props} type="material-icons" name="memory" />,
   },
   {
-    label: "Light",
-    value: "light",
-    icon: (props) => (
+    label: 'Light',
+    value: 'light',
+    icon: props => (
       <MultiIcon {...props} type="material-icons" name="light-mode" />
     ),
   },
   {
-    label: "Dark",
-    value: "dark",
-    icon: (props) => (
+    label: 'Dark',
+    value: 'dark',
+    icon: props => (
       <MultiIcon {...props} type="material-icons" name="dark-mode" />
     ),
   },
 ];
 
 const ColorSchemePickerDialog = () => {
-  const colorScheme = useSettings((state) => state.settings.theme.colorScheme);
+  const colorScheme = useSettings(
+    state => state.settings.appearance.colorScheme,
+  );
   const initialColorScheme = React.useRef<SavedColorSchemeType | null>(null);
-  const { setColorScheme } = useTheme();
-  const translations = useTranslations((state) => state.translations);
-  const [activeDialog, closeDialog] = useDialogs((state) => [
+  const {setColorScheme} = useTheme();
+  const translations = useTranslations(state => state.translations);
+  const [activeDialog, closeDialog] = useDialogs(state => [
     state.activeDialog,
     state.closeDialog,
   ]);
 
   React.useEffect(() => {
-    if (activeDialog !== "colorSchemePicker") {
+    if (activeDialog !== 'colorSchemePicker') {
       initialColorScheme.current = null;
       return;
     }
@@ -62,12 +62,12 @@ const ColorSchemePickerDialog = () => {
     (value: SavedColorSchemeType) => {
       setColorScheme(value);
     },
-    [setColorScheme]
+    [setColorScheme],
   );
 
   const handleRevert = React.useCallback(() => {
     if (initialColorScheme.current === null) {
-      Logger.error("Initial color scheme is null, cannot revert");
+      Logger.error('Initial color scheme is null, cannot revert');
       return;
     }
     setColorScheme(initialColorScheme.current);
@@ -76,19 +76,18 @@ const ColorSchemePickerDialog = () => {
 
   const translatedColorSchemeOptions = React.useMemo(
     () =>
-      colorSchemeOptions.map((option) => ({
+      colorSchemeOptions.map(option => ({
         ...option,
         label: translations[option.label],
       })),
-    [translations]
+    [translations],
   );
 
   return (
     <Dialog
-      visible={activeDialog === "colorSchemePicker"}
-      onDismiss={handleRevert}
-    >
-      <Dialog.Title>{translations["Color Scheme"]}</Dialog.Title>
+      visible={activeDialog === 'colorSchemePicker'}
+      onDismiss={handleRevert}>
+      <Dialog.Title>{translations['Color Scheme']}</Dialog.Title>
       <Dialog.Content>
         <SegmentedButtons
           style={styles.segmentedButtons}
@@ -98,8 +97,8 @@ const ColorSchemePickerDialog = () => {
         />
       </Dialog.Content>
       <Dialog.Actions style={styles.dialogActions}>
-        <Button onPress={handleRevert}>{translations["Revert"]}</Button>
-        <Button onPress={closeDialog}>{translations["Save"]}</Button>
+        <Button onPress={handleRevert}>{translations['Revert']}</Button>
+        <Button onPress={closeDialog}>{translations['Save']}</Button>
       </Dialog.Actions>
     </Dialog>
   );
@@ -110,10 +109,10 @@ const styles = StyleSheet.create({
     marginVertical: 15,
   },
   dialogActions: {
-    justifyContent: "space-between",
+    justifyContent: 'space-between',
   },
 });
 
-ColorSchemePickerDialog.displayName = "ColorSchemePickerDialog";
+ColorSchemePickerDialog.displayName = 'ColorSchemePickerDialog';
 
 export default ColorSchemePickerDialog;

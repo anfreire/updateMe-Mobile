@@ -1,25 +1,22 @@
 import {NavigationProp, RouteProp} from '@react-navigation/native';
-
-const HOME_PAGE = 'apps' as const;
+import {SettingsSectionItemInferred} from './settings';
 
 /*******************************************************************************
  *                                     APPS                                    *
  *******************************************************************************/
-export const AppsStackPages = ['app', 'apps'] as const;
 
-export type AppsStackPage = (typeof AppsStackPages)[number];
+export type AppsStackPage = 'app' | 'home';
 
 export type AppsStackParams = {
   app: {app: string};
-  apps: undefined;
+  home: undefined;
 };
 
 /*******************************************************************************
  *                                     TIPS                                    *
  *******************************************************************************/
-export const TipsStackPages = ['tips', 'tip'] as const;
 
-export type TipsStackPage = (typeof TipsStackPages)[number];
+export type TipsStackPage = 'tip' | 'tips';
 
 export type TipsStackParams = {
   tips: undefined;
@@ -29,50 +26,36 @@ export type TipsStackParams = {
 /*******************************************************************************
  *                                     MAIN                                    *
  *******************************************************************************/
-export const MainStackPages = [
-  'loading',
-  'apps-stack',
-  'downloads',
-  'report',
-  'settings',
-  'updates',
-  'tips-stack',
-  'suggest',
-] as const;
 
-export type MainStackPage = (typeof MainStackPages)[number];
+export type MainStackPage =
+  | 'apps-stack'
+  | 'downloads'
+  | 'loading'
+  | 'report'
+  | 'settings'
+  | 'suggest'
+  | 'tips-stack'
+  | 'updates';
 
 export type MainStackParams = {
-  loading: undefined;
   'apps-stack': undefined;
-  downloads: undefined;
+  downloads: undefined | {download: string};
+  loading: undefined;
   report: undefined;
-  settings: undefined | {setting: string};
-  updates: undefined;
-  'tips-stack': undefined;
+  settings: undefined | {setting: SettingsSectionItemInferred};
   suggest: undefined;
+  'tips-stack': undefined;
+  updates: undefined;
 };
 
 /*******************************************************************************
  *                                     ALL                                     *
  *******************************************************************************/
 
-export type _Page = AppsStackPage | MainStackPage | TipsStackPage;
+export type Page = AppsStackPage | MainStackPage | TipsStackPage;
 
-export const INITIAL_PAGE: _Page = 'loading' as const;
+export type PageParams = AppsStackParams & MainStackParams & TipsStackParams;
 
-export const PAGES = [
-  ...AppsStackPages,
-  ...MainStackPages,
-  ...TipsStackPages,
-] as const;
+export type NavigationProps = NavigationProp<PageParams>;
 
-export type PagesParams = AppsStackParams & MainStackParams & TipsStackParams;
-
-export type NavigationProps = NavigationProp<PagesParams>;
-
-export type RouteProps = RouteProp<PagesParams>;
-
-export const STACK_PAGES = ['apps-stack', 'tips-stack'] as const;
-
-export type Page = Exclude<_Page, (typeof STACK_PAGES)[number]>;
+export type RouteProps = RouteProp<PageParams>;

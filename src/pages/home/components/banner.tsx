@@ -6,6 +6,7 @@ import {NavigationProps} from '@/types/navigation';
 import {useUpdates} from '@/states/computed/updates';
 
 const makeUpdatesMessage = (updates: string[]) => {
+  if (updates.length === 0) return null;
   const updatesCopy = [...updates];
   if (updates.length === 1) {
     return `There is an update available for ${updates[0]}`;
@@ -29,6 +30,11 @@ const HomeBanner = () => {
   const updatesMessage = React.useMemo(
     () => makeUpdatesMessage(updates),
     [updates],
+  );
+
+  console.debug(
+    '[src/pages/home/components/banner.tsx]\nupdatesMessage',
+    updatesMessage,
   );
 
   if (!updatesMessage) return null;

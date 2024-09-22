@@ -1,15 +1,15 @@
-import { create } from "zustand";
-import AppsModule from "@/lib/apps";
-import { Logger } from "@/states/persistent/logs";
-import isEqual from "react-fast-compare";
+import {create} from 'zustand';
+import AppsModule from '@/lib/apps';
+import {Logger} from '@/states/persistent/logs';
+import isEqual from 'lodash/isEqual';
 
 const APP_INFO_URL =
-  "https://raw.githubusercontent.com/anfreire/updateMe-Data/main/app.json";
+  'https://raw.githubusercontent.com/anfreire/updateMe-Data/main/app.json';
 
 interface LatestAppInfo {
   version: string;
   download: string;
-  releaseNotes: { title: string; description: string }[];
+  releaseNotes: {title: string; description: string}[];
 }
 
 interface useAppState {
@@ -25,31 +25,31 @@ interface useAppActions {
 
 export type useAppProps = useAppState & useAppActions;
 
-export const useApp = create<useAppProps>((set) => ({
-  localVersion: "",
+export const useApp = create<useAppProps>(set => ({
+  localVersion: '',
   latest: {
-    version: "",
-    download: "",
+    version: '',
+    download: '',
     releaseNotes: [],
   },
   isFetched: false,
   getLocalVersion: async () => {
-    const version = (await AppsModule.getAppVersion("com.updateme")) as string;
-    set({ localVersion: version });
+    const version = (await AppsModule.getAppVersion('com.updateme')) as string;
+    set({localVersion: version});
     return version;
   },
   fetch: async () => {
-    set({ isFetched: false });
+    set({isFetched: false});
     try {
       const response = await fetch(APP_INFO_URL);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const newLatest = (await response.json()) as LatestAppInfo;
-      set((state) =>
+      set(state =>
         isEqual(state.latest, newLatest)
-          ? { isFetched: true }
-          : { latest: newLatest, isFetched: true }
+          ? {isFetched: true}
+          : {latest: newLatest, isFetched: true},
       );
       return newLatest;
     } catch (error) {

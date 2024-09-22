@@ -1,19 +1,19 @@
-import { StateStorage, createJSONStorage, persist } from "zustand/middleware";
-import { MMKV } from "react-native-mmkv";
-import { create } from "zustand";
-import isEqual from "react-fast-compare";
-import { Index, IndexApp } from "@/states/fetched/index";
+import {StateStorage, createJSONStorage, persist} from 'zustand/middleware';
+import {MMKV} from 'react-native-mmkv';
+import {create} from 'zustand';
+import isEqual from 'lodash/isEqual';
+import {Index, IndexApp} from '@/states/fetched/index';
 
-const STORAGE_ID = "default-providers" as const;
+const STORAGE_ID = 'default-providers' as const;
 
 export type DefaultProviders = Record<IndexApp, string>;
 
-const storage = new MMKV({ id: STORAGE_ID });
+const storage = new MMKV({id: STORAGE_ID});
 
 const zustandStorage: StateStorage = {
   setItem: (name, value) => storage.set(name, value),
-  getItem: (name) => storage.getString(name) ?? null,
-  removeItem: (name) => storage.delete(name),
+  getItem: name => storage.getString(name) ?? null,
+  removeItem: name => storage.delete(name),
 };
 
 interface useDefaultProvidersState {
@@ -36,7 +36,7 @@ export const useDefaultProviders = create<useDefaultProvidersProps>()(
       defaultProviders: {},
       populatedDefaultProviders: {},
       setDefaultProvider: (appName, provider) => {
-        set((state) => {
+        set(state => {
           if (state.defaultProviders[appName] === provider) return state;
           const newState = {
             defaultProviders: {
@@ -51,31 +51,31 @@ export const useDefaultProviders = create<useDefaultProvidersProps>()(
           return newState;
         });
       },
-      sanitize: (index) => {
+      sanitize: index => {
         const newDefaultProviders = Object.fromEntries(
           Object.entries(get().defaultProviders).filter(
             ([appName, provider]) =>
-              appName in index && provider in index[appName].providers
-          )
+              appName in index && provider in index[appName].providers,
+          ),
         );
-        set((state) =>
+        set(state =>
           isEqual(state.defaultProviders, newDefaultProviders)
             ? state
-            : { defaultProviders: newDefaultProviders }
+            : {defaultProviders: newDefaultProviders},
         );
         return newDefaultProviders;
       },
-      populate: (index) => {
+      populate: index => {
         const newPopulatedDefaultProviders = Object.fromEntries(
           Object.entries(index).map(([appName, app]) => [
             appName,
             get().defaultProviders[appName] ?? Object.keys(app.providers)[0],
-          ])
+          ]),
         );
-        set((state) =>
+        set(state =>
           isEqual(state.populatedDefaultProviders, newPopulatedDefaultProviders)
             ? state
-            : { populatedDefaultProviders: newPopulatedDefaultProviders }
+            : {populatedDefaultProviders: newPopulatedDefaultProviders},
         );
         return newPopulatedDefaultProviders;
       },
@@ -83,6 +83,6 @@ export const useDefaultProviders = create<useDefaultProvidersProps>()(
     {
       name: STORAGE_ID,
       storage: createJSONStorage(() => zustandStorage),
-    }
-  )
+    },
+  ),
 );

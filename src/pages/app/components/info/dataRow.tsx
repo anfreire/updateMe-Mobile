@@ -1,6 +1,6 @@
-import * as React from "react";
-import { StyleSheet } from "react-native";
-import { DataTable, Text } from "react-native-paper";
+import * as React from 'react';
+import {StyleSheet} from 'react-native';
+import {DataTable, Text} from 'react-native-paper';
 
 const AppInfoDataRow = ({
   title,
@@ -16,24 +16,24 @@ const AppInfoDataRow = ({
       <Text style={styles.titleText}>{title}</Text>
     </DataTable.Cell>
     <DataTable.Cell style={styles.versionCell}>
-      <Text style={{ color: valueColor }}>{value}</Text>
+      <Text style={{color: valueColor}}>{value}</Text>
     </DataTable.Cell>
   </DataTable.Row>
 );
 
 const styles = StyleSheet.create({
   titleCell: {
-    justifyContent: "flex-end",
+    justifyContent: 'flex-end',
     marginRight: 10,
   },
   titleText: {
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
   versionCell: {
-    justifyContent: "flex-start",
+    justifyContent: 'flex-start',
   },
 });
 
-AppInfoDataRow.displayName = "AppInfoDataRow";
+AppInfoDataRow.displayName = 'AppInfoDataRow';
 
 export default React.memo(AppInfoDataRow);

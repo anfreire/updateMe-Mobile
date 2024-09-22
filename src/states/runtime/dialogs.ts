@@ -1,20 +1,20 @@
-import { create } from "zustand";
-import isEqual from "react-fast-compare";
+import {create} from 'zustand';
+import isEqual from 'lodash/isEqual';
 
 export type Dialog =
-  | "sourceColorPicker"
-  | "colorSchemePicker"
-  | "share"
-  | "homeLayoutPicker"
-  | "newVersion";
+  | 'sourceColorPicker'
+  | 'colorSchemePicker'
+  | 'share'
+  | 'homeLayoutPicker'
+  | 'newVersion';
 
 export type CustomDialogProps = {
   title: string;
   content: string;
-  actions: { title: string; action: () => void }[];
+  actions: {title: string; action: () => void}[];
 };
 
-export type ActiveDialogType = Dialog | "custom" | null;
+export type ActiveDialogType = Dialog | 'custom' | null;
 
 type useDialogsState = {
   activeDialog: ActiveDialogType;
@@ -28,28 +28,28 @@ type useDialogsActions = {
 
 export type useDialogsProps = useDialogsState & useDialogsActions;
 
-export const useDialogs = create<useDialogsProps>((set) => ({
+export const useDialogs = create<useDialogsProps>(set => ({
   activeDialog: null,
   customDialog: null,
-  openDialog: (key) => {
-    if (typeof key === "string") {
-      set((state) =>
+  openDialog: key => {
+    if (typeof key === 'string') {
+      set(state =>
         state.activeDialog === key
           ? state
-          : { activeDialog: key, customDialog: null }
+          : {activeDialog: key, customDialog: null},
       );
     } else {
-      set((state) =>
+      set(state =>
         isEqual(state.customDialog, key)
           ? state
-          : { activeDialog: "custom", customDialog: key }
+          : {activeDialog: 'custom', customDialog: key},
       );
     }
   },
   closeDialog: () =>
-    set((state) =>
+    set(state =>
       state.activeDialog === null && state.customDialog === null
         ? state
-        : { activeDialog: null, customDialog: null }
+        : {activeDialog: null, customDialog: null},
     ),
 }));

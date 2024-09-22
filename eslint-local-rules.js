@@ -1,40 +1,41 @@
-"use strict";
+'use strict';
 
 const useZustandStores = [
-  "useUpdates",
-  "useVersions",
-  "useApp",
-  "useCategories",
-  "useIndex",
-  "useTips",
-  "useDefaultProviders",
-  "useFeedback",
-  "useLogs",
-  "useNotifications",
-  "useSettings",
-  "useTranslations",
-  "useDialogs",
-  "useDownloads",
-  "useDrawer",
-  "useSession",
-  "useToast",
+  'useUpdates',
+  'useVersions',
+  'useApp',
+  'useCategories',
+  'useIndex',
+  'useTips',
+  'useDefaultProviders',
+  'useFeedback',
+  'useLogs',
+  'useNotifications',
+  'useSettings',
+  'useTranslations',
+  'useDialogs',
+  'useDownloads',
+  'useDrawer',
+  'useSession',
+  'useToast',
 ];
 
 const zustandFunctions = [
-  "get",
-  "set",
-  "add",
-  "reset",
-  "open",
-  "close",
-  "register",
-  "refresh",
-  "fetch",
-  "activate",
-  "populate",
-  "sanitize",
-  "cancel",
-  "did",
+  'get',
+  'set',
+  'add',
+  'reset',
+  'open',
+  'close',
+  'register',
+  'refresh',
+  'fetch',
+  'activate',
+  'populate',
+  'sanitize',
+  'cancel',
+  'did',
+  'toggle',
 ];
 
 function isZustandFunction(variableName, calleeName) {
@@ -42,25 +43,25 @@ function isZustandFunction(variableName, calleeName) {
     useZustandStores.includes(calleeName) &&
     (zustandFunctions.includes(variableName) ||
       zustandFunctions.some(
-        (fn) =>
+        fn =>
           variableName.startsWith(fn) &&
           variableName.length > fn.length &&
-          variableName[fn.length] === variableName[fn.length].toUpperCase()
+          variableName[fn.length] === variableName[fn.length].toUpperCase(),
       ))
   );
 }
 
-const ReactReanimatedFunctions = ["useSharedValue", "useAnimatedStyle"];
+const ReactReanimatedFunctions = ['useSharedValue', 'useAnimatedStyle'];
 const ReactReanimatedHooks = {
-  usePulsing: "pulsingStyles",
-  useRotate: "rotatingStyles",
+  usePulsing: 'pulsingStyles',
+  useRotate: 'rotatingStyles',
 };
 
 function isReactReanimatedFunction(variableName, calleeName) {
   return (
     ReactReanimatedFunctions.includes(calleeName) ||
     Object.entries(ReactReanimatedHooks).some(
-      ([hook, variable]) => variableName === variable && calleeName === hook
+      ([hook, variable]) => variableName === variable && calleeName === hook,
     )
   );
 }
@@ -78,10 +79,10 @@ function isUnnecessaryDependency(variableName, resolved) {
   const def = resolved.defs[0];
   const init = def?.node?.init;
   if (
-    def.node.type !== "VariableDeclarator" ||
+    def.node.type !== 'VariableDeclarator' ||
     !def.node.init ||
-    init.type !== "CallExpression" ||
-    init.callee.type !== "Identifier"
+    init.type !== 'CallExpression' ||
+    init.callee.type !== 'Identifier'
   ) {
     return false;
   }
@@ -97,28 +98,28 @@ function isUnnecessaryDependency(variableName, resolved) {
 }
 
 module.exports = {
-  "exhaustive-deps": {
+  'exhaustive-deps': {
     meta: {
-      type: "suggestion",
+      type: 'suggestion',
       docs: {
         description:
-          "verifies the list of dependencies for Hooks like useEffect and similar",
+          'verifies the list of dependencies for Hooks like useEffect and similar',
         recommended: true,
-        url: "https://github.com/facebook/react/issues/14920",
+        url: 'https://github.com/facebook/react/issues/14920',
       },
-      fixable: "code",
+      fixable: 'code',
       hasSuggestions: true,
       schema: [
         {
-          type: "object",
+          type: 'object',
           additionalProperties: false,
           enableDangerousAutofixThisMayCauseInfiniteLoops: false,
           properties: {
             additionalHooks: {
-              type: "string",
+              type: 'string',
             },
             enableDangerousAutofixThisMayCauseInfiniteLoops: {
-              type: "boolean",
+              type: 'boolean',
             },
           },
         },
@@ -160,22 +161,22 @@ module.exports = {
        * SourceCode#getText that also works down to ESLint 3.0.0
        */
       const getSource =
-        typeof context.getSource === "function"
-          ? (node) => {
+        typeof context.getSource === 'function'
+          ? node => {
               return context.getSource(node);
             }
-          : (node) => {
+          : node => {
               return context.sourceCode.getText(node);
             };
       /**
        * SourceCode#getScope that also works down to ESLint 3.0.0
        */
       const getScope =
-        typeof context.getScope === "function"
+        typeof context.getScope === 'function'
           ? () => {
               return context.getScope();
             }
-          : (node) => {
+          : node => {
               return context.sourceCode.getScope(node);
             };
 
@@ -207,7 +208,7 @@ module.exports = {
         declaredDependenciesNode,
         reactiveHook,
         reactiveHookName,
-        isEffect
+        isEffect,
       ) {
         if (isEffect && node.async) {
           reportProblem({
@@ -215,15 +216,15 @@ module.exports = {
             message:
               `Effect callbacks are synchronous to prevent race conditions. ` +
               `Put the async function inside:\n\n` +
-              "useEffect(() => {\n" +
-              "  async function fetchData() {\n" +
-              "    // You can await here\n" +
-              "    const response = await MyAPI.getData(someId);\n" +
-              "    // ...\n" +
-              "  }\n" +
-              "  fetchData();\n" +
+              'useEffect(() => {\n' +
+              '  async function fetchData() {\n' +
+              '    // You can await here\n' +
+              '    const response = await MyAPI.getData(someId);\n' +
+              '    // ...\n' +
+              '  }\n' +
+              '  fetchData();\n' +
               `}, [someId]); // Or [] if effect doesn't need props or state\n\n` +
-              "Learn more about data fetching with Hooks: https://react.dev/link/hooks-data-fetching",
+              'Learn more about data fetching with Hooks: https://react.dev/link/hooks-data-fetching',
           });
         }
 
@@ -244,7 +245,7 @@ module.exports = {
           let currentScope = scope.upper;
           while (currentScope) {
             pureScopes.add(currentScope);
-            if (currentScope.type === "function") {
+            if (currentScope.type === 'function') {
               break;
             }
             currentScope = currentScope.upper;
@@ -284,7 +285,7 @@ module.exports = {
             return false;
           }
           // Look for `let stuff = ...`
-          if (def.node.type !== "VariableDeclarator") {
+          if (def.node.type !== 'VariableDeclarator') {
             return false;
           }
           let init = def.node.init;
@@ -292,8 +293,8 @@ module.exports = {
             return false;
           }
           while (
-            init.type === "TSAsExpression" ||
-            init.type === "AsExpression"
+            init.type === 'TSAsExpression' ||
+            init.type === 'AsExpression'
           ) {
             init = init.expression;
           }
@@ -311,10 +312,10 @@ module.exports = {
             }
           }
           if (
-            declaration.kind === "const" &&
-            init.type === "Literal" &&
-            (typeof init.value === "string" ||
-              typeof init.value === "number" ||
+            declaration.kind === 'const' &&
+            init.type === 'Literal' &&
+            (typeof init.value === 'string' ||
+              typeof init.value === 'number' ||
               init.value === null)
           ) {
             // Definitely stable
@@ -322,41 +323,41 @@ module.exports = {
           }
           // Detect known Hook calls
           // const [_, setState] = useState()
-          if (init.type !== "CallExpression") {
+          if (init.type !== 'CallExpression') {
             return false;
           }
           let callee = init.callee;
           // Step into `= React.something` initializer.
           if (
-            callee.type === "MemberExpression" &&
-            callee.object.name === "React" &&
+            callee.type === 'MemberExpression' &&
+            callee.object.name === 'React' &&
             callee.property != null &&
             !callee.computed
           ) {
             callee = callee.property;
           }
-          if (callee.type !== "Identifier") {
+          if (callee.type !== 'Identifier') {
             return false;
           }
           const id = def.node.id;
-          const { name } = callee;
-          if (name === "useRef" && id.type === "Identifier") {
+          const {name} = callee;
+          if (name === 'useRef' && id.type === 'Identifier') {
             // useRef() return value is stable.
             return true;
           } else if (
-            name === "useState" ||
-            name === "useReducer" ||
-            name === "useActionState"
+            name === 'useState' ||
+            name === 'useReducer' ||
+            name === 'useActionState'
           ) {
             // Only consider second value in initializing tuple stable.
             if (
-              id.type === "ArrayPattern" &&
+              id.type === 'ArrayPattern' &&
               id.elements.length === 2 &&
               isArray(resolved.identifiers)
             ) {
               // Is second tuple value the same reference we're checking?
               if (id.elements[1] === resolved.identifiers[0]) {
-                if (name === "useState") {
+                if (name === 'useState') {
                   const references = resolved.references;
                   let writeCount = 0;
                   for (let i = 0; i < references.length; i++) {
@@ -368,14 +369,14 @@ module.exports = {
                     }
                     setStateCallSites.set(
                       references[i].identifier,
-                      id.elements[0]
+                      id.elements[0],
                     );
                   }
                 }
                 // Setter is stable.
                 return true;
               } else if (id.elements[0] === resolved.identifiers[0]) {
-                if (name === "useState") {
+                if (name === 'useState') {
                   const references = resolved.references;
                   for (let i = 0; i < references.length; i++) {
                     stateVariables.add(references[i].identifier);
@@ -385,10 +386,10 @@ module.exports = {
                 return false;
               }
             }
-          } else if (name === "useTransition") {
+          } else if (name === 'useTransition') {
             // Only consider second value in initializing tuple stable.
             if (
-              id.type === "ArrayPattern" &&
+              id.type === 'ArrayPattern' &&
               id.elements.length === 2 &&
               Array.isArray(resolved.identifiers)
             ) {
@@ -426,11 +427,11 @@ module.exports = {
             const childScopeBlock = childScope.block;
             if (
               // function handleChange() {}
-              (fnNode.type === "FunctionDeclaration" &&
+              (fnNode.type === 'FunctionDeclaration' &&
                 childScopeBlock === fnNode) ||
               // const handleChange = () => {}
               // const handleChange = function() {}
-              (fnNode.type === "VariableDeclarator" &&
+              (fnNode.type === 'VariableDeclarator' &&
                 childScopeBlock.parent === fnNode)
             ) {
               // Found it!
@@ -465,11 +466,11 @@ module.exports = {
         // Remember such values. Avoid re-running extra checks on them.
         const memoizedIsStableKnownHookValue = memoizeWithWeakMap(
           isStableKnownHookValue,
-          stableKnownValueCache
+          stableKnownValueCache,
         );
         const memoizedIsFunctionWithoutCapturedValues = memoizeWithWeakMap(
           isFunctionWithoutCapturedValues,
-          functionWithoutCapturedValueCache
+          functionWithoutCapturedValueCache,
         );
 
         // These are usually mistaken. Collect them.
@@ -482,10 +483,10 @@ module.exports = {
           let curScope = reference.from;
           let isInReturnedFunction = false;
           while (curScope.block !== node) {
-            if (curScope.type === "function") {
+            if (curScope.type === 'function') {
               isInReturnedFunction =
                 curScope.block.parent != null &&
-                curScope.block.parent.type === "ReturnStatement";
+                curScope.block.parent.type === 'ReturnStatement';
             }
             curScope = curScope.upper;
           }
@@ -513,12 +514,12 @@ module.exports = {
             // Then normalize the narrowed dependency.
             const referenceNode = fastFindReferenceWithParent(
               node,
-              reference.identifier
+              reference.identifier,
             );
             const dependencyNode = getDependency(referenceNode);
             const dependency = analyzePropertyChain(
               dependencyNode,
-              optionalChains
+              optionalChains,
             );
 
             // Accessing ref.current inside effect cleanup is bad.
@@ -526,12 +527,12 @@ module.exports = {
               // We're in an effect...
               isEffect &&
               // ... and this look like accessing .current...
-              dependencyNode.type === "Identifier" &&
-              (dependencyNode.parent.type === "MemberExpression" ||
-                dependencyNode.parent.type === "OptionalMemberExpression") &&
+              dependencyNode.type === 'Identifier' &&
+              (dependencyNode.parent.type === 'MemberExpression' ||
+                dependencyNode.parent.type === 'OptionalMemberExpression') &&
               !dependencyNode.parent.computed &&
-              dependencyNode.parent.property.type === "Identifier" &&
-              dependencyNode.parent.property.name === "current" &&
+              dependencyNode.parent.property.type === 'Identifier' &&
+              dependencyNode.parent.property.name === 'current' &&
               // ...in a cleanup function or below...
               isInsideEffectCleanup(reference)
             ) {
@@ -542,8 +543,8 @@ module.exports = {
             }
 
             if (
-              dependencyNode.parent.type === "TSTypeQuery" ||
-              dependencyNode.parent.type === "TSTypeReference"
+              dependencyNode.parent.type === 'TSTypeQuery' ||
+              dependencyNode.parent.type === 'TSTypeReference'
             ) {
               continue;
             }
@@ -557,7 +558,7 @@ module.exports = {
               continue;
             }
             // Ignore Flow type parameters
-            if (def.type === "TypeParameter") {
+            if (def.type === 'TypeParameter') {
               continue;
             }
 
@@ -585,24 +586,24 @@ module.exports = {
 
         // Warn about accessing .current in cleanup effects.
         currentRefsInEffectCleanup.forEach(
-          ({ reference, dependencyNode }, dependency) => {
+          ({reference, dependencyNode}, dependency) => {
             const references = reference.resolved.references;
             // Is React managing this ref or us?
             // Let's see if we can find a .current assignment.
             let foundCurrentAssignment = false;
             for (let i = 0; i < references.length; i++) {
-              const { identifier } = references[i];
-              const { parent } = identifier;
+              const {identifier} = references[i];
+              const {parent} = identifier;
               if (
                 parent != null &&
                 // ref.current
                 // Note: no need to handle OptionalMemberExpression because it can't be LHS.
-                parent.type === "MemberExpression" &&
+                parent.type === 'MemberExpression' &&
                 !parent.computed &&
-                parent.property.type === "Identifier" &&
-                parent.property.name === "current" &&
+                parent.property.type === 'Identifier' &&
+                parent.property.name === 'current' &&
                 // ref.current = <something>
-                parent.parent.type === "AssignmentExpression" &&
+                parent.parent.type === 'AssignmentExpression' &&
                 parent.parent.left === parent
               ) {
                 foundCurrentAssignment = true;
@@ -622,7 +623,7 @@ module.exports = {
                 `'${dependency}.current' to a variable inside the effect, and ` +
                 `use that variable in the cleanup function.`,
             });
-          }
+          },
         );
 
         // Warn about assigning to variables in the outer scope.
@@ -647,11 +648,11 @@ module.exports = {
 
         // Remember which deps are stable and report bad usage first.
         const stableDependencies = new Set();
-        dependencies.forEach(({ isStable, references }, key) => {
+        dependencies.forEach(({isStable, references}, key) => {
           if (isStable) {
             stableDependencies.add(key);
           }
-          references.forEach((reference) => {
+          references.forEach(reference => {
             if (reference.writeExpr) {
               reportStaleAssignment(reference.writeExpr, key);
             }
@@ -667,11 +668,11 @@ module.exports = {
           // Check if there are any top-level setState() calls.
           // Those tend to lead to infinite loops.
           let setStateInsideEffectWithoutDeps = null;
-          dependencies.forEach(({ isStable, references }, key) => {
+          dependencies.forEach(({isStable, references}, key) => {
             if (setStateInsideEffectWithoutDeps) {
               return;
             }
-            references.forEach((reference) => {
+            references.forEach(reference => {
               if (setStateInsideEffectWithoutDeps) {
                 return;
               }
@@ -683,7 +684,7 @@ module.exports = {
               }
 
               let fnScope = reference.from;
-              while (fnScope.type !== "function") {
+              while (fnScope.type !== 'function') {
                 fnScope = fnScope.upper;
               }
               const isDirectlyInsideEffect = fnScope.block === node;
@@ -694,7 +695,7 @@ module.exports = {
             });
           });
           if (setStateInsideEffectWithoutDeps) {
-            const { suggestedDependencies } = collectRecommendations({
+            const {suggestedDependencies} = collectRecommendations({
               dependencies,
               declaredDependencies: [],
               stableDependencies,
@@ -707,17 +708,17 @@ module.exports = {
                 `React Hook ${reactiveHookName} contains a call to '${setStateInsideEffectWithoutDeps}'. ` +
                 `Without a list of dependencies, this can lead to an infinite chain of updates. ` +
                 `To fix this, pass [` +
-                suggestedDependencies.join(", ") +
+                suggestedDependencies.join(', ') +
                 `] as a second argument to the ${reactiveHookName} Hook.`,
               suggest: [
                 {
                   desc: `Add dependencies array: [${suggestedDependencies.join(
-                    ", "
+                    ', ',
                   )}]`,
                   fix(fixer) {
                     return fixer.insertTextAfter(
                       node,
-                      `, [${suggestedDependencies.join(", ")}]`
+                      `, [${suggestedDependencies.join(', ')}]`,
                     );
                   },
                 },
@@ -730,10 +731,10 @@ module.exports = {
         const declaredDependencies = [];
         const externalDependencies = new Set();
         const isArrayExpression =
-          declaredDependenciesNode.type === "ArrayExpression";
+          declaredDependenciesNode.type === 'ArrayExpression';
         const isTSAsArrayExpression =
-          declaredDependenciesNode.type === "TSAsExpression" &&
-          declaredDependenciesNode.expression.type === "ArrayExpression";
+          declaredDependenciesNode.type === 'TSAsExpression' &&
+          declaredDependenciesNode.expression.type === 'ArrayExpression';
         if (!isArrayExpression && !isTSAsArrayExpression) {
           // If the declared dependencies are not an array expression then we
           // can't verify that the user provided the correct dependencies. Tell
@@ -742,29 +743,29 @@ module.exports = {
             node: declaredDependenciesNode,
             message:
               `React Hook ${getSource(reactiveHook)} was passed a ` +
-              "dependency list that is not an array literal. This means we " +
+              'dependency list that is not an array literal. This means we ' +
               "can't statically verify whether you've passed the correct " +
-              "dependencies.",
+              'dependencies.',
           });
         } else {
           const arrayExpression = isTSAsArrayExpression
             ? declaredDependenciesNode.expression
             : declaredDependenciesNode;
 
-          arrayExpression.elements.forEach((declaredDependencyNode) => {
+          arrayExpression.elements.forEach(declaredDependencyNode => {
             // Skip elided elements.
             if (declaredDependencyNode === null) {
               return;
             }
             // If we see a spread element then add a special warning.
-            if (declaredDependencyNode.type === "SpreadElement") {
+            if (declaredDependencyNode.type === 'SpreadElement') {
               reportProblem({
                 node: declaredDependencyNode,
                 message:
                   `React Hook ${getSource(reactiveHook)} has a spread ` +
                   "element in its dependency array. This means we can't " +
                   "statically verify whether you've passed the " +
-                  "correct dependencies.",
+                  'correct dependencies.',
               });
               return;
             }
@@ -772,14 +773,14 @@ module.exports = {
               reportProblem({
                 node: declaredDependencyNode,
                 message:
-                  "Functions returned from `useEffectEvent` must not be included in the dependency array. " +
+                  'Functions returned from `useEffectEvent` must not be included in the dependency array. ' +
                   `Remove \`${getSource(
-                    declaredDependencyNode
+                    declaredDependencyNode,
                   )}\` from the list.`,
                 suggest: [
                   {
                     desc: `Remove the dependency \`${getSource(
-                      declaredDependencyNode
+                      declaredDependencyNode,
                     )}\``,
                     fix(fixer) {
                       return fixer.removeRange(declaredDependencyNode.range);
@@ -794,11 +795,11 @@ module.exports = {
             try {
               declaredDependency = analyzePropertyChain(
                 declaredDependencyNode,
-                null
+                null,
               );
             } catch (error) {
               if (/Unsupported node type/.test(error.message)) {
-                if (declaredDependencyNode.type === "Literal") {
+                if (declaredDependencyNode.type === 'Literal') {
                   if (dependencies.has(declaredDependencyNode.value)) {
                     reportProblem({
                       node: declaredDependencyNode,
@@ -812,7 +813,7 @@ module.exports = {
                       node: declaredDependencyNode,
                       message:
                         `The ${declaredDependencyNode.raw} literal is not a valid dependency ` +
-                        "because it never changes. You can safely remove it.",
+                        'because it never changes. You can safely remove it.',
                     });
                   }
                 } else {
@@ -821,7 +822,7 @@ module.exports = {
                     message:
                       `React Hook ${getSource(reactiveHook)} has a ` +
                       `complex expression in the dependency array. ` +
-                      "Extract it to a separate variable so it can be statically checked.",
+                      'Extract it to a separate variable so it can be statically checked.',
                   });
                 }
 
@@ -833,14 +834,14 @@ module.exports = {
 
             let maybeID = declaredDependencyNode;
             while (
-              maybeID.type === "MemberExpression" ||
-              maybeID.type === "OptionalMemberExpression" ||
-              maybeID.type === "ChainExpression"
+              maybeID.type === 'MemberExpression' ||
+              maybeID.type === 'OptionalMemberExpression' ||
+              maybeID.type === 'ChainExpression'
             ) {
               maybeID = maybeID.object || maybeID.expression.object;
             }
             const isDeclaredInComponent = !componentScope.through.some(
-              (ref) => ref.identifier === maybeID
+              ref => ref.identifier === maybeID,
             );
 
             // Add the dependency to our declared dependency map.
@@ -885,12 +886,12 @@ module.exports = {
             scope,
           });
           constructions.forEach(
-            ({ construction, isUsedOutsideOfHook, depType }) => {
+            ({construction, isUsedOutsideOfHook, depType}) => {
               const wrapperHook =
-                depType === "function" ? "useCallback" : "useMemo";
+                depType === 'function' ? 'useCallback' : 'useMemo';
 
               const constructionType =
-                depType === "function" ? "definition" : "initialization";
+                depType === 'function' ? 'definition' : 'initialization';
 
               const defaultAdvice = `wrap the ${constructionType} of '${construction.name.name}' in its own ${wrapperHook}() Hook.`;
 
@@ -899,9 +900,9 @@ module.exports = {
                 : `Move it inside the ${reactiveHookName} callback. Alternatively, ${defaultAdvice}`;
 
               const causation =
-                depType === "conditional" || depType === "logical expression"
-                  ? "could make"
-                  : "makes";
+                depType === 'conditional' || depType === 'logical expression'
+                  ? 'could make'
+                  : 'makes';
 
               const message =
                 `The '${construction.name.name}' ${depType} ${causation} the dependencies of ` +
@@ -913,20 +914,20 @@ module.exports = {
               // Wrapping function declarations can mess up hoisting.
               if (
                 isUsedOutsideOfHook &&
-                construction.type === "Variable" &&
+                construction.type === 'Variable' &&
                 // Objects may be mutated after construction, which would make this
                 // fix unsafe. Functions _probably_ won't be mutated, so we'll
                 // allow this fix for them.
-                depType === "function"
+                depType === 'function'
               ) {
                 suggest = [
                   {
                     desc: `Wrap the ${constructionType} of '${construction.name.name}' in its own ${wrapperHook}() Hook.`,
                     fix(fixer) {
                       const [before, after] =
-                        wrapperHook === "useMemo"
-                          ? [`useMemo(() => { return `, "; })"]
-                          : ["useCallback(", ")"];
+                        wrapperHook === 'useMemo'
+                          ? [`useMemo(() => { return `, '; })']
+                          : ['useCallback(', ')'];
                       return [
                         // TODO: also add an import?
                         fixer.insertTextBefore(construction.node.init, before),
@@ -948,7 +949,7 @@ module.exports = {
                 message,
                 suggest,
               });
-            }
+            },
           );
           return;
         }
@@ -974,9 +975,9 @@ module.exports = {
           if (declaredDependencies.length === 0) {
             return true;
           }
-          const declaredDepKeys = declaredDependencies.map((dep) => dep.key);
+          const declaredDepKeys = declaredDependencies.map(dep => dep.key);
           const sortedDeclaredDepKeys = declaredDepKeys.slice().sort();
-          return declaredDepKeys.join(",") === sortedDeclaredDepKeys.join(",");
+          return declaredDepKeys.join(',') === sortedDeclaredDepKeys.join(',');
         }
         if (areDeclaredDepsAlphabetized()) {
           suggestedDeps.sort();
@@ -987,13 +988,13 @@ module.exports = {
         // check whether any members in our path are always used as optional-only. In that case,
         // we will use ?. instead of . to concatenate those parts of the path.
         function formatDependency(path) {
-          const members = path.split(".");
-          let finalPath = "";
+          const members = path.split('.');
+          let finalPath = '';
           for (let i = 0; i < members.length; i++) {
             if (i !== 0) {
-              const pathSoFar = members.slice(0, i + 1).join(".");
+              const pathSoFar = members.slice(0, i + 1).join('.');
               const isOptional = optionalChains.get(pathSoFar) === true;
-              finalPath += isOptional ? "?." : ".";
+              finalPath += isOptional ? '?.' : '.';
             }
             finalPath += members[i];
           }
@@ -1005,30 +1006,30 @@ module.exports = {
             return null;
           }
           return (
-            (deps.size > 1 ? "" : singlePrefix + " ") +
+            (deps.size > 1 ? '' : singlePrefix + ' ') +
             label +
-            " " +
-            (deps.size > 1 ? "dependencies" : "dependency") +
-            ": " +
+            ' ' +
+            (deps.size > 1 ? 'dependencies' : 'dependency') +
+            ': ' +
             joinEnglish(
               Array.from(deps)
                 .sort()
-                .map((name) => "'" + formatDependency(name) + "'")
+                .map(name => "'" + formatDependency(name) + "'"),
             ) +
             `. Either ${fixVerb} ${
-              deps.size > 1 ? "them" : "it"
+              deps.size > 1 ? 'them' : 'it'
             } or remove the dependency array.`
           );
         }
 
-        let extraWarning = "";
+        let extraWarning = '';
         if (unnecessaryDependencies.size > 0) {
           let badRef = null;
-          Array.from(unnecessaryDependencies.keys()).forEach((key) => {
+          Array.from(unnecessaryDependencies.keys()).forEach(key => {
             if (badRef !== null) {
               return;
             }
-            if (key.endsWith(".current")) {
+            if (key.endsWith('.current')) {
               badRef = key;
             }
           });
@@ -1051,8 +1052,8 @@ module.exports = {
         // `props.foo()` marks `props` as a dependency because it has
         // a `this` value. This warning can be confusing.
         // So if we're going to show it, append a clarification.
-        if (!extraWarning && missingDependencies.has("props")) {
-          const propDep = dependencies.get("props");
+        if (!extraWarning && missingDependencies.has('props')) {
+          const propDep = dependencies.get('props');
           if (propDep == null) {
             return;
           }
@@ -1065,7 +1066,7 @@ module.exports = {
             const ref = refs[i];
             const id = fastFindReferenceWithParent(
               componentScope.block,
-              ref.identifier
+              ref.identifier,
             );
             if (!id) {
               isPropsOnlyUsedInMembers = false;
@@ -1077,8 +1078,8 @@ module.exports = {
               break;
             }
             if (
-              parent.type !== "MemberExpression" &&
-              parent.type !== "OptionalMemberExpression"
+              parent.type !== 'MemberExpression' &&
+              parent.type !== 'OptionalMemberExpression'
             ) {
               isPropsOnlyUsedInMembers = false;
               break;
@@ -1097,7 +1098,7 @@ module.exports = {
           // See if the user is trying to avoid specifying a callable prop.
           // This usually means they're unaware of useCallback.
           let missingCallbackDep = null;
-          missingDependencies.forEach((missingDep) => {
+          missingDependencies.forEach(missingDep => {
             if (missingCallbackDep) {
               return;
             }
@@ -1109,7 +1110,7 @@ module.exports = {
             }
             // Is this a destructured prop?
             const def = topScopeRef.defs[0];
-            if (def == null || def.name == null || def.type !== "Parameter") {
+            if (def == null || def.name == null || def.type !== 'Parameter') {
               return;
             }
             // Was it called in at least one case? Then it's a function.
@@ -1120,8 +1121,8 @@ module.exports = {
               if (
                 id != null &&
                 id.parent != null &&
-                (id.parent.type === "CallExpression" ||
-                  id.parent.type === "OptionalCallExpression") &&
+                (id.parent.type === 'CallExpression' ||
+                  id.parent.type === 'OptionalCallExpression') &&
                 id.parent.callee === id
               ) {
                 isFunctionCall = true;
@@ -1146,7 +1147,7 @@ module.exports = {
 
         if (!extraWarning && missingDependencies.size > 0) {
           let setStateRecommendation = null;
-          missingDependencies.forEach((missingDep) => {
+          missingDependencies.forEach(missingDep => {
             if (setStateRecommendation !== null) {
               return;
             }
@@ -1159,9 +1160,9 @@ module.exports = {
               maybeCall = id.parent;
               // Try to see if we have setState(someExpr(missingDep)).
               while (maybeCall != null && maybeCall !== componentScope.block) {
-                if (maybeCall.type === "CallExpression") {
+                if (maybeCall.type === 'CallExpression') {
                   const correspondingStateVariable = setStateCallSites.get(
-                    maybeCall.callee
+                    maybeCall.callee,
                   );
                   if (correspondingStateVariable != null) {
                     if (correspondingStateVariable.name === missingDep) {
@@ -1169,14 +1170,14 @@ module.exports = {
                       setStateRecommendation = {
                         missingDep,
                         setter: maybeCall.callee.name,
-                        form: "updater",
+                        form: 'updater',
                       };
                     } else if (stateVariables.has(id)) {
                       // setCount(count + increment)
                       setStateRecommendation = {
                         missingDep,
                         setter: maybeCall.callee.name,
-                        form: "reducer",
+                        form: 'reducer',
                       };
                     } else {
                       const resolved = references[i].resolved;
@@ -1185,11 +1186,11 @@ module.exports = {
                         // it must be a prop or something inside a prop.
                         // Therefore, recommend an inline reducer.
                         const def = resolved.defs[0];
-                        if (def != null && def.type === "Parameter") {
+                        if (def != null && def.type === 'Parameter') {
                           setStateRecommendation = {
                             missingDep,
                             setter: maybeCall.callee.name,
-                            form: "inlineReducer",
+                            form: 'inlineReducer',
                           };
                         }
                       }
@@ -1206,32 +1207,32 @@ module.exports = {
           });
           if (setStateRecommendation !== null) {
             switch (setStateRecommendation.form) {
-              case "reducer":
+              case 'reducer':
                 extraWarning =
                   ` You can also replace multiple useState variables with useReducer ` +
                   `if '${setStateRecommendation.setter}' needs the ` +
                   `current value of '${setStateRecommendation.missingDep}'.`;
                 break;
-              case "inlineReducer":
+              case 'inlineReducer':
                 extraWarning =
                   ` If '${setStateRecommendation.setter}' needs the ` +
                   `current value of '${setStateRecommendation.missingDep}', ` +
                   `you can also switch to useReducer instead of useState and ` +
                   `read '${setStateRecommendation.missingDep}' in the reducer.`;
                 break;
-              case "updater":
+              case 'updater':
                 extraWarning =
                   ` You can also do a functional update '${
                     setStateRecommendation.setter
                   }(${setStateRecommendation.missingDep.slice(
                     0,
-                    1
+                    1,
                   )} => ...)' if you only need '${
                     setStateRecommendation.missingDep
                   }'` + ` in the '${setStateRecommendation.setter}' call.`;
                 break;
               default:
-                throw new Error("Unknown case.");
+                throw new Error('Unknown case.');
             }
           }
         }
@@ -1243,33 +1244,33 @@ module.exports = {
             // To avoid a long message, show the next actionable item.
             (getWarningMessage(
               missingDependencies,
-              "a",
-              "missing",
-              "include"
+              'a',
+              'missing',
+              'include',
             ) ||
               getWarningMessage(
                 unnecessaryDependencies,
-                "an",
-                "unnecessary",
-                "exclude"
+                'an',
+                'unnecessary',
+                'exclude',
               ) ||
               getWarningMessage(
                 duplicateDependencies,
-                "a",
-                "duplicate",
-                "omit"
+                'a',
+                'duplicate',
+                'omit',
               )) +
             extraWarning,
           suggest: [
             {
               desc: `Update the dependencies array to be: [${suggestedDeps
                 .map(formatDependency)
-                .join(", ")}]`,
+                .join(', ')}]`,
               fix(fixer) {
                 // TODO: consider preserving the comments or formatting?
                 return fixer.replaceText(
                   declaredDependenciesNode,
-                  `[${suggestedDeps.map(formatDependency).join(", ")}]`
+                  `[${suggestedDeps.map(formatDependency).join(', ')}]`,
                 );
               },
             },
@@ -1280,7 +1281,7 @@ module.exports = {
       function visitCallExpression(node) {
         const callbackIndex = getReactiveHookCallbackIndex(
           node.callee,
-          options
+          options,
         );
         if (callbackIndex === -1) {
           // Not a React Hook call that needs deps.
@@ -1293,7 +1294,7 @@ module.exports = {
         const maybeNode = node.arguments[callbackIndex + 1];
         const declaredDependenciesNode =
           maybeNode &&
-          !(maybeNode.type === "Identifier" && maybeNode.name === "undefined")
+          !(maybeNode.type === 'Identifier' && maybeNode.name === 'undefined')
             ? maybeNode
             : undefined;
         const isEffect = /Effect($|[^a-z])/g.test(reactiveHookName);
@@ -1317,8 +1318,8 @@ module.exports = {
         if (!declaredDependenciesNode && !isEffect) {
           // These are only used for optimization.
           if (
-            reactiveHookName === "useMemo" ||
-            reactiveHookName === "useCallback"
+            reactiveHookName === 'useMemo' ||
+            reactiveHookName === 'useCallback'
           ) {
             // TODO: Can this have a suggestion?
             reportProblem({
@@ -1333,26 +1334,26 @@ module.exports = {
         }
 
         switch (callback.type) {
-          case "FunctionExpression":
-          case "ArrowFunctionExpression":
+          case 'FunctionExpression':
+          case 'ArrowFunctionExpression':
             visitFunctionWithDependencies(
               callback,
               declaredDependenciesNode,
               reactiveHook,
               reactiveHookName,
-              isEffect
+              isEffect,
             );
             return; // Handled
-          case "TSAsExpression":
+          case 'TSAsExpression':
             visitFunctionWithDependencies(
               callback.expression,
               declaredDependenciesNode,
               reactiveHook,
               reactiveHookName,
-              isEffect
+              isEffect,
             );
             return; // Handled
-          case "Identifier":
+          case 'Identifier':
             if (!declaredDependenciesNode) {
               // No deps, no problems.
               return; // Handled
@@ -1362,8 +1363,8 @@ module.exports = {
             if (
               declaredDependenciesNode.elements &&
               declaredDependenciesNode.elements.some(
-                (el) =>
-                  el && el.type === "Identifier" && el.name === callback.name
+                el =>
+                  el && el.type === 'Identifier' && el.name === callback.name,
               )
             ) {
               // If it's already in the list of deps, we don't care because
@@ -1383,22 +1384,22 @@ module.exports = {
             if (!def || !def.node) {
               break; // Unhandled
             }
-            if (def.type !== "Variable" && def.type !== "FunctionName") {
+            if (def.type !== 'Variable' && def.type !== 'FunctionName') {
               // Parameter or an unusual pattern. Bail out.
               break; // Unhandled
             }
             switch (def.node.type) {
-              case "FunctionDeclaration":
+              case 'FunctionDeclaration':
                 // useEffect(() => { ... }, []);
                 visitFunctionWithDependencies(
                   def.node,
                   declaredDependenciesNode,
                   reactiveHook,
                   reactiveHookName,
-                  isEffect
+                  isEffect,
                 );
                 return; // Handled
-              case "VariableDeclarator":
+              case 'VariableDeclarator':
                 const init = def.node.init;
                 if (!init) {
                   break; // Unhandled
@@ -1406,15 +1407,15 @@ module.exports = {
                 switch (init.type) {
                   // const effectBody = () => {...};
                   // useEffect(effectBody, []);
-                  case "ArrowFunctionExpression":
-                  case "FunctionExpression":
+                  case 'ArrowFunctionExpression':
+                  case 'FunctionExpression':
                     // We can inspect this function as if it were inline.
                     visitFunctionWithDependencies(
                       init,
                       declaredDependenciesNode,
                       reactiveHook,
                       reactiveHookName,
-                      isEffect
+                      isEffect,
                     );
                     return; // Handled
                 }
@@ -1444,7 +1445,7 @@ module.exports = {
               fix(fixer) {
                 return fixer.replaceText(
                   declaredDependenciesNode,
-                  `[${callback.name}]`
+                  `[${callback.name}]`,
                 );
               },
             },
@@ -1491,25 +1492,25 @@ function collectRecommendations({
   dependencies.forEach((_, key) => {
     const node = getOrCreateNodeByPath(depTree, key);
     node.isUsed = true;
-    markAllParentsByPath(depTree, key, (parent) => {
+    markAllParentsByPath(depTree, key, parent => {
       parent.isSubtreeUsed = true;
     });
   });
 
   // Mark all satisfied nodes.
   // Imagine checkmarks next to each declared dependency.
-  declaredDependencies.forEach(({ key }) => {
+  declaredDependencies.forEach(({key}) => {
     const node = getOrCreateNodeByPath(depTree, key);
     node.isSatisfiedRecursively = true;
   });
-  stableDependencies.forEach((key) => {
+  stableDependencies.forEach(key => {
     const node = getOrCreateNodeByPath(depTree, key);
     node.isSatisfiedRecursively = true;
   });
 
   // Tree manipulation helpers.
   function getOrCreateNodeByPath(rootNode, path) {
-    const keys = path.split(".");
+    const keys = path.split('.');
     let node = rootNode;
     for (const key of keys) {
       let child = node.children.get(key);
@@ -1522,7 +1523,7 @@ function collectRecommendations({
     return node;
   }
   function markAllParentsByPath(rootNode, path, fn) {
-    const keys = path.split(".");
+    const keys = path.split('.');
     let node = rootNode;
     for (const key of keys) {
       const child = node.children.get(key);
@@ -1541,7 +1542,7 @@ function collectRecommendations({
     depTree,
     missingDependencies,
     satisfyingDependencies,
-    (key) => key
+    key => key,
   );
   function scanTreeRecursively(node, missingPaths, satisfyingPaths, keyToPath) {
     node.children.forEach((child, key) => {
@@ -1567,7 +1568,7 @@ function collectRecommendations({
         child,
         missingPaths,
         satisfyingPaths,
-        (childKey) => path + "." + childKey
+        childKey => path + '.' + childKey,
       );
     });
   }
@@ -1576,7 +1577,7 @@ function collectRecommendations({
   const suggestedDependencies = [];
   const unnecessaryDependencies = new Set();
   const duplicateDependencies = new Set();
-  declaredDependencies.forEach(({ key }) => {
+  declaredDependencies.forEach(({key}) => {
     if (globalUnnecessaryDependencies.has(key)) {
       unnecessaryDependencies.add(key);
     } else if (satisfyingDependencies.has(key)) {
@@ -1590,7 +1591,7 @@ function collectRecommendations({
     } else {
       if (
         isEffect &&
-        !key.endsWith(".current") &&
+        !key.endsWith('.current') &&
         !externalDependencies.has(key)
       ) {
         // Effects are allowed extra "unnecessary" deps.
@@ -1619,50 +1620,50 @@ function collectRecommendations({
 // its human readable type name, else return null.
 function getConstructionExpressionType(node) {
   switch (node.type) {
-    case "ObjectExpression":
-      return "object";
-    case "ArrayExpression":
-      return "array";
-    case "ArrowFunctionExpression":
-    case "FunctionExpression":
-      return "function";
-    case "ClassExpression":
-      return "class";
-    case "ConditionalExpression":
+    case 'ObjectExpression':
+      return 'object';
+    case 'ArrayExpression':
+      return 'array';
+    case 'ArrowFunctionExpression':
+    case 'FunctionExpression':
+      return 'function';
+    case 'ClassExpression':
+      return 'class';
+    case 'ConditionalExpression':
       if (
         getConstructionExpressionType(node.consequent) != null ||
         getConstructionExpressionType(node.alternate) != null
       ) {
-        return "conditional";
+        return 'conditional';
       }
       return null;
-    case "LogicalExpression":
+    case 'LogicalExpression':
       if (
         getConstructionExpressionType(node.left) != null ||
         getConstructionExpressionType(node.right) != null
       ) {
-        return "logical expression";
+        return 'logical expression';
       }
       return null;
-    case "JSXFragment":
-      return "JSX fragment";
-    case "JSXElement":
-      return "JSX element";
-    case "AssignmentExpression":
+    case 'JSXFragment':
+      return 'JSX fragment';
+    case 'JSXElement':
+      return 'JSX element';
+    case 'AssignmentExpression':
       if (getConstructionExpressionType(node.right) != null) {
-        return "assignment expression";
+        return 'assignment expression';
       }
       return null;
-    case "NewExpression":
-      return "object construction";
-    case "Literal":
+    case 'NewExpression':
+      return 'object construction';
+    case 'Literal':
       if (node.value instanceof RegExp) {
-        return "regular expression";
+        return 'regular expression';
       }
       return null;
-    case "TypeCastExpression":
-    case "AsExpression":
-    case "TSAsExpression":
+    case 'TypeCastExpression':
+    case 'AsExpression':
+    case 'TSAsExpression':
       return getConstructionExpressionType(node.expression);
   }
   return null;
@@ -1677,8 +1678,8 @@ function scanForConstructions({
   scope,
 }) {
   const constructions = declaredDependencies
-    .map(({ key }) => {
-      const ref = componentScope.variables.find((v) => v.name === key);
+    .map(({key}) => {
+      const ref = componentScope.variables.find(v => v.name === key);
       if (ref == null) {
         return null;
       }
@@ -1693,13 +1694,13 @@ function scanForConstructions({
       // const foo = []
       // etc.
       if (
-        node.type === "Variable" &&
-        node.node.type === "VariableDeclarator" &&
-        node.node.id.type === "Identifier" && // Ensure this is not destructed assignment
+        node.type === 'Variable' &&
+        node.node.type === 'VariableDeclarator' &&
+        node.node.id.type === 'Identifier' && // Ensure this is not destructed assignment
         node.node.init != null
       ) {
         const constantExpressionType = getConstructionExpressionType(
-          node.node.init
+          node.node.init,
         );
         if (constantExpressionType != null) {
           return [ref, constantExpressionType];
@@ -1707,15 +1708,15 @@ function scanForConstructions({
       }
       // function handleChange() {}
       if (
-        node.type === "FunctionName" &&
-        node.node.type === "FunctionDeclaration"
+        node.type === 'FunctionName' &&
+        node.node.type === 'FunctionDeclaration'
       ) {
-        return [ref, "function"];
+        return [ref, 'function'];
       }
 
       // class Foo {}
-      if (node.type === "ClassName" && node.node.type === "ClassDeclaration") {
-        return [ref, "class"];
+      if (node.type === 'ClassName' && node.node.type === 'ClassDeclaration') {
+        return [ref, 'class'];
       }
       return null;
     })
@@ -1766,24 +1767,24 @@ function scanForConstructions({
  */
 function getDependency(node) {
   if (
-    (node.parent.type === "MemberExpression" ||
-      node.parent.type === "OptionalMemberExpression") &&
+    (node.parent.type === 'MemberExpression' ||
+      node.parent.type === 'OptionalMemberExpression') &&
     node.parent.object === node &&
-    node.parent.property.name !== "current" &&
+    node.parent.property.name !== 'current' &&
     !node.parent.computed &&
     !(
       node.parent.parent != null &&
-      (node.parent.parent.type === "CallExpression" ||
-        node.parent.parent.type === "OptionalCallExpression") &&
+      (node.parent.parent.type === 'CallExpression' ||
+        node.parent.parent.type === 'OptionalCallExpression') &&
       node.parent.parent.callee === node.parent
     )
   ) {
     return getDependency(node.parent);
   } else if (
     // Note: we don't check OptionalMemberExpression because it can't be LHS.
-    node.type === "MemberExpression" &&
+    node.type === 'MemberExpression' &&
     node.parent &&
-    node.parent.type === "AssignmentExpression" &&
+    node.parent.type === 'AssignmentExpression' &&
     node.parent.left === node
   ) {
     return node.object;
@@ -1821,29 +1822,29 @@ function markNode(node, optionalChains, result) {
  * Otherwise throw.
  */
 function analyzePropertyChain(node, optionalChains) {
-  if (node.type === "Identifier" || node.type === "JSXIdentifier") {
+  if (node.type === 'Identifier' || node.type === 'JSXIdentifier') {
     const result = node.name;
     if (optionalChains) {
       // Mark as required.
       optionalChains.set(result, false);
     }
     return result;
-  } else if (node.type === "MemberExpression" && !node.computed) {
+  } else if (node.type === 'MemberExpression' && !node.computed) {
     const object = analyzePropertyChain(node.object, optionalChains);
     const property = analyzePropertyChain(node.property, null);
     const result = `${object}.${property}`;
     markNode(node, optionalChains, result);
     return result;
-  } else if (node.type === "OptionalMemberExpression" && !node.computed) {
+  } else if (node.type === 'OptionalMemberExpression' && !node.computed) {
     const object = analyzePropertyChain(node.object, optionalChains);
     const property = analyzePropertyChain(node.property, null);
     const result = `${object}.${property}`;
     markNode(node, optionalChains, result);
     return result;
-  } else if (node.type === "ChainExpression" && !node.computed) {
+  } else if (node.type === 'ChainExpression' && !node.computed) {
     const expression = node.expression;
 
-    if (expression.type === "CallExpression") {
+    if (expression.type === 'CallExpression') {
       throw new Error(`Unsupported node type: ${expression.type}`);
     }
 
@@ -1859,10 +1860,10 @@ function analyzePropertyChain(node, optionalChains) {
 
 function getNodeWithoutReactNamespace(node, options) {
   if (
-    node.type === "MemberExpression" &&
-    node.object.type === "Identifier" &&
-    node.object.name === "React" &&
-    node.property.type === "Identifier" &&
+    node.type === 'MemberExpression' &&
+    node.object.type === 'Identifier' &&
+    node.object.name === 'React' &&
+    node.property.type === 'Identifier' &&
     !node.computed
   ) {
     return node.property;
@@ -1877,17 +1878,17 @@ function getNodeWithoutReactNamespace(node, options) {
 // For additionally configured Hooks, assume that they're like useEffect (0).
 function getReactiveHookCallbackIndex(calleeNode, options) {
   const node = getNodeWithoutReactNamespace(calleeNode);
-  if (node.type !== "Identifier") {
+  if (node.type !== 'Identifier') {
     return -1;
   }
   switch (node.name) {
-    case "useEffect":
-    case "useLayoutEffect":
-    case "useCallback":
-    case "useMemo":
+    case 'useEffect':
+    case 'useLayoutEffect':
+    case 'useCallback':
+    case 'useMemo':
       // useEffect(fn)
       return 0;
-    case "useImperativeHandle":
+    case 'useImperativeHandle':
       // useImperativeHandle(ref, fn)
       return 1;
     default:
@@ -1937,14 +1938,14 @@ function fastFindReferenceWithParent(start, target) {
     }
 
     for (const [key, value] of Object.entries(item)) {
-      if (key === "parent") {
+      if (key === 'parent') {
         continue;
       }
       if (isNodeLike(value)) {
         value.parent = item;
         queue.push(value);
       } else if (Array.isArray(value)) {
-        value.forEach((val) => {
+        value.forEach(val => {
           if (isNodeLike(val)) {
             val.parent = item;
             queue.push(val);
@@ -1958,15 +1959,15 @@ function fastFindReferenceWithParent(start, target) {
 }
 
 function joinEnglish(arr) {
-  let s = "";
+  let s = '';
   for (let i = 0; i < arr.length; i++) {
     s += arr[i];
     if (i === 0 && arr.length === 2) {
-      s += " and ";
+      s += ' and ';
     } else if (i === arr.length - 2 && arr.length > 2) {
-      s += ", and ";
+      s += ', and ';
     } else if (i < arr.length - 1) {
-      s += ", ";
+      s += ', ';
     }
   }
   return s;
@@ -1974,16 +1975,16 @@ function joinEnglish(arr) {
 
 function isNodeLike(val) {
   return (
-    typeof val === "object" &&
+    typeof val === 'object' &&
     val !== null &&
     !Array.isArray(val) &&
-    typeof val.type === "string"
+    typeof val.type === 'string'
   );
 }
 
 function isSameIdentifier(a, b) {
   return (
-    (a.type === "Identifier" || a.type === "JSXIdentifier") &&
+    (a.type === 'Identifier' || a.type === 'JSXIdentifier') &&
     a.type === b.type &&
     a.name === b.name &&
     a.range[0] === b.range[0] &&

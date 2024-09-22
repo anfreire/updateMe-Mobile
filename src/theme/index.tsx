@@ -1,26 +1,26 @@
-import * as React from "react";
-import { useColorScheme } from "react-native";
+import * as React from 'react';
+import {useColorScheme} from 'react-native';
 import {
   Material3Theme,
   Material3Scheme,
   useMaterial3Theme,
-} from "@pchmn/expo-material3-theme";
+} from '@pchmn/expo-material3-theme';
 import {
   MD3DarkTheme,
   MD3LightTheme,
   Provider as PaperProvider,
   ProviderProps,
-} from "react-native-paper";
+} from 'react-native-paper';
 import {
   NavigationContainer,
   DarkTheme as NavigationDarkTheme,
   DefaultTheme as NavigationDefaultTheme,
-} from "@react-navigation/native";
-import merge from "deepmerge";
-import { useSettings } from "@/states/persistent/settings";
+} from '@react-navigation/native';
+import merge from 'deepmerge';
+import {useSettings} from '@/states/persistent/settings';
 
-export type ColorSchemeType = "light" | "dark";
-export type SavedColorSchemeType = "system" | ColorSchemeType;
+export type ColorSchemeType = 'light' | 'dark';
+export type SavedColorSchemeType = 'system' | ColorSchemeType;
 
 type useThemeState = {
   theme: Material3Theme;
@@ -51,26 +51,26 @@ const ThemeProvider = ({
   fallbackSourceColor,
   ...otherProps
 }: ThemeProviderProps) => {
-  const systemColorScheme = useColorScheme() === "dark" ? "dark" : "light";
-  const { colorScheme: rawColorScheme, sourceColor } = useSettings((state) => ({
-    colorScheme: state.settings.theme.colorScheme,
-    sourceColor: state.settings.theme.sourceColor,
+  const systemColorScheme = useColorScheme() === 'dark' ? 'dark' : 'light';
+  const {colorScheme: rawColorScheme, sourceColor} = useSettings(state => ({
+    colorScheme: state.settings.appearance.colorScheme,
+    sourceColor: state.settings.appearance.sourceColor,
   }));
-  const { setSetting, resetSetting } = useSettings();
-  const { theme, updateTheme, resetTheme } = useMaterial3Theme({
+  const {setSetting, resetSetting} = useSettings();
+  const {theme, updateTheme, resetTheme} = useMaterial3Theme({
     sourceColor: sourceColor,
     fallbackSourceColor,
   });
 
   const colorScheme = React.useMemo(
-    () => (rawColorScheme === "system" ? systemColorScheme : rawColorScheme),
-    [rawColorScheme, systemColorScheme]
+    () => (rawColorScheme === 'system' ? systemColorScheme : rawColorScheme),
+    [rawColorScheme, systemColorScheme],
   );
 
   const derivedThemes = React.useMemo(
     () => ({
       combinedTheme:
-        colorScheme === "dark"
+        colorScheme === 'dark'
           ? merge(NavigationDarkTheme, {
               ...MD3DarkTheme,
               colors: theme.dark,
@@ -81,27 +81,27 @@ const ThemeProvider = ({
             }),
       schemedTheme: theme[colorScheme],
     }),
-    [theme, colorScheme]
+    [theme, colorScheme],
   );
 
   const setSourceColor = React.useCallback(
     (color: string) => {
-      setSetting("theme", "sourceColor", color);
+      setSetting('appearance', 'sourceColor', color);
       updateTheme(color);
     },
-    [updateTheme]
+    [updateTheme],
   );
 
   const setColorScheme = React.useCallback(
     (newColorScheme: SavedColorSchemeType) => {
-      setSetting("theme", "colorScheme", newColorScheme);
+      setSetting('appearance', 'colorScheme', newColorScheme);
     },
-    []
+    [],
   );
 
   const resetSourceColor = React.useCallback(() => {
     resetTheme();
-    resetSetting("theme", "sourceColor");
+    resetSetting('appearance', 'sourceColor');
   }, [resetTheme]);
 
   const contextValue = React.useMemo(
@@ -125,7 +125,7 @@ const ThemeProvider = ({
       resetSourceColor,
       updateTheme,
       resetTheme,
-    ]
+    ],
   );
 
   return (
@@ -139,14 +139,14 @@ const ThemeProvider = ({
   );
 };
 
-ThemeProvider.displayName = "ThemeProvider";
+ThemeProvider.displayName = 'ThemeProvider';
 
 export default ThemeProvider;
 
 export const useTheme = (): UseThemeProps => {
   const context = React.useContext(ThemeContext);
   if (!context) {
-    throw new Error("useTheme must be used within a ThemeProvider");
+    throw new Error('useTheme must be used within a ThemeProvider');
   }
   return context;
 };

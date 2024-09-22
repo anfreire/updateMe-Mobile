@@ -1,10 +1,10 @@
-import { create } from "zustand";
-import { Logger } from "../persistent/logs";
-import { MultiIconType } from "@/components/multiIcon";
-import isEqual from "react-fast-compare";
+import {create} from 'zustand';
+import {Logger} from '../persistent/logs';
+import {MultiIconType} from '@/components/multiIcon';
+import isEqual from 'lodash/isEqual';
 
 const CATEGORIES_URL =
-  "https://raw.githubusercontent.com/anfreire/updateMe-Data/main/categories.json" as const;
+  'https://raw.githubusercontent.com/anfreire/updateMe-Data/main/categories.json' as const;
 
 export type Categories = Record<
   string,
@@ -26,26 +26,26 @@ type useCategoriesActions = {
 
 export type useCategoriesProps = useCategoriesState & useCategoriesActions;
 
-export const useCategories = create<useCategoriesProps>((set) => ({
+export const useCategories = create<useCategoriesProps>(set => ({
   categories: {},
   isFetched: false,
   fetch: async () => {
-    set({ isFetched: false });
+    set({isFetched: false});
     try {
       const response = await fetch(CATEGORIES_URL);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const newCategories = (await response.json()) as Categories;
-      set((state) =>
+      set(state =>
         isEqual(state.categories, newCategories)
-          ? { isFetched: true }
-          : { categories: newCategories, isFetched: true }
+          ? {isFetched: true}
+          : {categories: newCategories, isFetched: true},
       );
       return newCategories;
     } catch (error) {
       Logger.error(`Error fetching categories: ${error}`);
-      set({ isFetched: true });
+      set({isFetched: true});
       return null;
     }
   },

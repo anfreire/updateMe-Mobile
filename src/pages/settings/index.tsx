@@ -1,25 +1,25 @@
-import * as React from "react";
-import { ScrollView } from "react-native";
-import SettingsAppearance from "./sections/appearance";
-import SettingsLayout from "./sections/layout";
-import SettingsCheckboxes from "./sections/checkboxes";
-import { Page } from "@/types/navigation";
-import { useCurrPageEffect } from "@/hooks/useCurrPageEffect";
+import * as React from 'react';
+import {Page} from '@/types/navigation';
+import {useCurrPageEffect} from '@/hooks/useCurrPageEffect';
+import {SectionsData} from './data';
+import {FlashList} from '@shopify/flash-list';
+import SettingsSection from './section';
 
-const CURR_PAGE: Page = "settings";
+const CURR_PAGE: Page = 'settings';
 
-const SettingsScreen = () => {
+const SettingsScreen: React.FC = React.memo(() => {
   useCurrPageEffect(CURR_PAGE);
 
   return (
-    <ScrollView>
-      <SettingsAppearance />
-      <SettingsLayout />
-      <SettingsCheckboxes />
-    </ScrollView>
+    <FlashList
+      data={SectionsData}
+      renderItem={SettingsSection}
+      estimatedItemSize={SectionsData.length}
+      keyExtractor={item => item.title}
+    />
   );
-};
+});
 
-SettingsScreen.displayName = "SettingsScreen";
+SettingsScreen.displayName = 'SettingsScreen';
 
 export default SettingsScreen;

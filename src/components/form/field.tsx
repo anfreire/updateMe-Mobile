@@ -1,9 +1,8 @@
-import * as React from "react";
-import { StyleSheet, View } from "react-native";
-import { TextInput } from "react-native-paper";
-import { ScrollView } from "react-native";
-import FormSuggestions from "./suggestions";
-import isEqual from "react-fast-compare";
+import * as React from 'react';
+import {StyleSheet, View} from 'react-native';
+import {TextInput} from 'react-native-paper';
+import {ScrollView} from 'react-native';
+import FormSuggestions from './suggestions';
 
 interface FormFieldProps {
   label: string;
@@ -37,7 +36,7 @@ const FormField = ({
       scrollViewRef?.current?.getInnerViewNode(),
       (_, y) => {
         scrollTo?.(y - 150);
-      }
+      },
     );
   }, [scrollTo, scrollViewRef]);
 
@@ -46,7 +45,7 @@ const FormField = ({
       multiline: numberOfLines > 1,
       minHeight: numberOfLines > 1 ? 150 : undefined,
     }),
-    [numberOfLines]
+    [numberOfLines],
   );
 
   return (
@@ -61,8 +60,8 @@ const FormField = ({
         numberOfLines={1}
         maxLength={100}
         value={value}
-        onChangeText={(text) => onChange(fieldKey, text)}
-        style={[syles.input, { minHeight: multilineProps.minHeight }]}
+        onChangeText={text => onChange(fieldKey, text)}
+        style={[syles.input, {minHeight: multilineProps.minHeight}]}
         error={error}
       />
       <FormSuggestions
@@ -76,13 +75,13 @@ const FormField = ({
 
 const syles = StyleSheet.create({
   wrapper: {
-    width: "100%",
+    width: '100%',
   },
   input: {
-    width: "100%",
+    width: '100%',
   },
 });
 
-FormField.displayName = "FormField";
+FormField.displayName = 'FormField';
 
-export default React.memo(FormField, isEqual);
+export default React.memo(FormField);

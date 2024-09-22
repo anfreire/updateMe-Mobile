@@ -27,9 +27,9 @@ const HomeStack = () => {
   );
 
   return (
-    <Stack.Navigator initialRouteName="apps" id="apps-stack">
+    <Stack.Navigator initialRouteName="home" id="apps-stack">
       <Stack.Screen
-        name="apps"
+        name="home"
         options={{
           headerStyle: {
             backgroundColor: schemedTheme.surfaceContainer,

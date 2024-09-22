@@ -1,16 +1,16 @@
-import { StateStorage, createJSONStorage, persist } from "zustand/middleware";
-import { MMKV } from "react-native-mmkv";
-import { create } from "zustand";
-import isEqual from "react-fast-compare";
+import {StateStorage, createJSONStorage, persist} from 'zustand/middleware';
+import {MMKV} from 'react-native-mmkv';
+import {create} from 'zustand';
+import isEqual from 'lodash/isEqual';
 
-const STORAGE_ID = "notifications" as const;
+const STORAGE_ID = 'notifications' as const;
 
-const storage = new MMKV({ id: STORAGE_ID });
+const storage = new MMKV({id: STORAGE_ID});
 
 const zustandStorage: StateStorage = {
   setItem: (name, value) => storage.set(name, value),
-  getItem: (name) => storage.getString(name) ?? null,
-  removeItem: (name) => storage.delete(name),
+  getItem: name => storage.getString(name) ?? null,
+  removeItem: name => storage.delete(name),
 };
 
 type useNotificationsState = {
@@ -25,23 +25,23 @@ export type useNotificationsProps = useNotificationsState &
   useNotificationsActions;
 export const useNotifications = create<useNotificationsProps>()(
   persist(
-    (set) => ({
+    set => ({
       appsVersionsSent: {},
       addAppVersionSent: (appName, version) => {
-        set((state) => {
+        set(state => {
           const newAppsVersionsSent = {
             ...state.appsVersionsSent,
             [appName]: version,
           };
           return isEqual(state.appsVersionsSent, newAppsVersionsSent)
             ? state
-            : { appsVersionsSent: newAppsVersionsSent };
+            : {appsVersionsSent: newAppsVersionsSent};
         });
       },
     }),
     {
       name: STORAGE_ID,
       storage: createJSONStorage(() => zustandStorage),
-    }
-  )
+    },
+  ),
 );

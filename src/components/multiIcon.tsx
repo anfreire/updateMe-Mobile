@@ -1,5 +1,4 @@
 import * as React from 'react';
-import isEqual from 'react-fast-compare';
 import {IconProps} from 'react-native-vector-icons/Icon';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Entypo from 'react-native-vector-icons/Entypo';
@@ -36,20 +35,17 @@ const typeMapper: Record<string, React.ComponentType<IconProps>> = {
 export type MultiIconType = keyof typeof typeMapper;
 
 interface MultiIconProps extends IconProps {
-  type: MultiIconType;
+  type?: MultiIconType;
 }
 
 const MultiIcon = (props: MultiIconProps) => {
   const {type, ...otherProps} = props;
-  const IconComponent = React.useMemo(() => typeMapper[type], [type]);
-
-  return (
-    <React.Suspense fallback={null}>
-      <IconComponent {...otherProps} />
-    </React.Suspense>
+  return React.createElement(
+    typeMapper[type ?? 'material-community'],
+    otherProps,
   );
 };
 
 MultiIcon.displayName = 'MultiIcon';
 
-export default React.memo(MultiIcon, isEqual);
+export default React.memo(MultiIcon);

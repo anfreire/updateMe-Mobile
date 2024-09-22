@@ -2,7 +2,7 @@ import {create} from 'zustand';
 import {Index} from '@/states/fetched/index';
 import {DefaultProviders} from '@/states/persistent/defaultProviders';
 import {Versions} from '@/states/computed/versions';
-import isEqual from 'react-fast-compare';
+import isEqual from 'lodash/isEqual';
 
 export type Updates = string[];
 

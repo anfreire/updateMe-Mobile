@@ -1,10 +1,12 @@
+export type HomeLayout = 'categories' | 'list' | 'grid';
+
 export interface Settings {
   layout: {
-    homeStyle: "categories" | "list" | "grid";
+    homeStyle: HomeLayout;
   };
-  theme: {
+  appearance: {
     sourceColor?: string;
-    colorScheme: "system" | "light" | "dark";
+    colorScheme: 'system' | 'light' | 'dark';
   };
   notifications: {
     updatesNotification: boolean;
@@ -21,11 +23,11 @@ export interface Settings {
 
 export const DEFAULT_SETTINGS: Settings = {
   layout: {
-    homeStyle: "categories",
+    homeStyle: 'categories',
   },
-  theme: {
+  appearance: {
     sourceColor: undefined,
-    colorScheme: "system",
+    colorScheme: 'system',
   },
   notifications: {
     updatesNotification: true,
@@ -42,16 +44,19 @@ export const DEFAULT_SETTINGS: Settings = {
 
 export type SettingsSection = keyof Settings;
 
-export type SettingsSectionItem<T extends SettingsSection> = keyof Settings[T];
+export type SettingsSectionItem<T extends SettingsSection> = {
+  [K in keyof Settings[T]]: K;
+}[keyof Settings[T]];
 
-export type SettingsSectionItemValue<T extends SettingsSection> =
-  Settings[T][SettingsSectionItem<T>];
+export type SettingsSectionItemInferred = {
+  [K in SettingsSection]: SettingsSectionItem<K>;
+}[SettingsSection];
 
-export type BooleanSettingsSection = {
-  [K in keyof Settings]: Settings[K] extends { [key: string]: boolean }
-    ? K
-    : never;
-}[keyof Settings];
-
-export type BooleanSettingsSectionItem<T extends BooleanSettingsSection> =
-  Settings[T] extends { [key: string]: boolean } ? keyof Settings[T] : never;
+export type SettingsSectionItemValue<
+  T extends SettingsSection,
+  K extends SettingsSectionItem<T>,
+> = {
+  [P in T]: {
+    [Q in K]: Settings[P][Q];
+  };
+}[T][K];

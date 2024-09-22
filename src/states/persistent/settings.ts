@@ -1,25 +1,23 @@
-import { StateStorage, createJSONStorage, persist } from "zustand/middleware";
-import { MMKV } from "react-native-mmkv";
-import { create } from "zustand";
+import {StateStorage, createJSONStorage, persist} from 'zustand/middleware';
+import {MMKV} from 'react-native-mmkv';
+import {create} from 'zustand';
 import {
-  BooleanSettingsSection,
-  BooleanSettingsSectionItem,
   DEFAULT_SETTINGS,
   Settings,
   SettingsSection,
   SettingsSectionItem,
   SettingsSectionItemValue,
-} from "@/types/settings";
-import isEqual from "react-fast-compare";
+} from '@/types/settings';
+import isEqual from 'lodash/isEqual';
 
-const STORAGE_ID = "settings" as const;
+const STORAGE_ID = 'settings' as const;
 
-const storage = new MMKV({ id: STORAGE_ID });
+const storage = new MMKV({id: STORAGE_ID});
 
 const zustandStorage: StateStorage = {
   setItem: (name, value) => storage.set(name, value),
-  getItem: (name) => storage.getString(name) ?? null,
-  removeItem: (name) => storage.delete(name),
+  getItem: name => storage.getString(name) ?? null,
+  removeItem: name => storage.delete(name),
 };
 
 type useSettingsState = {
@@ -27,21 +25,14 @@ type useSettingsState = {
 };
 
 type useSettingsActions = {
-  setSetting: <T extends keyof Settings, K extends keyof Settings[T]>(
+  setSetting: <T extends SettingsSection, K extends SettingsSectionItem<T>>(
     key: T,
     item: K,
-    value: Settings[T][K]
+    value: SettingsSectionItemValue<T, K>,
   ) => void;
-  toggleSetting: <
-    T extends BooleanSettingsSection,
-    K extends BooleanSettingsSectionItem<T>,
-  >(
+  resetSetting: <T extends SettingsSection, K extends SettingsSectionItem<T>>(
     key: T,
-    item: K
-  ) => void;
-  resetSetting: <T extends keyof Settings, K extends keyof Settings[T]>(
-    key: T,
-    item: K
+    item: K,
   ) => void;
 };
 
@@ -49,48 +40,31 @@ export type useSettingsProps = useSettingsState & useSettingsActions;
 
 export const useSettings = create<useSettingsProps>()(
   persist(
-    (set) => ({
+    set => ({
       settings: DEFAULT_SETTINGS,
       setSetting: <T extends SettingsSection, K extends SettingsSectionItem<T>>(
         key: T,
         item: K,
-        value: SettingsSectionItemValue<T>
+        value: SettingsSectionItemValue<T, K>,
       ) => {
-        set((state) => {
+        set(state => {
           const newSettings = {
             ...state.settings,
-            [key]: { ...state.settings[key], [item]: value },
+            [key]: {...state.settings[key], [item]: value},
           };
           return isEqual(state.settings, newSettings)
             ? state
-            : { settings: newSettings };
+            : {settings: newSettings};
         });
-      },
-      toggleSetting: <
-        T extends BooleanSettingsSection,
-        K extends BooleanSettingsSectionItem<T>,
-      >(
-        key: T,
-        item: K
-      ) => {
-        set((state) => ({
-          settings: {
-            ...state.settings,
-            [key]: {
-              ...state.settings[key],
-              [item]: !state.settings[key][item],
-            },
-          },
-        }));
       },
       resetSetting: <
         T extends SettingsSection,
         K extends SettingsSectionItem<T>,
       >(
         key: T,
-        item: K
+        item: K,
       ) => {
-        set((state) => {
+        set(state => {
           const newSettings = {
             ...state.settings,
             [key]: {
@@ -100,13 +74,13 @@ export const useSettings = create<useSettingsProps>()(
           };
           return isEqual(state.settings, newSettings)
             ? state
-            : { settings: newSettings };
+            : {settings: newSettings};
         });
       },
     }),
     {
       name: STORAGE_ID,
       storage: createJSONStorage(() => zustandStorage),
-    }
-  )
+    },
+  ),
 );

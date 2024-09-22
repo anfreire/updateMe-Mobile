@@ -1,9 +1,9 @@
-import { create } from "zustand";
-import { Logger } from "../persistent/logs";
-import isEqual from "react-fast-compare";
+import {create} from 'zustand';
+import {Logger} from '../persistent/logs';
+import isEqual from 'lodash/isEqual';
 
 const INDEX_URL =
-  "https://raw.githubusercontent.com/anfreire/updateMe-Data/main/index.json" as const;
+  'https://raw.githubusercontent.com/anfreire/updateMe-Data/main/index.json' as const;
 
 export interface IndexAppProviderProps {
   packageName: string;
@@ -37,21 +37,21 @@ interface useIndexActions {
 
 export type useIndexProps = useIndexState & useIndexActions;
 
-export const useIndex = create<useIndexProps>((set) => ({
+export const useIndex = create<useIndexProps>(set => ({
   index: {},
   isFetched: false,
   fetch: async () => {
-    set({ isFetched: false });
+    set({isFetched: false});
     try {
       const response = await fetch(INDEX_URL);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const newIndex = (await response.json()) as Index;
-      set((state) =>
+      set(state =>
         isEqual(state.index, newIndex)
-          ? { isFetched: true }
-          : { index: newIndex, isFetched: true }
+          ? {isFetched: true}
+          : {index: newIndex, isFetched: true},
       );
       return newIndex;
     } catch (error) {
