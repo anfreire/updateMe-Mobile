@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {SectionComponentDataInferred} from './data';
+import {SectionComponentDataInferred} from '../data';
 import {List} from 'react-native-paper';
 import {useTranslations} from '@/states/persistent/translations';
 import DialogSettingsItem from './dialogItem';

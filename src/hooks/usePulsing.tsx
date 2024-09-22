@@ -39,3 +39,26 @@ export function usePulsing() {
 
   return {startPulsing, cancelPulsing, pulsingStyles};
 }
+
+export function usePulsingStyles(pulse: boolean) {
+  const {pulsingStyles, startPulsing, cancelPulsing} = usePulsing();
+  const isPulsing = React.useRef(false);
+
+  React.useEffect(() => {
+    if (isPulsing.current || !pulse) return;
+
+    startPulsing(() => {
+      isPulsing.current = false;
+    });
+    isPulsing.current = true;
+
+    return () => {
+      if (isPulsing.current) {
+        cancelPulsing();
+        isPulsing.current = false;
+      }
+    };
+  }, [pulse, cancelPulsing, startPulsing]);
+
+  return pulsingStyles;
+}

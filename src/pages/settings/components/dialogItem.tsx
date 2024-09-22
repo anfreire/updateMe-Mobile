@@ -5,8 +5,10 @@ import {List} from 'react-native-paper';
 import Animated from 'react-native-reanimated';
 import MultiIcon from '@/components/multiIcon';
 import {Style} from 'react-native-paper/lib/typescript/components/List/utils';
-import {usePulsingSettingsStyles} from './usePulsingSettingsStyle';
-import {ItemComponentDataInferred} from './data';
+import {ItemComponentDataInferred} from '../data';
+import {useRoute} from '@react-navigation/native';
+import {RouteProps} from '@/types/navigation';
+import {usePulsingStyles} from '@/hooks/usePulsing';
 
 const AnimatedListItem = Animated.createAnimatedComponent(List.Item);
 
@@ -30,7 +32,13 @@ const DialogSettingsItem = ({data}: DialogSettingItemProps) => {
     state.translations[data.description],
   ]);
   const openDialog = useDialogs(state => state.openDialog);
-  const pulsingStyles = usePulsingSettingsStyles(data.key);
+  const {params} = useRoute<RouteProps>();
+  const paramMatches = React.useMemo(
+    () => !!(params && 'setting' in params && params.setting === data.key),
+    [params, data.key],
+  );
+
+  const pulsingStyles = usePulsingStyles(paramMatches);
 
   const handlePress = React.useCallback(() => {
     openDialog(data.action.data as Dialog);

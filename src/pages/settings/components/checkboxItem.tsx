@@ -4,8 +4,7 @@ import {Checkbox, List} from 'react-native-paper';
 import Animated from 'react-native-reanimated';
 import MultiIcon from '@/components/multiIcon';
 import {useSettings} from '@/states/persistent/settings';
-import {usePulsingSettingsStyles} from './usePulsingSettingsStyle';
-import {ItemComponentDataInferred} from './data';
+import {ItemComponentDataInferred} from '../data';
 import {useShallow} from 'zustand/react/shallow';
 import {
   SettingsSection,
@@ -13,6 +12,9 @@ import {
   SettingsSectionItemValue,
 } from '@/types/settings';
 import {Style} from 'react-native-paper/lib/typescript/components/List/utils';
+import {usePulsingStyles} from '@/hooks/usePulsing';
+import {useRoute} from '@react-navigation/native';
+import {RouteProps} from '@/types/navigation';
 
 const AnimatedListItem = Animated.createAnimatedComponent(List.Item);
 
@@ -28,7 +30,13 @@ const CheckboxSettingsItem = ({data}: CheckboxSettingItemProps) => {
     state.translations[data.title],
     state.translations[data.description],
   ]);
-  const pulsingStyles = usePulsingSettingsStyles(item);
+  const {params} = useRoute<RouteProps>();
+  const paramMatches = React.useMemo(
+    () => !!(params && 'setting' in params && params.setting === item),
+    [params, item],
+  );
+
+  const pulsingStyles = usePulsingStyles(paramMatches);
   const [persistedValue, setPersistedValue] = useSettings(
     useShallow(state => [state.settings[section][item], state.setSetting]),
   );
@@ -76,5 +84,4 @@ const CheckboxSettingsItem = ({data}: CheckboxSettingItemProps) => {
   );
 };
 
-CheckboxSettingsItem.displayName = 'CheckboxSettingsItem';
 export default React.memo(CheckboxSettingsItem);

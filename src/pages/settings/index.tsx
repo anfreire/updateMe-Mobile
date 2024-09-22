@@ -3,7 +3,7 @@ import {Page} from '@/types/navigation';
 import {useCurrPageEffect} from '@/hooks/useCurrPageEffect';
 import {SectionsData} from './data';
 import {FlashList} from '@shopify/flash-list';
-import SettingsSection from './section';
+import SettingsSection from './components/section';
 
 const CURR_PAGE: Page = 'settings';
 
