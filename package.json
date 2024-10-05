@@ -6,7 +6,7 @@
     "android": "env PATH=\"/home/linuxbrew/.linuxbrew/opt/openjdk@17/bin:/home/linuxbrew/.linuxbrew/bin:$PATH\" react-native run-android --active-arch-only",
     "ios": "react-native run-ios",
     "lint": "eslint",
-    "start": "react-native start",
+    "start": "env PATH=\"/home/linuxbrew/.linuxbrew/opt/openjdk@17/bin:/home/linuxbrew/.linuxbrew/bin:$PATH\" react-native start",
     "test": "jest",
     "clear": "watchman watch-del '/home/anfreire/Documents/Projects/Mobile/updateMe' ; watchman watch-project '/home/anfreire/Documents/Projects/Mobile/updateMe'",
     "build-clean": "rm -rf android/app/build; cd android && env PATH=\"/home/linuxbrew/.linuxbrew/opt/openjdk@17/bin:/home/linuxbrew/.linuxbrew/bin:$PATH\" ./gradlew clean",

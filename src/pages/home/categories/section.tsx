@@ -2,21 +2,21 @@ import {Categories} from '@/states/fetched/categories';
 import * as React from 'react';
 import {StyleSheet} from 'react-native';
 import {List} from 'react-native-paper';
-import HomeCategoryItem from './homeCategoryItem';
 import {Style} from 'react-native-paper/lib/typescript/components/List/utils';
 import MultiIcon from '@/components/multiIcon';
+import HomeCategoriesItem from './item';
 
 interface HomeCategorySectionProps {
   title: string;
   category: Categories[string];
-  expanded: boolean;
+  isExpanded: boolean;
   toggleCategory: (category: string) => void;
 }
 
-const HomeCategorySection = ({
+const HomeCategoriesSection = ({
   title,
   category,
-  expanded,
+  isExpanded,
   toggleCategory,
 }: HomeCategorySectionProps) => {
   const CategoryIcon = React.useCallback(
@@ -31,7 +31,7 @@ const HomeCategorySection = ({
     [category.type, category.icon],
   );
 
-  const handleToggle = React.useCallback(() => {
+  const handleOnPress = React.useCallback(() => {
     toggleCategory(title);
   }, [toggleCategory, title]);
 
@@ -39,11 +39,11 @@ const HomeCategorySection = ({
     <List.Accordion
       title={title}
       style={styles.categoryContainer}
-      expanded={expanded}
-      onPress={handleToggle}
+      expanded={isExpanded}
+      onPress={handleOnPress}
       left={CategoryIcon}>
       {category.apps.map(app => (
-        <HomeCategoryItem key={app} app={app} />
+        <HomeCategoriesItem key={app} app={app} />
       ))}
     </List.Accordion>
   );
@@ -55,6 +55,6 @@ const styles = StyleSheet.create({
   },
 });
 
-HomeCategorySection.displayName = 'HomeCategorySection';
+HomeCategoriesSection.displayName = 'HomeCategoriesSection';
 
-export default React.memo(HomeCategorySection);
+export default React.memo(HomeCategoriesSection);

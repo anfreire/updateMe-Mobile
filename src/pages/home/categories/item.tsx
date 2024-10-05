@@ -1,21 +1,26 @@
-import {useIndex} from '@/states/fetched';
 import * as React from 'react';
-import {StyleSheet} from 'react-native';
+import {useIndex} from '@/states/fetched';
+import {Image, StyleSheet} from 'react-native';
 import {List} from 'react-native-paper';
 import {useNavigation} from '@react-navigation/native';
-import AppIcon from '@/pages/home/components/common/appIcon';
 import {NavigationProps} from '@/types/navigation';
 
-export interface HomeCategoryItemProps {
+export interface HomeItemProps {
   app: string;
 }
 
-const HomeCategoryItem = ({app}: HomeCategoryItemProps) => {
+const HomeCategoriesItem = ({app}: HomeItemProps) => {
   const index = useIndex(state => state.index);
   const {navigate} = useNavigation<NavigationProps>();
 
-  const CategoriesAppIcon = React.useCallback(
-    () => <AppIcon homeLayout="categories" uri={index[app].icon} />,
+  const buildAppIcon = React.useCallback(
+    () => (
+      <Image
+        resizeMode="contain"
+        style={styles.appIcon}
+        source={{uri: index[app].icon}}
+      />
+    ),
     [app, index],
   );
 
@@ -27,21 +32,25 @@ const HomeCategoryItem = ({app}: HomeCategoryItemProps) => {
     <List.Item
       key={app}
       title={app}
-      style={styles.homeCategoryItem}
-      left={CategoriesAppIcon}
+      style={styles.homeItem}
+      left={buildAppIcon}
       onPress={handleOnPress}
     />
   );
 };
 
 const styles = StyleSheet.create({
-  homeCategoryItem: {
+  appIcon: {
+    width: 25,
+    height: 25,
+  },
+  homeItem: {
     paddingLeft: 25,
     backgroundColor: 'transparent',
     width: '100%',
   },
 });
 
-HomeCategoryItem.displayName = 'HomeCategoryItem';
+HomeCategoriesItem.displayName = 'HomeCategoriesItem';
 
-export default React.memo(HomeCategoryItem);
+export default React.memo(HomeCategoriesItem);

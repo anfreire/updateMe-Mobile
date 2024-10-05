@@ -1,9 +1,4 @@
-export type HomeLayout = 'categories' | 'list' | 'grid';
-
 export interface Settings {
-  layout: {
-    homeStyle: HomeLayout;
-  };
   appearance: {
     sourceColor?: string;
     colorScheme: 'system' | 'light' | 'dark';
@@ -22,9 +17,6 @@ export interface Settings {
 }
 
 export const DEFAULT_SETTINGS: Settings = {
-  layout: {
-    homeStyle: 'categories',
-  },
   appearance: {
     sourceColor: undefined,
     colorScheme: 'system',

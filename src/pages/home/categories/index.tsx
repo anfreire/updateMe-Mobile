@@ -2,8 +2,8 @@ import * as React from 'react';
 import ThemedRefreshControl from '@/components/refreshControl';
 import {useIndex} from '@/states/fetched';
 import {useCategories} from '@/states/fetched/categories';
-import {useHomeCategories} from './useHomeCategories';
 import {FlashList} from '@shopify/flash-list';
+import {useHomeCategories} from '../hooks/useHomeCategories';
 
 const refresh = () => {
   useIndex.getState().fetch();

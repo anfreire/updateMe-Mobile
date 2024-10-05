@@ -36,6 +36,7 @@ const zustandFunctions = [
   'cancel',
   'did',
   'toggle',
+  'interpolate',
 ];
 
 function isZustandFunction(variableName, calleeName) {

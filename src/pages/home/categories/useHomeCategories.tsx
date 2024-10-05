@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {useIndex} from '@/states/fetched';
 import {useCategories} from '@/states/fetched/categories';
-import HomeCategorySection from './homeCategorySection';
+import HomeCategorySection from '../categories/section';
 
 export function useHomeCategories(apps: string[]) {
   const index = useIndex(state => state.index);
@@ -60,7 +60,7 @@ export function useHomeCategories(apps: string[]) {
         key={item}
         title={item}
         category={filteredCategories[item]}
-        expanded={isInSearch || openedCategories.has(item)}
+        isExpanded={isInSearch || openedCategories.has(item)}
         toggleCategory={toggleCategory}
       />
     ),
