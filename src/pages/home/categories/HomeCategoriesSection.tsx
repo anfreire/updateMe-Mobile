@@ -4,7 +4,7 @@ import {StyleSheet} from 'react-native';
 import {List} from 'react-native-paper';
 import {Style} from 'react-native-paper/lib/typescript/components/List/utils';
 import MultiIcon from '@/components/multiIcon';
-import HomeCategoriesItem from './item';
+import HomeCategoriesItem from './HomeCategoriesItem';
 
 interface HomeCategorySectionProps {
   title: string;
@@ -54,7 +54,5 @@ const styles = StyleSheet.create({
     paddingLeft: 0,
   },
 });
-
-HomeCategoriesSection.displayName = 'HomeCategoriesSection';
 
 export default React.memo(HomeCategoriesSection);

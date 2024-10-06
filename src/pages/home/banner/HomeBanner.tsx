@@ -14,4 +14,4 @@ const HomeBanner = () => {
   );
 };
 
-export default HomeBanner;
+export default React.memo(HomeBanner);

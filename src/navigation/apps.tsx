@@ -1,6 +1,6 @@
 import * as React from 'react';
 import AppScreen from '@/pages/app';
-import HomeScreen from '@/pages/home';
+import HomeScreen from '@/pages/home/homeScreen';
 import HomeLogo from '@/pages/home/logo';
 import {useDrawer} from '@/states/runtime/drawer';
 import {useTheme} from '@/theme';

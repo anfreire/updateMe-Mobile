@@ -1,3 +1,3 @@
-import HomeBanner from './homeBanner';
+import HomeBanner from './HomeBanner';
 
 export {HomeBanner};

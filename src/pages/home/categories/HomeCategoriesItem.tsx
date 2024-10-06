@@ -51,6 +51,4 @@ const styles = StyleSheet.create({
   },
 });
 
-HomeCategoriesItem.displayName = 'HomeCategoriesItem';
-
 export default React.memo(HomeCategoriesItem);
