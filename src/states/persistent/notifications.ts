@@ -1,7 +1,7 @@
 import {StateStorage, createJSONStorage, persist} from 'zustand/middleware';
 import {MMKV} from 'react-native-mmkv';
 import {create} from 'zustand';
-import isEqual from 'lodash/isEqual';
+import {deepEqual} from 'fast-equals';
 
 const STORAGE_ID = 'notifications' as const;
 
@@ -33,7 +33,7 @@ export const useNotifications = create<useNotificationsProps>()(
             ...state.appsVersionsSent,
             [appName]: version,
           };
-          return isEqual(state.appsVersionsSent, newAppsVersionsSent)
+          return deepEqual(state.appsVersionsSent, newAppsVersionsSent)
             ? state
             : {appsVersionsSent: newAppsVersionsSent};
         });

@@ -1,7 +1,8 @@
 import {StateStorage, createJSONStorage, persist} from 'zustand/middleware';
 import {MMKV} from 'react-native-mmkv';
 import {create} from 'zustand';
-import isEqual from 'lodash/isEqual';
+import {deepEqual} from 'fast-equals';
+
 import {Index, IndexApp} from '@/states/fetched/index';
 
 const STORAGE_ID = 'default-providers' as const;
@@ -59,7 +60,7 @@ export const useDefaultProviders = create<useDefaultProvidersProps>()(
           ),
         );
         set(state =>
-          isEqual(state.defaultProviders, newDefaultProviders)
+          deepEqual(state.defaultProviders, newDefaultProviders)
             ? state
             : {defaultProviders: newDefaultProviders},
         );
@@ -73,7 +74,10 @@ export const useDefaultProviders = create<useDefaultProvidersProps>()(
           ]),
         );
         set(state =>
-          isEqual(state.populatedDefaultProviders, newPopulatedDefaultProviders)
+          deepEqual(
+            state.populatedDefaultProviders,
+            newPopulatedDefaultProviders,
+          )
             ? state
             : {populatedDefaultProviders: newPopulatedDefaultProviders},
         );

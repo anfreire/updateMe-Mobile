@@ -1,5 +1,4 @@
 import {create} from 'zustand';
-import isEqual from 'lodash/isEqual';
 
 export type Dialog =
   | 'sourceColorPicker'

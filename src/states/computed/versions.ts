@@ -2,7 +2,7 @@ import AppsModule from '@/lib/apps';
 import {create} from 'zustand';
 import {Index} from '@/states/fetched/index';
 import {DefaultProviders} from '@/states/persistent/defaultProviders';
-import isEqual from 'lodash/isEqual';
+import {deepEqual} from 'fast-equals';
 
 export type Versions = Record<string, string | null>;
 
@@ -34,7 +34,7 @@ export const useVersions = create<useVersionsProps>(set => ({
     const newVersions = Object.fromEntries(entries);
 
     set(state =>
-      isEqual(state.versions, newVersions) ? state : {versions: newVersions},
+      deepEqual(state.versions, newVersions) ? state : {versions: newVersions},
     );
 
     return newVersions;

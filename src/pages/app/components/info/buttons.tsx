@@ -36,8 +36,6 @@ const AppInfoButtons = ({currApp}: AppInfoButtonsProps) => {
     };
   }, [currApp, translations, handleInstall]);
 
-  console.log('AppInfoButtons rendered', buttonProps);
-
   return (
     <View style={styles.buttonWrapper}>
       <Button

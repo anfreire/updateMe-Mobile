@@ -8,7 +8,7 @@ import {
   SettingsSectionItem,
   SettingsSectionItemValue,
 } from '@/types/settings';
-import isEqual from 'lodash/isEqual';
+import {deepEqual} from 'fast-equals';
 
 const STORAGE_ID = 'settings' as const;
 
@@ -52,7 +52,7 @@ export const useSettings = create<useSettingsProps>()(
             ...state.settings,
             [key]: {...state.settings[key], [item]: value},
           };
-          return isEqual(state.settings, newSettings)
+          return deepEqual(state.settings, newSettings)
             ? state
             : {settings: newSettings};
         });

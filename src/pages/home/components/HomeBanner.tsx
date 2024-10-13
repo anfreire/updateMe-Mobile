@@ -1,11 +1,16 @@
 import * as React from 'react';
+import {Banner} from 'react-native-paper';
 import {useTranslations} from '@/states/persistent/translations';
 import {useUpdates} from '@/states/computed/updates';
 import {useSession} from '@/states/runtime/session';
 import {useNavigation} from '@react-navigation/native';
 import {NavigationProps} from '@/types/navigation';
 
-export function useHomeBanner() {
+/*******************************************************************************
+ *                                    LOGIC                                    *
+ *******************************************************************************/
+
+function useHomeBanner() {
   const interpolate = useTranslations(state => state.interpolate);
   const updates = useUpdates(state => state.updates);
   const [bannerDismissed, activateFlag] = useSession(state => [
@@ -15,7 +20,7 @@ export function useHomeBanner() {
   const {navigate} = useNavigation<NavigationProps>();
 
   const bannerMessage = React.useMemo(() => {
-    if (updates.length === 0) return null;
+    if (bannerDismissed || updates.length === 0) return '';
     const updatesCopy = [...updates];
     if (updates.length === 1) {
       return interpolate('There is an update available for $1', updates[0]);
@@ -27,7 +32,7 @@ export function useHomeBanner() {
         lastApp,
       );
     }
-  }, [updates]);
+  }, [bannerDismissed, updates]);
 
   const bannerActions = React.useMemo(
     () => [
@@ -43,5 +48,27 @@ export function useHomeBanner() {
     [navigate],
   );
 
-  return {bannerDismissed, bannerMessage, bannerActions};
+  const bannerVisible = !bannerDismissed && bannerMessage !== '';
+
+  return {bannerVisible, bannerMessage, bannerActions};
 }
+
+/*******************************************************************************
+ *                                  COMPONENT                                  *
+ *******************************************************************************/
+
+const HomeBanner = () => {
+  const {bannerVisible, bannerMessage, bannerActions} = useHomeBanner();
+
+  return (
+    <Banner visible={bannerVisible} actions={bannerActions}>
+      {bannerMessage}
+    </Banner>
+  );
+};
+
+/*******************************************************************************
+ *                                    EXPORT                                   *
+ *******************************************************************************/
+
+export default React.memo(HomeBanner);

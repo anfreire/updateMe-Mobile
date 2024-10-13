@@ -1,7 +1,7 @@
 import {create} from 'zustand';
 import {Logger} from '../persistent/logs';
 import {MultiIconType} from '@/components/multiIcon';
-import isEqual from 'lodash/isEqual';
+import {deepEqual} from 'fast-equals';
 
 const CATEGORIES_URL =
   'https://raw.githubusercontent.com/anfreire/updateMe-Data/main/categories.json' as const;
@@ -38,7 +38,7 @@ export const useCategories = create<useCategoriesProps>(set => ({
       }
       const newCategories = (await response.json()) as Categories;
       set(state =>
-        isEqual(state.categories, newCategories)
+        deepEqual(state.categories, newCategories)
           ? {isFetched: true}
           : {categories: newCategories, isFetched: true},
       );

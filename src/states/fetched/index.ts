@@ -1,6 +1,6 @@
 import {create} from 'zustand';
 import {Logger} from '../persistent/logs';
-import isEqual from 'lodash/isEqual';
+import {deepEqual} from 'fast-equals';
 
 const INDEX_URL =
   'https://raw.githubusercontent.com/anfreire/updateMe-Data/main/index.json' as const;
@@ -49,7 +49,7 @@ export const useIndex = create<useIndexProps>(set => ({
       }
       const newIndex = (await response.json()) as Index;
       set(state =>
-        isEqual(state.index, newIndex)
+        deepEqual(state.index, newIndex)
           ? {isFetched: true}
           : {index: newIndex, isFetched: true},
       );

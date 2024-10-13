@@ -1,5 +1,5 @@
 import {create} from 'zustand';
-import isEqual from 'lodash/isEqual';
+import {deepEqual} from 'fast-equals';
 
 const TIPS_URL =
   'https://raw.githubusercontent.com/anfreire/updateMe-Data/main/tips.json';
@@ -37,13 +37,12 @@ export const useTips = create<useTipsProps>(set => ({
       }
       const newTips = (await response.json()) as Tips;
       set(state =>
-        isEqual(state.tips, newTips)
+        deepEqual(state.tips, newTips)
           ? {isFetched: true}
           : {tips: newTips, isFetched: true},
       );
       return newTips;
-    } catch (error) {
-      console.error(`Error fetching tips: ${error}`);
+    } catch (_) {
       set({isFetched: true});
       return null;
     }

@@ -24,7 +24,6 @@ const AppInfo = ({currApp}: AppInfoProps) => {
     }),
     [currApp, theme.schemedTheme.error, translations],
   );
-  console.log('AppInfo rendered', localVersionProps);
 
   return (
     <Card contentStyle={styles.card}>

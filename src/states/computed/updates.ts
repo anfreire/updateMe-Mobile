@@ -2,7 +2,7 @@ import {create} from 'zustand';
 import {Index} from '@/states/fetched/index';
 import {DefaultProviders} from '@/states/persistent/defaultProviders';
 import {Versions} from '@/states/computed/versions';
-import isEqual from 'lodash/isEqual';
+import {deepEqual} from 'fast-equals';
 
 export type Updates = string[];
 
@@ -35,7 +35,7 @@ export const useUpdates = create<useUpdatesProps>(set => ({
     }, [] as Updates);
 
     set(state =>
-      isEqual(state.updates, newUpdates) ? state : {updates: newUpdates},
+      deepEqual(state.updates, newUpdates) ? state : {updates: newUpdates},
     );
 
     return newUpdates;

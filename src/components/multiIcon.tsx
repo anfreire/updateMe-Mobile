@@ -46,6 +46,4 @@ const MultiIcon = (props: MultiIconProps) => {
   );
 };
 
-MultiIcon.displayName = 'MultiIcon';
-
 export default React.memo(MultiIcon);

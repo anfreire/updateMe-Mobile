@@ -1,7 +1,7 @@
 import {create} from 'zustand';
 import AppsModule from '@/lib/apps';
 import {Logger} from '@/states/persistent/logs';
-import isEqual from 'lodash/isEqual';
+import {deepEqual} from 'fast-equals';
 
 const APP_INFO_URL =
   'https://raw.githubusercontent.com/anfreire/updateMe-Data/main/app.json';
@@ -47,7 +47,7 @@ export const useApp = create<useAppProps>(set => ({
       }
       const newLatest = (await response.json()) as LatestAppInfo;
       set(state =>
-        isEqual(state.latest, newLatest)
+        deepEqual(state.latest, newLatest)
           ? {isFetched: true}
           : {latest: newLatest, isFetched: true},
       );

@@ -1,30 +1,20 @@
 import * as React from 'react';
 import AppScreen from '@/pages/app';
-import HomeScreen from '@/pages/home/homeScreen';
-import HomeLogo from '@/pages/home/logo';
-import {useDrawer} from '@/states/runtime/drawer';
+import HomeScreen from '@/pages/home';
 import {useTheme} from '@/theme';
 import {createStackNavigator} from '@react-navigation/stack';
-import {IconButton} from 'react-native-paper';
-import {AppsStackParams, NavigationProps} from '@/types/navigation';
-import {useNavigation} from '@react-navigation/native';
+import {AppsStackParams} from '@/types/navigation';
+import HomeLogo from '@/pages/home/components/HomeLogo';
+import {useDrawerButton} from './buttons/useDrawerButton';
+import {useBackButton} from './buttons/useBackButton';
 
 const Stack = createStackNavigator<AppsStackParams>();
 
 const HomeStack = () => {
   const {schemedTheme} = useTheme();
-  const openDrawer = useDrawer(state => state.openDrawer);
-  const {goBack} = useNavigation<NavigationProps>();
 
-  const headerRight = React.useCallback(
-    () => <IconButton icon="menu" onPress={openDrawer} />,
-    [],
-  );
-
-  const headerLeft = React.useCallback(
-    () => <IconButton icon="arrow-left" onPress={goBack} />,
-    [goBack],
-  );
+  const drawerButton = useDrawerButton();
+  const backButton = useBackButton();
 
   return (
     <Stack.Navigator initialRouteName="home" id="apps-stack">
@@ -35,7 +25,7 @@ const HomeStack = () => {
             backgroundColor: schemedTheme.surfaceContainer,
           },
           headerTitle: HomeLogo,
-          headerRight,
+          headerRight: drawerButton,
         }}
         navigationKey="apps"
         component={HomeScreen}
@@ -50,8 +40,7 @@ const HomeStack = () => {
             color: schemedTheme.onSurface,
           },
           headerTitle: '',
-          headerLeft,
-          headerRight,
+          headerLeft: backButton,
         }}
         navigationKey="app"
         component={AppScreen}

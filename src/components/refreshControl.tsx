@@ -1,6 +1,6 @@
-import * as React from "react";
-import { RefreshControl } from "react-native";
-import { useTheme } from "@/theme";
+import * as React from 'react';
+import {RefreshControl} from 'react-native';
+import {useTheme} from '@/theme';
 
 interface ThemedRefreshControlProps {
   onRefresh: () => void;
@@ -11,14 +11,14 @@ const ThemedRefreshControl = ({
   onRefresh,
   refreshing = false,
 }: ThemedRefreshControlProps) => {
-  const { sourceColor, schemedTheme } = useTheme();
+  const {sourceColor, schemedTheme} = useTheme();
 
   const themeStyles = React.useMemo(
     () => ({
       colors: [sourceColor],
       progressBackgroundColor: schemedTheme.surfaceBright,
     }),
-    [sourceColor, schemedTheme]
+    [sourceColor, schemedTheme],
   );
   return (
     <RefreshControl
@@ -29,7 +29,5 @@ const ThemedRefreshControl = ({
     />
   );
 };
-
-ThemedRefreshControl.displayName = "ThemedRefreshControl";
 
 export default ThemedRefreshControl;
