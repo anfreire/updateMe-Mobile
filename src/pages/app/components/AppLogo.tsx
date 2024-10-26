@@ -1,48 +1,66 @@
 import * as React from 'react';
-import {StyleSheet} from 'react-native';
+import {Image, StyleSheet} from 'react-native';
+import {Card, Text} from 'react-native-paper';
 
 /*******************************************************************************
  *                                  CONSTANTS                                  *
  *******************************************************************************/
 
-const SAMPLE_COMPONENT_CONSTANT = 1;
-
-/*******************************************************************************
- *                                    TYPES                                    *
- *******************************************************************************/
-
-type SampleCOmponentItemType = 'type1' | 'type2';
+const MAX_IMAGE_SIZE = 100;
 
 /*******************************************************************************
  *                                    UTILS                                    *
  *******************************************************************************/
 
-function doSomething() {
-  return SAMPLE_COMPONENT_CONSTANT;
-}
+const calculateImageSize = (width: number, height: number) => ({
+  width: MAX_IMAGE_SIZE * (width / height),
+  height: MAX_IMAGE_SIZE,
+});
 
 /*******************************************************************************
  *                                     HOOK                                    *
  *******************************************************************************/
 
-function useSampleComponent() {
-  const value = 1;
+const useAppLogo = (title: string, icon: string) => {
+  const [imageSize, setImageSize] = React.useState({
+    width: MAX_IMAGE_SIZE,
+    height: MAX_IMAGE_SIZE,
+  });
 
-  use;
-  return {value};
-}
+  React.useEffect(() => {
+    Image.getSize(icon, (width, height) =>
+      setImageSize(calculateImageSize(width, height)),
+    );
+  }, [icon]);
+
+  const paddingHorizontal = React.useMemo(
+    () => (title.length > 15 ? 40 : 50),
+    [title],
+  );
+  return {imageSize, paddingHorizontal};
+};
 
 /*******************************************************************************
  *                                  COMPONENT                                  *
  *******************************************************************************/
 
-const SampleComponent = () => {
-  const {value} = useSampleComponent();
+interface AppLogoProps {
+  title: string;
+  icon: string;
+}
+
+const AppLogo = ({title, icon}: AppLogoProps) => {
+  const {imageSize, paddingHorizontal} = useAppLogo(title, icon);
 
   return (
-    <View style={styles.wrapper}>
-      <Text>{value}</Text>
-    </View>
+    <Card contentStyle={[styles.card, {paddingHorizontal}]}>
+      <Card.Cover
+        resizeMode="contain"
+        style={[styles.cardCover, imageSize]}
+        source={{uri: icon}}
+      />
+      <Text variant="headlineLarge">{title}</Text>
+    </Card>
   );
 };
 
@@ -51,9 +69,17 @@ const SampleComponent = () => {
  *******************************************************************************/
 
 const styles = StyleSheet.create({
-  wrapper: {
+  card: {
     width: '100%',
-    height: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'column',
+    padding: 30,
+    paddingBottom: 20,
+    gap: 20,
+  },
+  cardCover: {
+    backgroundColor: 'transparent',
   },
 });
 
@@ -61,5 +87,5 @@ const styles = StyleSheet.create({
  *                                    EXPORT                                   *
  *******************************************************************************/
 
-export default SampleComponent;
-// export default React.memo(SampleComponent);
+// export default AppLogo;
+export default React.memo(AppLogo);

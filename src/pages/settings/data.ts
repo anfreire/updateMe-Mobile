@@ -1,4 +1,4 @@
-import {MultiIconType} from '@/components/multiIcon';
+import {MultiIconType} from '@/components/MultiIcon';
 import {Dialog} from '@/states/runtime/dialogs';
 import {
   SettingsSection,

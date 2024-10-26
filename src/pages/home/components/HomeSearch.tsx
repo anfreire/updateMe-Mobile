@@ -10,21 +10,25 @@ import {
 import {useFocusEffect} from '@react-navigation/native';
 import {useTheme} from '@/theme';
 
+/*******************************************************************************
+ *                                  CONSTANTS                                  *
+ *******************************************************************************/
+
 const CLOSED_WIDTH = 56;
 const OPEN_WIDTH = 256;
 const ANIMATION_DURATION = 300;
 
 /*******************************************************************************
- *                                    LOGIC                                    *
+ *                                     HOOK                                    *
  *******************************************************************************/
 
 export function useHomeSearch(
   search: string,
-  setSearch: (search: string) => void,
-  textInputRef: React.RefObject<TextInput>,
+  setSearch: React.Dispatch<React.SetStateAction<string>>,
 ) {
   const theme = useTheme();
   const width = useSharedValue(CLOSED_WIDTH);
+  const textInputRef = React.useRef<TextInput>(null);
 
   const animatedStyle = useAnimatedStyle(() => ({
     width: width.value,
@@ -41,13 +45,11 @@ export function useHomeSearch(
   const open = React.useCallback(() => {
     textInputRef.current?.focus();
     width.value = withTiming(OPEN_WIDTH, {duration: ANIMATION_DURATION});
-    // eslint-disable-next-line local-rules/exhaustive-deps
   }, []);
 
   const close = React.useCallback(() => {
     textInputRef.current?.blur();
     width.value = withTiming(CLOSED_WIDTH, {duration: ANIMATION_DURATION});
-    // eslint-disable-next-line local-rules/exhaustive-deps
   }, []);
 
   const handleOnPress = React.useCallback(() => {
@@ -85,7 +87,7 @@ export function useHomeSearch(
     }, [close, search]),
   );
 
-  return {handleOnPress, animatedStyle, themedStyles};
+  return {textInputRef, handleOnPress, animatedStyle, themedStyles};
 }
 
 /*******************************************************************************
@@ -94,16 +96,12 @@ export function useHomeSearch(
 
 interface HomeSearchProps {
   search: string;
-  setSearch: (search: string) => void;
+  setSearch: React.Dispatch<React.SetStateAction<string>>;
 }
 
 const HomeSearch = ({search, setSearch}: HomeSearchProps) => {
-  const textInputRef = React.useRef<TextInput>(null);
-  const {handleOnPress, animatedStyle, themedStyles} = useHomeSearch(
-    search,
-    setSearch,
-    textInputRef,
-  );
+  const {textInputRef, handleOnPress, animatedStyle, themedStyles} =
+    useHomeSearch(search, setSearch);
 
   return (
     <Animated.View style={[styles.outterView, animatedStyle, themedStyles]}>

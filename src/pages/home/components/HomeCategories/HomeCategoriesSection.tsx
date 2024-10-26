@@ -3,11 +3,11 @@ import * as React from 'react';
 import {StyleSheet} from 'react-native';
 import {List} from 'react-native-paper';
 import {Style} from 'react-native-paper/lib/typescript/components/List/utils';
-import MultiIcon from '@/components/multiIcon';
+import MultiIcon from '@/components/MultiIcon';
 import HomeCategoriesItem from './HomeCategoriesItem';
 
 /*******************************************************************************
- *                                    LOGIC                                    *
+ *                                     HOOK                                    *
  *******************************************************************************/
 
 function useHomeCategoriesSection(

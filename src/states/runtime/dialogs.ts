@@ -1,5 +1,4 @@
 import {create} from 'zustand';
-
 export type Dialog =
   | 'sourceColorPicker'
   | 'colorSchemePicker'
@@ -39,7 +38,7 @@ export const useDialogs = create<useDialogsProps>(set => ({
       );
     } else {
       set(state =>
-        isEqual(state.customDialog, key)
+        JSON.stringify(state.customDialog) === JSON.stringify(key)
           ? state
           : {activeDialog: 'custom', customDialog: key},
       );

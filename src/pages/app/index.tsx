@@ -1,52 +1,69 @@
-import * as React from "react";
-import { ScrollView, StyleSheet, View } from "react-native";
-import { ActivityIndicator } from "react-native-paper";
-import RelatedAppsBanner from "@/pages/app/components/relatedAppsBanner";
-import { useTheme } from "@/theme";
-import ThemedRefreshControl from "@/components/refreshControl";
-import AppLogo from "@/pages/app/components/logo";
-import AppInfo from "@/pages/app/components/info";
-import AppFeatures from "@/pages/app/components/features";
-import AppProvider from "@/pages/app/components/providers";
-import { useVersions } from "@/states/computed/versions";
+import * as React from 'react';
+import {ScrollView, StyleSheet, View} from 'react-native';
+import ThemedRefreshControl from '@/components/refreshControl';
+import AppProvider from '@/pages/app/components/AppProviders';
+import {useVersions} from '@/states/computed/versions';
 import {
   useFocusEffect,
   useNavigation,
   useRoute,
-} from "@react-navigation/native";
-import { useDefaultProviders } from "@/states/persistent/defaultProviders";
-import { NavigationProps, Page, RouteProps } from "@/types/navigation";
-import { useIndex } from "@/states/fetched";
-import { useCurrApp } from "@/hooks/useCurrApp";
-import { useCurrPageEffect } from "@/hooks/useCurrPageEffect";
+} from '@react-navigation/native';
+import {
+  DefaultProviders,
+  useDefaultProviders,
+} from '@/states/persistent/defaultProviders';
+import {NavigationProps, Page, RouteProps} from '@/types/navigation';
+import {Index, useIndex} from '@/states/fetched';
+import {useCurrApp} from '@/hooks/useCurrApp';
+import {useCurrPageEffect} from '@/hooks/useCurrPageEffect';
+import LoadingView from '@/components/loadingView';
+import RelatedAppBanner from './components/RelatedAppBanner';
+import AppLogo from './components/AppLogo';
+import AppInfo from './components/AppInfo';
+import AppFeatures from './components/AppFeatures';
 
-const CURR_PAGE: Page = "app";
+/*******************************************************************************
+ *                                  CONSTANTS                                  *
+ *******************************************************************************/
 
-const AppScreen = () => {
-  const theme = useTheme();
-  const { setOptions } = useNavigation<NavigationProps>();
-  const { params } = useRoute<RouteProps>();
-  const index = useIndex((state) => state.index);
+const CURR_PAGE: Page = 'app';
+
+/*******************************************************************************
+ *                                    UTILS                                    *
+ *******************************************************************************/
+
+const refreshVersions = (
+  index: Index,
+  populatedDefaultProviders: DefaultProviders,
+) => useVersions.getState().refresh(index, populatedDefaultProviders);
+
+/*******************************************************************************
+ *                                     HOOK                                    *
+ *******************************************************************************/
+
+function useAppScreen() {
+  const index = useIndex(state => state.index);
   const populatedDefaultProviders = useDefaultProviders(
-    (state) => state.populatedDefaultProviders
+    state => state.populatedDefaultProviders,
   );
-  const refreshVersions = useVersions((state) => state.refresh);
+  const {setOptions} = useNavigation<NavigationProps>();
+  const {params} = useRoute<RouteProps>();
 
   const appTitle = React.useMemo(() => {
-    return params && "app" in params ? params.app : null;
+    return params && 'app' in params ? params.app : null;
   }, [params]);
-
-  const refresh = React.useCallback(() => {
-    refreshVersions(index, populatedDefaultProviders);
-  }, [index, populatedDefaultProviders]);
 
   const currApp = useCurrApp(appTitle);
 
+  const refresh = React.useCallback(
+    () => refreshVersions(index, populatedDefaultProviders),
+    [index, populatedDefaultProviders],
+  );
   React.useEffect(() => {
     if (!appTitle) {
       return;
     }
-    setOptions({ title: appTitle });
+    setOptions({title: appTitle});
   }, [appTitle, setOptions]);
 
   useFocusEffect(
@@ -56,28 +73,29 @@ const AppScreen = () => {
       return () => {
         clearInterval(interval);
       };
-    }, [refresh])
+    }, [refresh]),
   );
 
   useCurrPageEffect(CURR_PAGE);
 
+  return {currApp, refresh};
+}
+
+/*******************************************************************************
+ *                                  COMPONENT                                  *
+ *******************************************************************************/
+
+const AppScreen = () => {
+  const {currApp, refresh} = useAppScreen();
+
   if (!currApp) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={theme.sourceColor} />
-      </View>
-    );
+    return <LoadingView />;
   }
 
   return (
     <>
-      <RelatedAppsBanner currApp={currApp} />
-      <ScrollView
-        refreshControl={ThemedRefreshControl({
-          refreshing: false,
-          onRefresh: refresh,
-        })}
-      >
+      <RelatedAppBanner currApp={currApp} />
+      <ScrollView refreshControl={ThemedRefreshControl({onRefresh: refresh})}>
         <View style={styles.contentContainer}>
           <AppLogo title={currApp.title} icon={currApp.icon} />
           <AppInfo currApp={currApp} />
@@ -89,26 +107,24 @@ const AppScreen = () => {
   );
 };
 
+/*******************************************************************************
+ *                                    STYLES                                   *
+ *******************************************************************************/
+
 const styles = StyleSheet.create({
-  loadingContainer: {
-    width: "100%",
-    height: "100%",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-  },
   contentContainer: {
-    width: "100%",
-    height: "100%",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
+    width: '100%',
+    height: '100%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
     padding: 20,
     gap: 20,
   },
 });
 
-AppScreen.displayName = "AppScreen";
+/*******************************************************************************
+ *                                    EXPORT                                   *
+ *******************************************************************************/
 
-export default AppScreen;
+export default React.memo(AppScreen);

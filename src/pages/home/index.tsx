@@ -9,10 +9,14 @@ import HomeBanner from './components/HomeBanner';
 import HomeCategories from './components/HomeCategories';
 import HomeSearch from './components/HomeSearch';
 
+/*******************************************************************************
+ *                                  CONSTANTS                                  *
+ *******************************************************************************/
+
 const CURR_PAGE: Page = 'app';
 
 /*******************************************************************************
- *                                    LOGIC                                    *
+ *                                    UTILS                                    *
  *******************************************************************************/
 
 const normalizeString = (str: string) =>
@@ -20,6 +24,10 @@ const normalizeString = (str: string) =>
     .toLowerCase()
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '');
+
+/*******************************************************************************
+ *                                     HOOK                                    *
+ *******************************************************************************/
 
 export function useHomeScreen() {
   const [search, setSearch] = React.useState<string>('');
@@ -55,6 +63,8 @@ export function useHomeScreen() {
     );
   }, [categories, isRefreshing, isSearchActive, searchTokens]);
 
+  useCurrPageEffect(CURR_PAGE);
+
   return {search, setSearch, isRefreshing, isSearchActive, filteredCategories};
 }
 
@@ -65,8 +75,6 @@ export function useHomeScreen() {
 const HomeScreen = () => {
   const {search, setSearch, isRefreshing, isSearchActive, filteredCategories} =
     useHomeScreen();
-
-  useCurrPageEffect(CURR_PAGE);
 
   if (isRefreshing) {
     return <LoadingView />;

@@ -3,7 +3,7 @@ import {useTranslations} from '@/states/persistent/translations';
 import {Dialog, useDialogs} from '@/states/runtime/dialogs';
 import {List} from 'react-native-paper';
 import Animated from 'react-native-reanimated';
-import MultiIcon from '@/components/multiIcon';
+import MultiIcon from '@/components/MultiIcon';
 import {Style} from 'react-native-paper/lib/typescript/components/List/utils';
 import {ItemComponentDataInferred} from '../data';
 import {useRoute} from '@react-navigation/native';

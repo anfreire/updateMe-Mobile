@@ -40,10 +40,15 @@ interface MultiIconProps extends IconProps {
 
 const MultiIcon = (props: MultiIconProps) => {
   const {type, ...otherProps} = props;
+
+  if (type && !typeMapper[type]) {
+    throw new Error(`Invalid icon type: ${type}`);
+  }
+
   return React.createElement(
     typeMapper[type ?? 'material-community'],
     otherProps,
   );
 };
 
-export default React.memo(MultiIcon);
+export default React.memo(MultiIcon) as React.FC<MultiIconProps>;

@@ -2,7 +2,7 @@ import * as React from 'react';
 import {useTranslations} from '@/states/persistent/translations';
 import {Checkbox, List} from 'react-native-paper';
 import Animated from 'react-native-reanimated';
-import MultiIcon from '@/components/multiIcon';
+import MultiIcon from '@/components/MultiIcon';
 import {useSettings} from '@/states/persistent/settings';
 import {ItemComponentDataInferred} from '../data';
 import {useShallow} from 'zustand/react/shallow';

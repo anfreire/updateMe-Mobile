@@ -5,11 +5,15 @@ import HomeCategoriesSection from './HomeCategoriesSection';
 import {Categories, useCategories} from '@/states/fetched/categories';
 import {useIndex} from '@/states/fetched';
 
+/*******************************************************************************
+ *                                    UTILS                                    *
+ *******************************************************************************/
+
 const refresh = () =>
   useIndex.getState().fetch().then(useCategories.getState().fetch);
 
 /*******************************************************************************
- *                                    LOGIC                                    *
+ *                                     HOOK                                    *
  *******************************************************************************/
 
 export function useHomeCategories() {
@@ -67,7 +71,7 @@ const HomeCategories = ({
     <FlashList
       data={Object.keys(filteredCategories)}
       renderItem={renderItem}
-      estimatedItemSize={20}
+      estimatedItemSize={100}
       keyExtractor={item => item}
       refreshControl={ThemedRefreshControl({onRefresh: refresh})}
     />

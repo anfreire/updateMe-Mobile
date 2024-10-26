@@ -31,7 +31,6 @@ type useTranslationsActions = {
     language: string,
     translations: Record<Translation, string>,
   ) => void;
-  interpolate: (template: Translation, ...values: string[]) => string;
 };
 
 export type useTranslationsProps = useTranslationsState &
@@ -39,7 +38,7 @@ export type useTranslationsProps = useTranslationsState &
 
 export const useTranslations = create<useTranslationsProps>()(
   persist(
-    (set, get) => ({
+    set => ({
       language: DEFAULT_LANGUAGE,
       translations: DEFAULT_TRANSLATIONS,
       resetTranslations: () => {
@@ -57,8 +56,6 @@ export const useTranslations = create<useTranslationsProps>()(
           return state.language === language ? state : {language, translations};
         });
       },
-      interpolate: (template, ...values) =>
-        interpolate(get().translations[template], ...values),
     }),
     {
       name: STORAGE_ID,

@@ -49,6 +49,5 @@ const HomeStack = () => {
   );
 };
 
-HomeStack.displayName = 'HomeStack';
 
 export default HomeStack;

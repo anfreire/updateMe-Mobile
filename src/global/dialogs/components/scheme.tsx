@@ -2,7 +2,7 @@ import * as React from 'react';
 import {Button, Dialog, SegmentedButtons} from 'react-native-paper';
 import {useDialogs} from '@/states/runtime/dialogs';
 import {SavedColorSchemeType, useTheme} from '@/theme';
-import MultiIcon from '@/components/multiIcon';
+import MultiIcon from '@/components/MultiIcon';
 import {useSettings} from '@/states/persistent/settings';
 import {IconSource} from 'react-native-paper/lib/typescript/components/Icon';
 import {StyleSheet} from 'react-native';

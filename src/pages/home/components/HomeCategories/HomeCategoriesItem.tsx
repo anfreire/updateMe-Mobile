@@ -7,7 +7,7 @@ import {NavigationProps} from '@/types/navigation';
 import FastImage from 'react-native-fast-image';
 
 /*******************************************************************************
- *                                    LOGIC                                    *
+ *                                     HOOK                                    *
  *******************************************************************************/
 
 function useHomeCategoriesItem(app: string) {

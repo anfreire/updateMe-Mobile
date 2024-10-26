@@ -1,6 +1,6 @@
 import {create} from 'zustand';
 import {Logger} from '../persistent/logs';
-import {MultiIconType} from '@/components/multiIcon';
+import {MultiIconType} from '@/components/MultiIcon';
 import {deepEqual} from 'fast-equals';
 
 const CATEGORIES_URL =

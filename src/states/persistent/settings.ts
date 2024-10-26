@@ -72,7 +72,7 @@ export const useSettings = create<useSettingsProps>()(
               [item]: DEFAULT_SETTINGS[key][item],
             },
           };
-          return isEqual(state.settings, newSettings)
+          return JSON.stringify(state.settings) === JSON.stringify(newSettings)
             ? state
             : {settings: newSettings};
         });
