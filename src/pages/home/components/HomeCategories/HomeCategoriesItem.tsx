@@ -63,6 +63,7 @@ const styles = StyleSheet.create({
     width: 25,
     height: 25,
     borderRadius: 5,
+    overflow: 'hidden',
   },
   homeItem: {
     paddingLeft: 25,
