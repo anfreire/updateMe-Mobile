@@ -26,7 +26,7 @@ export function useHomeSearch(
   search: string,
   setSearch: React.Dispatch<React.SetStateAction<string>>,
 ) {
-  const theme = useTheme();
+  const {schemedTheme} = useTheme();
   const width = useSharedValue(CLOSED_WIDTH);
   const textInputRef = React.useRef<TextInput>(null);
 
@@ -36,10 +36,10 @@ export function useHomeSearch(
 
   const themedStyles = React.useMemo(
     () => ({
-      backgroundColor: theme.schemedTheme.primaryContainer,
-      color: theme.schemedTheme.onPrimaryContainer,
+      backgroundColor: schemedTheme.primaryContainer,
+      color: schemedTheme.onPrimaryContainer,
     }),
-    [theme.schemedTheme],
+    [schemedTheme],
   );
 
   const open = React.useCallback(() => {

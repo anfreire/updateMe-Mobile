@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {ScrollView, StyleSheet, View} from 'react-native';
-import ThemedRefreshControl from '@/components/refreshControl';
+import {useThemedRefreshControl} from '@/hooks/useThemedRefreshControl';
 import AppProvider from '@/pages/app/components/AppProviders';
 import {useVersions} from '@/states/computed/versions';
 import {
@@ -78,7 +78,9 @@ function useAppScreen() {
 
   useCurrPageEffect(CURR_PAGE);
 
-  return {currApp, refresh};
+  const refreshControl = useThemedRefreshControl(refresh);
+
+  return {currApp, refreshControl};
 }
 
 /*******************************************************************************
@@ -86,7 +88,7 @@ function useAppScreen() {
  *******************************************************************************/
 
 const AppScreen = () => {
-  const {currApp, refresh} = useAppScreen();
+  const {currApp, refreshControl} = useAppScreen();
 
   if (!currApp) {
     return <LoadingView />;
@@ -95,7 +97,7 @@ const AppScreen = () => {
   return (
     <>
       <RelatedAppBanner currApp={currApp} />
-      <ScrollView refreshControl={ThemedRefreshControl({onRefresh: refresh})}>
+      <ScrollView refreshControl={refreshControl}>
         <View style={styles.contentContainer}>
           <AppLogo title={currApp.title} icon={currApp.icon} />
           <AppInfo currApp={currApp} />

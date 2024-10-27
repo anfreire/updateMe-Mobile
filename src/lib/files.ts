@@ -2,7 +2,7 @@ import ReactNativeBlobUtil, {
   FetchBlobResponse,
   ReactNativeBlobUtilStat,
   StatefulPromise,
-} from "react-native-blob-util";
+} from 'react-native-blob-util';
 
 const dir: string = ReactNativeBlobUtil.fs.dirs.DownloadDir;
 
@@ -20,8 +20,8 @@ async function getFileInfo(path: string): Promise<ReactNativeBlobUtilStat> {
 }
 
 async function listDir(): Promise<string[]> {
-  return (await ReactNativeBlobUtil.fs.ls(dir)).filter((file) =>
-    file.endsWith(".apk")
+  return (await ReactNativeBlobUtil.fs.ls(dir)).filter(file =>
+    file.endsWith('.apk'),
   );
 }
 
@@ -31,15 +31,15 @@ async function getAllFilesInfo(): Promise<
   const files = await listDir();
   return await files.reduce(async (accPromise, file) => {
     const acc = await accPromise;
-    const fileInfo = await getFileInfo(file);
-    return { ...acc, [file]: fileInfo };
+    const fileInfo = await ReactNativeBlobUtil.fs.stat(buildAbsolutePath(file));
+    return {...acc, [file]: fileInfo};
   }, Promise.resolve({}));
 }
 
-async function installApk(path: string): Promise<void> {
-  await ReactNativeBlobUtil.android.actionViewIntent(
+async function installApk(path: string): Promise<boolean | null> {
+  return await ReactNativeBlobUtil.android.actionViewIntent(
     path,
-    "application/vnd.android.package-archive"
+    'application/vnd.android.package-archive',
   );
 }
 
@@ -48,7 +48,7 @@ async function deleteFile(path: string): Promise<void> {
 }
 
 async function deleteMultipleFiles(paths: string[]): Promise<void> {
-  await Promise.all(paths.map(async (path) => await deleteFile(path)));
+  await Promise.all(paths.map(async path => await deleteFile(path)));
 }
 
 async function deleteAllFiles(): Promise<void> {
@@ -59,7 +59,7 @@ function downloadFile(
   url: string,
   filename: string,
   path: string,
-  onProgress: (progress: number) => void
+  onProgress: (progress: number) => void,
 ): StatefulPromise<FetchBlobResponse> {
   return ReactNativeBlobUtil.config({
     addAndroidDownloads: {
@@ -70,9 +70,9 @@ function downloadFile(
       mediaScannable: true,
     },
   })
-    .fetch("GET", url, {})
+    .fetch('GET', url, {})
     .progress((received, total) =>
-      onProgress(parseFloat(received) / parseFloat(total))
+      onProgress(parseFloat(received) / parseFloat(total)),
     );
 }
 

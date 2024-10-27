@@ -17,9 +17,9 @@ const HomeStack = () => {
   const backButton = useBackButton();
 
   return (
-    <Stack.Navigator initialRouteName="home" id="apps-stack">
+    <Stack.Navigator initialRouteName="apps" id="apps-stack">
       <Stack.Screen
-        name="home"
+        name="apps"
         options={{
           headerStyle: {
             backgroundColor: schemedTheme.surfaceContainer,
@@ -40,6 +40,7 @@ const HomeStack = () => {
             color: schemedTheme.onSurface,
           },
           headerTitle: '',
+          headerRight: drawerButton,
           headerLeft: backButton,
         }}
         navigationKey="app"
@@ -48,6 +49,5 @@ const HomeStack = () => {
     </Stack.Navigator>
   );
 };
-
 
 export default HomeStack;

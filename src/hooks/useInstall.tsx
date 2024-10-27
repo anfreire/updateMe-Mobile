@@ -22,10 +22,13 @@ export function useInstall(
   const addDownload = useDownloads(state => state.addDownload);
   const openToast = useToast(state => state.openToast);
   const openDrawer = useDrawer(state => state.openDrawer);
-  const [downloadsOpenedDrawer, activateFlag] = useSession(state => [
-    state.flags.downloadsOpenedDrawer,
-    state.activateFlag,
-  ]);
+  const [downloadsOpenedDrawer, currPage, activateFlag] = useSession(
+    useShallow(state => [
+      state.flags.downloadsOpenedDrawer,
+      state.currPage,
+      state.activateFlag,
+    ]),
+  );
   const [installUnsafe, installAfterDownload] = useSettings(
     useShallow(state => [
       state.settings.security.installUnsafeApps,
@@ -55,13 +58,17 @@ export function useInstall(
     });
   }, [translations, navigate]);
 
-  const handleSafeDownload = React.useCallback(() => {
+  const handleSafeDownload = React.useCallback(async () => {
     const fileName = FilesModule.buildFileName(appName, providerProps.version);
+
+    try {
+      await FilesModule.deleteFile(FilesModule.buildAbsolutePath(fileName));
+    } catch {}
 
     addDownload(fileName, providerProps.download, undefined, path => {
       if (installAfterDownload) {
-        FilesModule.installApk(path);
-      } else {
+        FilesModule.installApk(path).then(console.log);
+      } else if (currPage !== 'downloads') {
         openToast(
           interpolate(translations['$1 finished downloading'], appName),
           {
@@ -79,6 +86,7 @@ export function useInstall(
     providerProps.download,
     installAfterDownload,
     translations,
+    currPage,
   ]);
 
   const handleDownloadNotice = React.useCallback(() => {

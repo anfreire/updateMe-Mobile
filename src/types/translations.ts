@@ -138,6 +138,8 @@ const translations = [
   'There is an update available for $1',
   'There are updates available for $1 and $2',
   'Uninstall',
+  'Downloaded',
+  'Downloading',
 ] as const;
 
 export type Translation = (typeof translations)[number];

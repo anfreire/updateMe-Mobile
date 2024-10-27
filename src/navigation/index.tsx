@@ -1,29 +1,28 @@
-import * as React from "react";
-import { createStackNavigator } from "@react-navigation/stack";
-import { useTheme } from "@/theme";
-import { IconButton } from "react-native-paper";
-import LoadingScreen from "@/pages/loading";
-import HomeStack from "./apps";
-import DownloadsScreen from "@/pages/downloads";
-import { useTranslations } from "@/states/persistent/translations";
-import ReportScreen from "@/pages/report";
-import SettingsScreen from "@/pages/settings";
-import UpdatesScreen from "@/pages/updates";
-import TipsStack from "./tips";
-import SuggestScreen from "@/pages/suggest";
-import { MainStackParams, NavigationProps } from "@/types/navigation";
-import { useNavigation } from "@react-navigation/native";
+import * as React from 'react';
+import {createStackNavigator} from '@react-navigation/stack';
+import {useTheme} from '@/theme';
+import {IconButton} from 'react-native-paper';
+import LoadingScreen from '@/pages/loading';
+import HomeStack from './apps';
+import DownloadsScreen from '@/pages/downloads';
+import {useTranslations} from '@/states/persistent/translations';
+import SettingsScreen from '@/pages/settings';
+import UpdatesScreen from '@/pages/updates';
+import TipsStack from './tips';
+import SuggestScreen from '@/pages/suggest';
+import {MainStackParams, NavigationProps} from '@/types/navigation';
+import {useNavigation} from '@react-navigation/native';
 
 const Stack = createStackNavigator<MainStackParams>();
 
 export default function MainStack() {
-  const { schemedTheme } = useTheme();
-  const { goBack } = useNavigation<NavigationProps>();
-  const translations = useTranslations((state) => state.translations);
+  const {schemedTheme} = useTheme();
+  const {goBack} = useNavigation<NavigationProps>();
+  const translations = useTranslations(state => state.translations);
 
   const headerLeft = React.useCallback(
     () => <IconButton icon="arrow-left" onPress={goBack} />,
-    [goBack]
+    [goBack],
   );
 
   return (
@@ -51,24 +50,10 @@ export default function MainStack() {
           headerTitleStyle: {
             color: schemedTheme.onSurface,
           },
-          headerTitle: translations["Downloads"],
+          headerTitle: translations['Downloads'],
           headerLeft,
         }}
         component={DownloadsScreen}
-      />
-      <Stack.Screen
-        name="report"
-        options={{
-          headerStyle: {
-            backgroundColor: schemedTheme.surfaceContainer,
-          },
-          headerTitleStyle: {
-            color: schemedTheme.onSurface,
-          },
-          headerTitle: translations["Report"],
-          headerLeft,
-        }}
-        component={ReportScreen}
       />
       <Stack.Screen
         name="settings"
@@ -79,7 +64,7 @@ export default function MainStack() {
           headerTitleStyle: {
             color: schemedTheme.onSurface,
           },
-          headerTitle: translations["Settings"],
+          headerTitle: translations['Settings'],
           headerLeft,
         }}
         component={SettingsScreen}
@@ -93,7 +78,7 @@ export default function MainStack() {
           headerTitleStyle: {
             color: schemedTheme.onSurface,
           },
-          headerTitle: translations["Updates"],
+          headerTitle: translations['Updates'],
           headerLeft,
         }}
         component={UpdatesScreen}
@@ -114,7 +99,7 @@ export default function MainStack() {
           headerTitleStyle: {
             color: schemedTheme.onSurface,
           },
-          headerTitle: translations["Suggest an App"],
+          headerTitle: translations['Suggest an App'],
           headerLeft,
         }}
         component={SuggestScreen}

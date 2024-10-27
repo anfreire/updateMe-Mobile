@@ -59,7 +59,9 @@ const AppLogo = ({title, icon}: AppLogoProps) => {
         style={[styles.cardCover, imageSize]}
         source={{uri: icon}}
       />
-      <Text variant="headlineLarge">{title}</Text>
+      <Text style={styles.cardText} variant="headlineLarge">
+        {title}
+      </Text>
     </Card>
   );
 };
@@ -80,6 +82,9 @@ const styles = StyleSheet.create({
   },
   cardCover: {
     backgroundColor: 'transparent',
+  },
+  cardText: {
+    textAlign: 'center',
   },
 });
 

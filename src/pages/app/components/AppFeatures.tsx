@@ -20,10 +20,14 @@ const renderItem = ({item}: {item: string}) => (
  *                                     HOOK                                    *
  *******************************************************************************/
 
-const useAppFeatures = () => {
+const useAppFeatures = (features: string[]) => {
   const translations = useTranslations(state => state.translations);
 
-  return {translations};
+  const titleLabel = translations['Features'];
+
+  const isMultipleFeatures = features.length > 1;
+
+  return {titleLabel, isMultipleFeatures};
 };
 
 /*******************************************************************************
@@ -35,16 +39,17 @@ interface AppFeaturesProps {
 }
 
 const AppFeatures = ({features}: AppFeaturesProps) => {
-  const {translations} = useAppFeatures();
+  const {titleLabel, isMultipleFeatures} = useAppFeatures(features);
 
   return (
     <Card contentStyle={styles.card}>
-      <Text variant="titleLarge">{translations['Features']}</Text>
+      <Text variant="titleLarge">{titleLabel}</Text>
       <Carousel
         width={300}
         height={50}
         loop
-        autoPlay={true}
+        enabled={isMultipleFeatures}
+        autoPlay={isMultipleFeatures}
         data={features}
         renderItem={renderItem}
       />
@@ -83,5 +88,4 @@ const styles = StyleSheet.create({
  *                                    EXPORT                                   *
  *******************************************************************************/
 
-// export default AppFeatures;
 export default React.memo(AppFeatures);

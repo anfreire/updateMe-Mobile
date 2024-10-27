@@ -5,11 +5,11 @@ import {SettingsSectionItemInferred} from './settings';
  *                                     APPS                                    *
  *******************************************************************************/
 
-export type AppsStackPage = 'app' | 'home';
+export type AppsStackPage = 'app' | 'apps';
 
 export type AppsStackParams = {
   app: {app: string};
-  home: undefined;
+  apps: undefined;
 };
 
 /*******************************************************************************
@@ -31,7 +31,6 @@ export type MainStackPage =
   | 'apps-stack'
   | 'downloads'
   | 'loading'
-  | 'report'
   | 'settings'
   | 'suggest'
   | 'tips-stack'
@@ -41,7 +40,6 @@ export type MainStackParams = {
   'apps-stack': undefined;
   downloads: undefined | {download: string};
   loading: undefined;
-  report: undefined;
   settings: undefined | {setting: SettingsSectionItemInferred};
   suggest: undefined;
   'tips-stack': undefined;

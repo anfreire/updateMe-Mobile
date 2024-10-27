@@ -1,5 +1,5 @@
 import * as React from 'react';
-import ThemedRefreshControl from '@/components/refreshControl';
+import {useThemedRefreshControl} from '@/hooks/useThemedRefreshControl';
 import {FlashList} from '@shopify/flash-list';
 import HomeCategoriesSection from './HomeCategoriesSection';
 import {Categories, useCategories} from '@/states/fetched/categories';
@@ -33,9 +33,12 @@ export function useHomeCategories() {
     });
   }, []);
 
+  const refreshControl = useThemedRefreshControl(refresh);
+
   return {
     openedCategories,
     toggleCategory,
+    refreshControl,
   };
 }
 
@@ -52,7 +55,8 @@ const HomeCategories = ({
   filteredCategories,
   isSearchActive,
 }: HomeCategoriesProps) => {
-  const {openedCategories, toggleCategory} = useHomeCategories();
+  const {openedCategories, toggleCategory, refreshControl} =
+    useHomeCategories();
 
   const renderItem = React.useCallback(
     ({item}: {item: string}) => (
@@ -73,7 +77,7 @@ const HomeCategories = ({
       renderItem={renderItem}
       estimatedItemSize={100}
       keyExtractor={item => item}
-      refreshControl={ThemedRefreshControl({onRefresh: refresh})}
+      refreshControl={refreshControl}
     />
   );
 };
