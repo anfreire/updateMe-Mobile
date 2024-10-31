@@ -43,13 +43,6 @@ const AppInfo = ({currApp}: AppInfoProps) => {
   const {localVersionProps, localVersionLabel, availableVersionLabel} =
     useAppInfo(currApp);
 
-  console.log(
-    'AppInfo',
-    localVersionProps,
-    localVersionLabel,
-    availableVersionLabel,
-  );
-
   return (
     <Card contentStyle={styles.card}>
       <DataTable>

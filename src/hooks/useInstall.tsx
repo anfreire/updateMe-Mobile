@@ -12,10 +12,7 @@ import {useDrawer} from '@/states/runtime/drawer';
 import {useNavigation} from '@react-navigation/native';
 import {NavigationProps} from '@/types/navigation';
 
-export function useInstall(
-  appName: string,
-  providerProps: IndexAppProviderProps,
-) {
+export function useInstall() {
   const openDialog = useDialogs(state => state.openDialog);
   const translations = useTranslations(state => state.translations);
   const {navigate} = useNavigation<NavigationProps>();
@@ -36,7 +33,7 @@ export function useInstall(
     ]),
   );
 
-  const handleUnsafeDownload = React.useCallback(() => {
+  const handleUnsafeInstall = React.useCallback(() => {
     openDialog({
       title: translations['Potentially unsafe apk'],
       content: interpolate(
@@ -58,66 +55,65 @@ export function useInstall(
     });
   }, [translations, navigate]);
 
-  const handleSafeDownload = React.useCallback(async () => {
-    const fileName = FilesModule.buildFileName(appName, providerProps.version);
+  const handleSafeInstall = React.useCallback(
+    async (appName: string, providerProps: IndexAppProviderProps) => {
+      const fileName = FilesModule.buildFileName(
+        appName,
+        providerProps.version,
+      );
 
-    try {
-      await FilesModule.deleteFile(FilesModule.buildAbsolutePath(fileName));
-    } catch {}
+      try {
+        await FilesModule.deleteFile(FilesModule.buildAbsolutePath(fileName));
+      } catch {}
 
-    addDownload(fileName, providerProps.download, undefined, path => {
-      if (installAfterDownload) {
-        FilesModule.installApk(path).then(console.log);
-      } else if (currPage !== 'downloads') {
+      addDownload(fileName, providerProps.download, undefined, path => {
+        if (installAfterDownload) {
+          FilesModule.installApk(path).then(console.log);
+        } else if (currPage !== 'downloads') {
+          openToast(
+            interpolate(translations['$1 finished downloading'], appName),
+            {
+              action: {
+                label: translations['Install'],
+                onPress: () => FilesModule.installApk(path),
+              },
+            },
+          );
+        }
+      });
+    },
+    [installAfterDownload, translations, currPage],
+  );
+
+  const showDownloadNotice = React.useCallback(
+    (appName: string) => {
+      if (!downloadsOpenedDrawer) {
+        openDrawer();
+        activateFlag('downloadsOpenedDrawer');
+      } else {
         openToast(
-          interpolate(translations['$1 finished downloading'], appName),
+          interpolate(translations['$1 was added to the downloads'], appName),
           {
             action: {
-              label: translations['Install'],
-              onPress: () => FilesModule.installApk(path),
+              label: 'Open',
+              onPress: () => navigate('downloads'),
             },
           },
         );
       }
-    });
-  }, [
-    appName,
-    providerProps.version,
-    providerProps.download,
-    installAfterDownload,
-    translations,
-    currPage,
-  ]);
+    },
+    [downloadsOpenedDrawer, translations, navigate],
+  );
 
-  const handleDownloadNotice = React.useCallback(() => {
-    if (!downloadsOpenedDrawer) {
-      openDrawer();
-      activateFlag('downloadsOpenedDrawer');
-    } else {
-      openToast(
-        interpolate(translations['$1 was added to the downloads'], appName),
-        {
-          action: {
-            label: 'Open',
-            onPress: () => navigate('downloads'),
-          },
-        },
-      );
-    }
-  }, [downloadsOpenedDrawer, appName, translations, navigate]);
-
-  return React.useCallback(() => {
-    if (!installUnsafe && !providerProps.safe) {
-      handleUnsafeDownload();
-      return;
-    }
-    handleSafeDownload();
-    handleDownloadNotice();
-  }, [
-    installUnsafe,
-    providerProps.safe,
-    handleUnsafeDownload,
-    handleSafeDownload,
-    handleDownloadNotice,
-  ]);
+  return React.useCallback(
+    (appName: string, providerProps: IndexAppProviderProps) => {
+      if (!installUnsafe && !providerProps.safe) {
+        handleUnsafeInstall();
+        return;
+      }
+      handleSafeInstall(appName, providerProps);
+      showDownloadNotice(appName);
+    },
+    [installUnsafe, handleUnsafeInstall, handleSafeInstall, showDownloadNotice],
+  );
 }

@@ -52,7 +52,9 @@ async function deleteMultipleFiles(paths: string[]): Promise<void> {
 }
 
 async function deleteAllFiles(): Promise<void> {
-  await deleteMultipleFiles(await listDir());
+  await deleteMultipleFiles(
+    (await listDir()).map(file => buildAbsolutePath(file)),
+  );
 }
 
 function downloadFile(

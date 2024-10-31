@@ -13,7 +13,11 @@ import MultiIcon from '@/components/MultiIcon';
 
 function useAppInfoButton(currApp: CurrAppProps) {
   const translations = useTranslations(state => state.translations);
-  const handleInstall = useInstall(currApp.title, currApp.defaultProvider);
+  const install = useInstall();
+
+  const handleInstall = React.useCallback(() => {
+    install(currApp.title, currApp.defaultProvider);
+  }, [install, currApp.defaultProvider, currApp.title]);
 
   const uninstallLabel = React.useMemo(
     () => (currApp.version == null ? null : translations['Uninstall']),
@@ -98,4 +102,4 @@ const styles = StyleSheet.create({
  *                                    EXPORT                                   *
  *******************************************************************************/
 
-export default React.memo(AppInfoButton);
+export default AppInfoButton;

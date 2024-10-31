@@ -7,6 +7,10 @@ import {
 } from '@/types/settings';
 import {Translation} from '@/types/translations';
 
+/*******************************************************************************
+ *                                    TYPES                                    *
+ *******************************************************************************/
+
 export type ItemActionData<
   Section extends SettingsSection,
   Item extends SettingsSectionItem<Section>,
@@ -113,30 +117,6 @@ export const DownloadsSection: SectionComponentData<'downloads'> = {
 };
 
 /*******************************************************************************
- *                                    Layout                                   *
- *******************************************************************************/
-
-const HomeStyle: ItemComponentData<'layout'> = {
-  key: 'homeStyle',
-  title: 'Feels like home',
-  description: 'Change the layout of the home screen',
-  icon: {
-    type: 'feather',
-    name: 'layout',
-  },
-  action: {
-    type: 'dialog',
-    data: 'homeLayoutPicker',
-  },
-};
-
-export const LayoutSection: SectionComponentData<'layout'> = {
-  title: 'Layout',
-  key: 'layout',
-  items: [HomeStyle],
-};
-
-/*******************************************************************************
  *                                Notifications                                *
  *******************************************************************************/
 
@@ -195,7 +175,6 @@ const SecuritySection: SectionComponentData<'security'> = {
 
 export const SectionsData: SectionComponentDataInferred[] = [
   AppearanceSection,
-  LayoutSection,
   NotificationsSection,
   DownloadsSection,
   SecuritySection,

@@ -11,19 +11,22 @@ import {useTheme} from '@/theme';
 import DrawerWrapper from '@/global/drawer';
 import {useSettings} from '@/states/persistent/settings';
 import {useDialogs} from '@/states/runtime/dialogs';
-import {useTips} from '@/states/fetched/tips';
 import PermissionsModule from '@/lib/permissions';
 import BackgroundTasksModule from '@/lib/backgroundTasks';
 import MainStack from '@/navigation';
 import {useApp} from '@/states/fetched/app';
 
+const deleteOnLeave = () => {
+  if (useSettings.getState().settings.downloads.deleteOnLeave) {
+    console.log('Deleting all files');
+    FilesModule.deleteAllFiles();
+  }
+};
+
 function App(): React.JSX.Element {
   const theme = useTheme();
-  const deleteOnLeave = useSettings(
-    state => state.settings.downloads.deleteOnLeave,
-  );
+
   const openDialog = useDialogs(state => state.openDialog);
-  const fetchTips = useTips(state => state.fetch);
   const [info, localVersion] = useApp(state => [
     state.latest,
     state.localVersion,
@@ -47,13 +50,10 @@ function App(): React.JSX.Element {
   }, [releaseNotification, updateNotification]);
 
   React.useEffect(() => {
-    fetchTips(); // Fetch tips from the server
+    deleteOnLeave();
 
-    if (deleteOnLeave)
-      return () => {
-        FilesModule.deleteAllFiles();
-      }; // Clean up files on app enter (In case it didn't clean up on exit)
-  }, [deleteOnLeave]);
+    return deleteOnLeave;
+  }, []);
 
   const statusBarProps: {
     backgroundColor: string;
