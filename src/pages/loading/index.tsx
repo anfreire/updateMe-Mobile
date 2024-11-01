@@ -6,7 +6,7 @@ import {useIndex} from '@/states/fetched';
 import {useApp} from '@/states/fetched/app';
 import {useCategories} from '@/states/fetched/categories';
 import {NavigationProps, Page} from '@/types/navigation';
-import LoadingIcon from './icon';
+import LoadingIcon from './components/LoadingIcon';
 import {useCurrPageEffect} from '@/hooks/useCurrPageEffect';
 import {useTips} from '@/states/fetched/tips';
 

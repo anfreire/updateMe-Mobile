@@ -31,6 +31,7 @@ export function usePulsing() {
 
   const cancelPulsing = React.useCallback(() => {
     cancelAnimation(opacity);
+    opacity.value = 1;
   }, []);
 
   const pulsingStyles = useAnimatedStyle(() => ({
@@ -46,7 +47,13 @@ export function usePulsingStyles(pulse: boolean) {
 
   React.useEffect(() => {
     'worklet';
-    if (isPulsing.current || !pulse) return;
+    if (isPulsing.current || !pulse) {
+      if (!pulse) {
+        cancelPulsing();
+        isPulsing.current = false;
+      }
+      return;
+    }
 
     startPulsing(() => {
       'worklet';

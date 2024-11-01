@@ -18,6 +18,7 @@ const useZustandStores = [
   'useDrawer',
   'useSession',
   'useToast',
+  'usePulsingStyles',
 ];
 
 const zustandFunctions = [
@@ -37,6 +38,7 @@ const zustandFunctions = [
   'did',
   'toggle',
   'interpolate',
+  'pulsingStyles',
 ];
 
 function isZustandFunction(variableName, calleeName) {

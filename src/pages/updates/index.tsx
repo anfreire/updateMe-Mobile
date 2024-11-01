@@ -11,7 +11,7 @@ import {useUpdates} from '@/states/computed/updates';
 import {NavigationProps, Page} from '@/types/navigation';
 import {useCurrPageEffect} from '@/hooks/useCurrPageEffect';
 import {useInstall} from '@/hooks/useInstall';
-import UpdatesList from './UpdatesList';
+import UpdatesList from './components/UpdatesList';
 
 /*******************************************************************************
  *                                  CONSTANTS                                  *

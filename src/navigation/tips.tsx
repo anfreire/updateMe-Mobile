@@ -1,8 +1,8 @@
 import * as React from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
 import TipsScreen from '@/pages/tips';
-import TipScreen from '@/pages/tips/tip';
 import {TipsStackParams} from '@/types/navigation';
+import TipScreen from '@/pages/tips/components/TipScreen';
 
 const Stack = createStackNavigator<TipsStackParams>();
 

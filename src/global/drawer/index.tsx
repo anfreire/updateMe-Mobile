@@ -9,7 +9,7 @@ import {useDownloads} from '@/states/runtime/downloads';
 import {useTranslations} from '@/states/persistent/translations';
 import {useNavigation} from '@react-navigation/native';
 import {MainStackPage, NavigationProps} from '@/types/navigation';
-import {usePulsing} from '@/hooks/usePulsing';
+import {usePulsingStyles} from '@/hooks/usePulsing';
 import {
   ListRenderItem,
   FlatList,
@@ -30,6 +30,7 @@ interface DrawerItem {
   description: string;
   icon: string;
   onClick: () => void;
+  style?: {opacity: number};
 }
 
 const renderListIcon =
@@ -53,16 +54,8 @@ const DrawerWrapper = ({children}: DrawerWrapperProps) => {
   const hasDownloads = useDownloads(state => state.hasDownloads);
   const openDialog = useDialogs(state => state.openDialog);
   const translations = useTranslations(state => state.translations);
-  const {startPulsing, cancelPulsing, pulsingStyles} = usePulsing();
 
-  React.useEffect(() => {
-    if (isDrawerOpen && hasDownloads) {
-      startPulsing();
-    }
-    return () => {
-      cancelPulsing();
-    };
-  }, [isDrawerOpen, hasDownloads, startPulsing, cancelPulsing]);
+  const pulsingStyles = usePulsingStyles(hasDownloads && isDrawerOpen);
 
   const navigateTo = React.useCallback(
     (route: MainStackPage) => {
@@ -77,7 +70,7 @@ const DrawerWrapper = ({children}: DrawerWrapperProps) => {
     openDialog(key);
   }, []);
 
-  const items = React.useMemo(
+  const items: DrawerItem[] = React.useMemo(
     () => [
       {
         key: 'downloads',
@@ -85,6 +78,7 @@ const DrawerWrapper = ({children}: DrawerWrapperProps) => {
         description: translations['View your downloads'],
         icon: 'download',
         onClick: () => navigateTo('downloads'),
+        style: pulsingStyles,
       },
       {
         key: 'updates',
@@ -132,7 +126,7 @@ const DrawerWrapper = ({children}: DrawerWrapperProps) => {
         description={item.description}
         left={renderListIcon(item.icon)}
         onPress={item.onClick}
-        style={item.key === 'downloads' ? pulsingStyles : undefined}
+        style={item.style}
       />
     ),
     [],
@@ -172,7 +166,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 });
-
-DrawerWrapper.displayName = 'DrawerWrapper';
 
 export default DrawerWrapper;
