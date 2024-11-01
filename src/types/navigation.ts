@@ -32,7 +32,6 @@ export type MainStackPage =
   | 'downloads'
   | 'loading'
   | 'settings'
-  | 'suggest'
   | 'tips-stack'
   | 'updates';
 
@@ -41,7 +40,6 @@ export type MainStackParams = {
   downloads: undefined | {download: string};
   loading: undefined;
   settings: undefined | {setting: SettingsSectionItemInferred};
-  suggest: undefined;
   'tips-stack': undefined;
   updates: undefined;
 };

@@ -25,17 +25,14 @@ export const useUpdates = create<useUpdatesProps>(set => ({
   refresh: (index, populatedDefaultProviders, versions) => {
     const newUpdates: Updates = Object.entries(
       populatedDefaultProviders,
-    ).reduce(
-      (acc, [app, provider]) => {
-        const currentVersion = versions[app];
-        const newVersion = index[app]['providers'][provider].version;
-        if (currentVersion && newVersion > currentVersion) {
-          acc.push(app);
-        }
-        return acc;
-      },
-      ['YouTube'] as Updates,
-    );
+    ).reduce((acc, [app, provider]) => {
+      const currentVersion = versions[app];
+      const newVersion = index[app]['providers'][provider].version;
+      if (currentVersion && newVersion > currentVersion) {
+        acc.push(app);
+      }
+      return acc;
+    }, [] as Updates);
 
     set(state =>
       deepEqual(state.updates, newUpdates) ? state : {updates: newUpdates},

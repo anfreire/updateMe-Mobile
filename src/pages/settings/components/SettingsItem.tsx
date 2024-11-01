@@ -15,7 +15,7 @@ import {Style} from 'react-native-paper/lib/typescript/components/List/utils';
 import MultiIcon from '@/components/MultiIcon';
 import {Checkbox, List} from 'react-native-paper';
 import Animated from 'react-native-reanimated';
-import {StyleSheet} from 'react-native';
+import {StyleSheet, View} from 'react-native';
 
 /*******************************************************************************
  *                                  CONSTANTS                                  *
@@ -105,13 +105,14 @@ function useSettingsItem(data: ItemComponentDataInferred) {
 
   const leftItem = React.useCallback(
     (props: {color: string; style: Style}) => (
-      <MultiIcon
-        color={props.color}
-        style={[props.style, styles.icon]}
-        size={20}
-        type={data.icon.type}
-        name={data.icon.name}
-      />
+      <View style={styles.iconWrapper}>
+        <MultiIcon
+          {...props}
+          size={20}
+          type={data.icon.type}
+          name={data.icon.name}
+        />
+      </View>
     ),
     [data.icon.type, data.icon.name],
   );
@@ -163,11 +164,14 @@ const SettingsItem = ({data}: SettingsItemProps) => {
  *******************************************************************************/
 
 const styles = StyleSheet.create({
-  icon: {},
+  iconWrapper: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 });
 
 /*******************************************************************************
  *                                    EXPORT                                   *
  *******************************************************************************/
 
-export default React.memo(SettingsItem);
+export default SettingsItem;

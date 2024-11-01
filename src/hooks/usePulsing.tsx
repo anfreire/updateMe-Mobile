@@ -24,7 +24,7 @@ export function usePulsing() {
         },
         afterPulsing,
       ),
-      -1,
+      6,
       true,
     );
   }, []);
@@ -45,14 +45,17 @@ export function usePulsingStyles(pulse: boolean) {
   const isPulsing = React.useRef(false);
 
   React.useEffect(() => {
+    'worklet';
     if (isPulsing.current || !pulse) return;
 
     startPulsing(() => {
+      'worklet';
       isPulsing.current = false;
     });
     isPulsing.current = true;
 
     return () => {
+      'worklet';
       if (isPulsing.current) {
         cancelPulsing();
         isPulsing.current = false;

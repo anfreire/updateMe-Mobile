@@ -6,13 +6,12 @@ import {useVersions} from '@/states/computed/versions';
 import {useThemedRefreshControl} from '@/hooks/useThemedRefreshControl';
 import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import {useTranslations} from '@/states/persistent/translations';
-import UpdateItem, {useUpdateItemCallbacks} from './item';
 import {useIndex} from '@/states/fetched';
 import {useUpdates} from '@/states/computed/updates';
 import {NavigationProps, Page} from '@/types/navigation';
 import {useCurrPageEffect} from '@/hooks/useCurrPageEffect';
-import {useUpdateApp} from './useUpdateApp';
-import {FlashList} from '@shopify/flash-list';
+import {useInstall} from '@/hooks/useInstall';
+import UpdatesList from './UpdatesList';
 
 /*******************************************************************************
  *                                  CONSTANTS                                  *
@@ -26,31 +25,54 @@ const REFRESH_UPDATES_INTERVAL = 1000;
  *******************************************************************************/
 
 function useUpdateScreen() {
+  const [updating, setUpdating] = React.useState<Record<string, string>>({});
+
   const index = useIndex(state => state.index);
   const populatedDefaultProviders = useDefaultProviders(
     state => state.populatedDefaultProviders,
   );
-  const refresh = useVersions(state => state.refresh);
-  const updates = useUpdates(state => state.updates);
   const translations = useTranslations(state => state.translations);
-  const [updating, setUpdating] = React.useState<Record<string, string>>({});
+  const updates = useUpdates(state => state.updates);
+
+  const refreshVersions = useVersions(state => state.refresh);
   const {setOptions} = useNavigation<NavigationProps>();
 
-  const refreshUpdates = React.useCallback(() => {
-    refresh(index, populatedDefaultProviders);
+  const refresh = React.useCallback(() => {
+    refreshVersions(index, populatedDefaultProviders);
   }, [index, populatedDefaultProviders]);
 
-  const updateApp = useUpdateApp({setUpdating});
+  const install = useInstall();
 
-  const refreshControl = useThemedRefreshControl(refreshUpdates);
+  const updateApp = React.useCallback(
+    (appName: string) => {
+      install(
+        appName,
+        index[appName].providers[populatedDefaultProviders[appName]],
+        {
+          disableNotice: true,
+          disableDrawer: true,
+          onStart: path => setUpdating(prev => ({...prev, [appName]: path})),
+          onFinished: () =>
+            setUpdating(prev => {
+              // eslint-disable-next-line @typescript-eslint/no-unused-vars
+              const {[appName]: _, ...rest} = prev;
+              return rest;
+            }),
+        },
+      );
+    },
+    [install, index, populatedDefaultProviders],
+  );
+
+  const refreshControl = useThemedRefreshControl(refresh);
 
   useCurrPageEffect(CURR_PAGE);
 
   useFocusEffect(
     React.useCallback(() => {
-      const interval = setInterval(refreshUpdates, REFRESH_UPDATES_INTERVAL);
+      const interval = setInterval(refresh, REFRESH_UPDATES_INTERVAL);
       return () => clearInterval(interval);
-    }, [refreshUpdates]),
+    }, [refresh]),
   );
 
   React.useEffect(() => {
@@ -66,15 +88,6 @@ function useUpdateScreen() {
     });
   }, [updates, updateApp, translations, setOptions]);
 
-  React.useEffect(() => {
-    setUpdating(prev => {
-      const filtered = Object.fromEntries(
-        Object.entries(prev).filter(([key]) => updates.includes(key)),
-      );
-      return filtered;
-    });
-  }, [updates]);
-
   return {updates, refreshControl, updating, updateApp, translations};
 }
 
@@ -86,32 +99,6 @@ const UpdatesScreen = () => {
   const {updates, refreshControl, updating, updateApp, translations} =
     useUpdateScreen();
 
-  const {buildLeftItem, buildRightItem, handleLongPress, handlePress} =
-    useUpdateItemCallbacks(updateApp);
-
-  const renderItem = React.useCallback(
-    ({item}: {item: string}) => (
-      <UpdateItem
-        key={item}
-        appName={item}
-        fileName={updating[item] ?? null}
-        updateApp={updateApp}
-        handlePress={handlePress}
-        handleLongPress={handleLongPress}
-        buildLeftItem={buildLeftItem}
-        buildRightItem={buildRightItem}
-      />
-    ),
-    [
-      updating,
-      updateApp,
-      handlePress,
-      handleLongPress,
-      buildLeftItem,
-      buildRightItem,
-    ],
-  );
-
   if (updates.length === 0) {
     return (
       <View style={styles.wrapper}>
@@ -122,12 +109,10 @@ const UpdatesScreen = () => {
   }
 
   return (
-    <FlashList
-      data={updates}
-      renderItem={renderItem}
-      keyExtractor={item => item}
+    <UpdatesList
       refreshControl={refreshControl}
-      estimatedItemSize={100}
+      updating={updating}
+      updateApp={updateApp}
     />
   );
 };

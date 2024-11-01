@@ -1,7 +1,6 @@
 import * as React from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
 import {useTheme} from '@/theme';
-import {IconButton} from 'react-native-paper';
 import LoadingScreen from '@/pages/loading';
 import HomeStack from './apps';
 import DownloadsScreen from '@/pages/downloads';
@@ -9,24 +8,29 @@ import {useTranslations} from '@/states/persistent/translations';
 import SettingsScreen from '@/pages/settings';
 import UpdatesScreen from '@/pages/updates';
 import TipsStack from './tips';
-import SuggestScreen from '@/pages/suggest';
-import {MainStackParams, NavigationProps} from '@/types/navigation';
-import {useNavigation} from '@react-navigation/native';
+import {MainStackParams} from '@/types/navigation';
+import {useBackButton} from './buttons/useBackButton';
 
 const Stack = createStackNavigator<MainStackParams>();
 
 export default function MainStack() {
   const {schemedTheme} = useTheme();
-  const {goBack} = useNavigation<NavigationProps>();
   const translations = useTranslations(state => state.translations);
 
-  const headerLeft = React.useCallback(
-    () => <IconButton icon="arrow-left" onPress={goBack} />,
-    [goBack],
-  );
+  const backButton = useBackButton();
 
   return (
-    <Stack.Navigator id="main-stack" initialRouteName="loading">
+    <Stack.Navigator
+      id="main-stack"
+      initialRouteName="loading"
+      screenOptions={{
+        headerStyle: {
+          backgroundColor: schemedTheme.surfaceContainer,
+        },
+        headerTitleStyle: {
+          color: schemedTheme.onSurface,
+        },
+      }}>
       <Stack.Screen
         name="loading"
         options={{
@@ -44,14 +48,8 @@ export default function MainStack() {
       <Stack.Screen
         name="downloads"
         options={{
-          headerStyle: {
-            backgroundColor: schemedTheme.surfaceContainer,
-          },
-          headerTitleStyle: {
-            color: schemedTheme.onSurface,
-          },
           headerTitle: translations['Downloads'],
-          headerLeft,
+          headerLeft: backButton,
         }}
         component={DownloadsScreen}
       />
@@ -65,7 +63,7 @@ export default function MainStack() {
             color: schemedTheme.onSurface,
           },
           headerTitle: translations['Settings'],
-          headerLeft,
+          headerLeft: backButton,
         }}
         component={SettingsScreen}
       />
@@ -79,30 +77,16 @@ export default function MainStack() {
             color: schemedTheme.onSurface,
           },
           headerTitle: translations['Updates'],
-          headerLeft,
+          headerLeft: backButton,
         }}
         component={UpdatesScreen}
       />
       <Stack.Screen
         name="tips-stack"
         options={{
-          headerShown: false,
+          title: translations['Tips'],
         }}
         component={TipsStack}
-      />
-      <Stack.Screen
-        name="suggest"
-        options={{
-          headerStyle: {
-            backgroundColor: schemedTheme.surfaceContainer,
-          },
-          headerTitleStyle: {
-            color: schemedTheme.onSurface,
-          },
-          headerTitle: translations['Suggest an App'],
-          headerLeft,
-        }}
-        component={SuggestScreen}
       />
     </Stack.Navigator>
   );

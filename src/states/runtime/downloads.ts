@@ -1,7 +1,7 @@
-import FilesModule from "../../lib/files";
-import { create } from "zustand";
-import { FetchBlobResponse, StatefulPromise } from "react-native-blob-util";
-import { Logger } from "../persistent/logs";
+import FilesModule from '../../lib/files';
+import {create} from 'zustand';
+import {FetchBlobResponse, StatefulPromise} from 'react-native-blob-util';
+import {Logger} from '../persistent/logs';
 
 export interface Download {
   progress: number;
@@ -17,8 +17,9 @@ type useDownloadsActions = {
   addDownload: (
     fileName: string,
     url: string,
+    onStart?: (fileName: string) => void,
     onProgress?: (progress: number) => void,
-    onFinished?: (path: string) => void
+    onFinished?: (path: string) => void,
   ) => void;
   cancelDownload: (fileName: string) => void;
   removeDownload: (fileName: string) => void;
@@ -32,20 +33,22 @@ export const useDownloads = create<useDownloadsProps>((set, get) => ({
   addDownload: (
     fileName: string,
     url: string,
+    onStart = () => {},
     onProgress = () => {},
-    onFinished = () => {}
+    onFinished = () => {},
   ) => {
-    set((state) => ({
+    set(state => ({
       hasDownloads: true,
       downloads: {
         ...state.downloads,
-        [fileName]: { progress: 0 },
+        [fileName]: {progress: 0},
       },
     }));
 
     const path = FilesModule.buildAbsolutePath(fileName);
-    const task = FilesModule.downloadFile(url, fileName, path, (progress) => {
-      set((state) => ({
+    onStart(fileName);
+    const task = FilesModule.downloadFile(url, fileName, path, progress => {
+      set(state => ({
         downloads: {
           ...state.downloads,
           [fileName]: {
@@ -57,18 +60,18 @@ export const useDownloads = create<useDownloadsProps>((set, get) => ({
       onProgress(progress);
     });
 
-    set((state) => ({
+    set(state => ({
       downloads: {
         ...state.downloads,
-        [fileName]: { ...state.downloads[fileName], task },
+        [fileName]: {...state.downloads[fileName], task},
       },
     }));
 
     task
-      .then((result) => {
+      .then(result => {
         onFinished(result.path());
       })
-      .catch((reason) => {
+      .catch(reason => {
         Logger.error(`Error downloading file ${fileName}: ${reason}`);
       })
       .finally(() => {
@@ -76,9 +79,9 @@ export const useDownloads = create<useDownloadsProps>((set, get) => ({
       });
   },
   removeDownload: (fileName: string) => {
-    set((state) => {
+    set(state => {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { [fileName]: _, ...restDownloads } = state.downloads;
+      const {[fileName]: _, ...restDownloads} = state.downloads;
       return {
         downloads: restDownloads,
         hasDownloads: Object.keys(restDownloads).length > 0,

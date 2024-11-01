@@ -8,7 +8,7 @@ import {Dialog, useDialogs} from '@/states/runtime/dialogs';
 import {useDownloads} from '@/states/runtime/downloads';
 import {useTranslations} from '@/states/persistent/translations';
 import {useNavigation} from '@react-navigation/native';
-import {NavigationProps} from '@/types/navigation';
+import {MainStackPage, NavigationProps} from '@/types/navigation';
 import {usePulsing} from '@/hooks/usePulsing';
 import {
   ListRenderItem,
@@ -65,7 +65,7 @@ const DrawerWrapper = ({children}: DrawerWrapperProps) => {
   }, [isDrawerOpen, hasDownloads, startPulsing, cancelPulsing]);
 
   const navigateTo = React.useCallback(
-    (route: 'downloads' | 'updates' | 'tips' | 'settings' | 'suggest') => {
+    (route: MainStackPage) => {
       closeDrawer();
       navigate(route);
     },
@@ -98,7 +98,7 @@ const DrawerWrapper = ({children}: DrawerWrapperProps) => {
         title: translations['Tips'],
         description: translations['Maximize your experience'],
         icon: 'star-four-points',
-        onClick: () => navigateTo('tips'),
+        onClick: () => navigateTo('tips-stack'),
       },
       {
         key: 'settings',
@@ -106,13 +106,6 @@ const DrawerWrapper = ({children}: DrawerWrapperProps) => {
         description: translations['Change the app settings'],
         icon: 'cog',
         onClick: () => navigateTo('settings'),
-      },
-      {
-        key: 'suggest',
-        title: translations['Suggest'],
-        description: translations['Suggest a new app'],
-        icon: 'lightbulb-on',
-        onClick: () => navigateTo('suggest'),
       },
       {
         key: 'share',

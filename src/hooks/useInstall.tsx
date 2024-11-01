@@ -12,6 +12,14 @@ import {useDrawer} from '@/states/runtime/drawer';
 import {useNavigation} from '@react-navigation/native';
 import {NavigationProps} from '@/types/navigation';
 
+interface useInstallAdditionalOptions {
+  disableNotice?: boolean;
+  disableDrawer?: boolean;
+  onStart?: (path: string) => void;
+  onProgress?: (progress: number) => void;
+  onFinished?: (path: string) => void;
+}
+
 export function useInstall() {
   const openDialog = useDialogs(state => state.openDialog);
   const translations = useTranslations(state => state.translations);
@@ -56,7 +64,11 @@ export function useInstall() {
   }, [translations, navigate]);
 
   const handleSafeInstall = React.useCallback(
-    async (appName: string, providerProps: IndexAppProviderProps) => {
+    async (
+      appName: string,
+      providerProps: IndexAppProviderProps,
+      additionalOptions?: useInstallAdditionalOptions,
+    ) => {
       const fileName = FilesModule.buildFileName(
         appName,
         providerProps.version,
@@ -66,31 +78,38 @@ export function useInstall() {
         await FilesModule.deleteFile(FilesModule.buildAbsolutePath(fileName));
       } catch {}
 
-      addDownload(fileName, providerProps.download, undefined, path => {
-        if (installAfterDownload) {
-          FilesModule.installApk(path).then(console.log);
-        } else if (currPage !== 'downloads') {
-          openToast(
-            interpolate(translations['$1 finished downloading'], appName),
-            {
-              action: {
-                label: translations['Install'],
-                onPress: () => FilesModule.installApk(path),
+      addDownload(
+        fileName,
+        providerProps.download,
+        additionalOptions?.onStart,
+        additionalOptions?.onProgress,
+        path => {
+          if (installAfterDownload) {
+            FilesModule.installApk(path).then(console.log);
+          } else if (currPage !== 'downloads') {
+            openToast(
+              interpolate(translations['$1 finished downloading'], appName),
+              {
+                action: {
+                  label: translations['Install'],
+                  onPress: () => FilesModule.installApk(path),
+                },
               },
-            },
-          );
-        }
-      });
+            );
+          }
+          additionalOptions?.onFinished?.(path);
+        },
+      );
     },
     [installAfterDownload, translations, currPage],
   );
 
   const showDownloadNotice = React.useCallback(
-    (appName: string) => {
-      if (!downloadsOpenedDrawer) {
+    (appName: string, additionalOptions?: useInstallAdditionalOptions) => {
+      if (!downloadsOpenedDrawer && !additionalOptions?.disableDrawer) {
         openDrawer();
         activateFlag('downloadsOpenedDrawer');
-      } else {
+      } else if (!additionalOptions?.disableNotice) {
         openToast(
           interpolate(translations['$1 was added to the downloads'], appName),
           {
@@ -106,13 +125,17 @@ export function useInstall() {
   );
 
   return React.useCallback(
-    (appName: string, providerProps: IndexAppProviderProps) => {
+    (
+      appName: string,
+      providerProps: IndexAppProviderProps,
+      additionalOptions?: useInstallAdditionalOptions,
+    ) => {
       if (!installUnsafe && !providerProps.safe) {
         handleUnsafeInstall();
         return;
       }
-      handleSafeInstall(appName, providerProps);
-      showDownloadNotice(appName);
+      handleSafeInstall(appName, providerProps, additionalOptions);
+      showDownloadNotice(appName, additionalOptions);
     },
     [installUnsafe, handleUnsafeInstall, handleSafeInstall, showDownloadNotice],
   );
