@@ -72,7 +72,12 @@ export const useDownloads = create<useDownloadsProps>((set, get) => ({
         onFinished(result.path());
       })
       .catch(reason => {
-        Logger.error(`Error downloading file ${fileName}: ${reason}`);
+        Logger.error(
+          'Downloads',
+          'Download',
+          'Failed to download file',
+          reason,
+        );
       })
       .finally(() => {
         get().removeDownload(fileName);
@@ -94,7 +99,7 @@ export const useDownloads = create<useDownloadsProps>((set, get) => ({
       try {
         download.task.cancel();
       } catch (error) {
-        Logger.error(`Error cancelling download ${fileName}: ${error}`);
+        Logger.error('Downloads', 'Cancel', 'Failed to cancel download', error);
       }
       get().removeDownload(fileName);
       FilesModule.deleteFile(fileName);

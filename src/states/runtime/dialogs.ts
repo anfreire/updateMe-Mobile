@@ -1,10 +1,14 @@
 import {create} from 'zustand';
+import {deepEqual} from 'fast-equals';
+
 export type Dialog =
   | 'sourceColorPicker'
   | 'colorSchemePicker'
   | 'share'
   | 'homeLayoutPicker'
-  | 'newVersion';
+  | 'newVersion'
+  | 'providersOrder'
+  | 'ignoredApps'
 
 export type CustomDialogProps = {
   title: string;
@@ -38,7 +42,7 @@ export const useDialogs = create<useDialogsProps>(set => ({
       );
     } else {
       set(state =>
-        JSON.stringify(state.customDialog) === JSON.stringify(key)
+        deepEqual(state.customDialog, key)
           ? state
           : {activeDialog: 'custom', customDialog: key},
       );

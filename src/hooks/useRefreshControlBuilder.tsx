@@ -2,7 +2,11 @@ import * as React from 'react';
 import {RefreshControl} from 'react-native';
 import {useTheme} from '@/theme';
 
-export function useThemedRefreshControl(
+/******************************************************************************
+ *                                    HOOK                                    *
+ ******************************************************************************/
+
+export function useRefreshControlBuilder(
   onRefresh: () => void,
   refreshing: boolean = false,
 ) {

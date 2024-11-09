@@ -1,8 +1,8 @@
 // eslint-disable-next-line react-native/split-platform-components
-import { PermissionsAndroid, NativeModules, Permission } from "react-native";
+import {PermissionsAndroid, NativeModules, Permission} from 'react-native';
 
 async function grantAndroidPermission(
-  permission: Permission
+  permission: Permission,
 ): Promise<boolean> {
   const granted = await PermissionsAndroid.check(permission);
   if (!granted) {

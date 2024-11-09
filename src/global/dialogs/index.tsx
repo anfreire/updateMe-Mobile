@@ -1,19 +1,29 @@
 import * as React from 'react';
-import SourceColorPickerDialog from './components/appearance';
-import ColorSchemePickerDialog from './components/scheme';
-import ShareDialog from './components/share';
-import NewVersionDialog from './components/newVersion';
 import {Portal} from 'react-native-paper';
-import CustomDialog from './components/custom';
+import SourceColorPickerDialog from './components/ColorPickerDialog';
+import ColorSchemePickerDialog from './components/ColorSchemeDialog';
+import ShareDialog from './components/ShareDialog';
+import NewVersionDialog from './components/NewVersionDialog';
+import CustomDialog from './components/CustomDialog';
+import IgnoredAppsDialog from './components/IgnoredAppsDialog';
 
-export function Dialogs() {
-  return (
-    <Portal>
-      <CustomDialog />
-      <SourceColorPickerDialog />
-      <ColorSchemePickerDialog />
-      <ShareDialog />
-      <NewVersionDialog />
-    </Portal>
-  );
-}
+/******************************************************************************
+ *                                 COMPONENT                                  *
+ ******************************************************************************/
+
+const Dialogs = () => (
+  <Portal>
+    <CustomDialog />
+    <SourceColorPickerDialog />
+    <ColorSchemePickerDialog />
+    <ShareDialog />
+    <IgnoredAppsDialog />
+    <NewVersionDialog />
+  </Portal>
+);
+
+/******************************************************************************
+ *                                   EXPORT                                   *
+ ******************************************************************************/
+
+export default React.memo(Dialogs);

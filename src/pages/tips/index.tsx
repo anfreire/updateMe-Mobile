@@ -1,27 +1,25 @@
 import * as React from 'react';
-import {useThemedRefreshControl} from '@/hooks/useThemedRefreshControl';
 import {useTips} from '@/states/fetched/tips';
 import {StyleSheet, View} from 'react-native';
 import {List} from 'react-native-paper';
-import {useFocusEffect, useNavigation} from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 import {NavigationProps} from '@/types/navigation';
 import LoadingView from '@/components/loadingView';
 import {Style} from 'react-native-paper/lib/typescript/components/List/utils';
 import {Page} from '@/types/navigation';
-import {useCurrPageEffect} from '@/hooks/useCurrPageEffect';
+import {useNestedCurrPageEffect} from '@/hooks/useCurrPageEffect';
 import {FlashList} from '@shopify/flash-list';
-import {useBackButton} from '@/navigation/buttons/useBackButton';
-import {useTranslations} from '@/states/persistent/translations';
+import {useRefreshControlBuilder} from '@/hooks/useRefreshControlBuilder';
 
-/*******************************************************************************
- *                                  CONSTANTS                                  *
- *******************************************************************************/
+/******************************************************************************
+ *                                 CONSTANTS                                  *
+ ******************************************************************************/
 
 const CURR_PAGE: Page = 'tips';
 
-/*******************************************************************************
- *                                    UTILS                                    *
- *******************************************************************************/
+/******************************************************************************
+ *                                   UTILS                                    *
+ ******************************************************************************/
 
 const chevronRightIcon = (props: {color: string; style?: Style}) => (
   <View style={styles.iconWrapper}>
@@ -29,9 +27,9 @@ const chevronRightIcon = (props: {color: string; style?: Style}) => (
   </View>
 );
 
-/*******************************************************************************
- *                                     HOOK                                    *
- *******************************************************************************/
+/******************************************************************************
+ *                                    HOOK                                    *
+ ******************************************************************************/
 
 function useTipsScreen() {
   const [tips, isfetched, fetchTips] = useTips(state => [
@@ -39,32 +37,18 @@ function useTipsScreen() {
     state.isFetched,
     state.fetch,
   ]);
-  const translations = useTranslations(state => state.translations);
-  const {navigate, getParent} = useNavigation<NavigationProps>();
+  const {navigate} = useNavigation<NavigationProps>();
 
-  const refreshControl = useThemedRefreshControl(fetchTips, !isfetched);
+  const refreshControl = useRefreshControlBuilder(fetchTips, !isfetched);
 
-  const backButton = useBackButton();
-
-  useFocusEffect(
-    React.useCallback(() => {
-      getParent()?.setOptions({
-        title: translations['Tips'],
-        headerLeft: backButton,
-      });
-    }, [getParent, translations, backButton]),
-  );
-
-  useCurrPageEffect(CURR_PAGE);
-
-  useFocusEffect(React.useCallback(() => {}, []));
+  useNestedCurrPageEffect(CURR_PAGE);
 
   return {tips, isfetched, navigate, refreshControl};
 }
 
-/*******************************************************************************
- *                                  COMPONENT                                  *
- *******************************************************************************/
+/******************************************************************************
+ *                                 COMPONENT                                  *
+ ******************************************************************************/
 
 const TipsScreen = () => {
   const {tips, isfetched, navigate, refreshControl} = useTipsScreen();
@@ -91,7 +75,6 @@ const TipsScreen = () => {
   return (
     <FlashList
       data={Object.keys(tips)}
-      keyExtractor={item => item}
       renderItem={renderItem}
       refreshControl={refreshControl}
       estimatedItemSize={100}
@@ -99,17 +82,17 @@ const TipsScreen = () => {
   );
 };
 
-/*******************************************************************************
- *                                    STYLES                                   *
- *******************************************************************************/
+/******************************************************************************
+ *                                   STYLES                                   *
+ ******************************************************************************/
 
 const styles = StyleSheet.create({
   iconWrapper: {justifyContent: 'center', alignItems: 'center'},
   listItem: {fontSize: 13},
 });
 
-/*******************************************************************************
- *                                    EXPORT                                   *
- *******************************************************************************/
+/******************************************************************************
+ *                                   EXPORT                                   *
+ ******************************************************************************/
 
 export default TipsScreen;

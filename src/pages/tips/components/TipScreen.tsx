@@ -1,32 +1,26 @@
 import LoadingView from '@/components/loadingView';
-import {useCurrPageEffect} from '@/hooks/useCurrPageEffect';
+import {useNestedCurrPageEffect} from '@/hooks/useCurrPageEffect';
 import {useTips} from '@/states/fetched/tips';
-import {NavigationProps, Page, RouteProps} from '@/types/navigation';
-import {
-  useFocusEffect,
-  useNavigation,
-  useRoute,
-} from '@react-navigation/native';
+import {Page, RouteProps} from '@/types/navigation';
+import {useRoute} from '@react-navigation/native';
 import * as React from 'react';
 import {StyleSheet, useWindowDimensions} from 'react-native';
-import {IconButton} from 'react-native-paper';
 import Carousel from 'react-native-reanimated-carousel';
 import TipPage from './TipPage';
 
-/*******************************************************************************
- *                                  CONSTANTS                                  *
- *******************************************************************************/
+/******************************************************************************
+ *                                 CONSTANTS                                  *
+ ******************************************************************************/
 
 const CURR_PAGE: Page = 'tip';
 
-/*******************************************************************************
- *                                     HOOK                                    *
- *******************************************************************************/
+/******************************************************************************
+ *                                    HOOK                                    *
+ ******************************************************************************/
 
 const useTipScreen = () => {
   const tips = useTips(state => state.tips);
   const {params} = useRoute<RouteProps>();
-  const {getParent, navigate} = useNavigation<NavigationProps>();
   const [wasTouched, setWasTouched] = React.useState(false);
   const dimensions = useWindowDimensions();
 
@@ -39,33 +33,18 @@ const useTipScreen = () => {
     return tips[tipTitle].content;
   }, [tipTitle, tips]);
 
-  useFocusEffect(
-    React.useCallback(() => {
-      if (!tipTitle) {
-        return;
-      }
-
-      getParent()?.setOptions({
-        title: tipTitle,
-        headerLeft: () => (
-          <IconButton icon="arrow-left" onPress={() => navigate('tips')} />
-        ),
-      });
-    }, [tipTitle, getParent, navigate]),
-  );
-
   const registerTouch = React.useCallback(() => {
     setWasTouched(prev => prev || true);
   }, []);
 
-  useCurrPageEffect(CURR_PAGE);
+  useNestedCurrPageEffect(CURR_PAGE, {tip: tipTitle});
 
   return {tipContent, dimensions, wasTouched, registerTouch};
 };
 
-/*******************************************************************************
- *                                  COMPONENT                                  *
- *******************************************************************************/
+/******************************************************************************
+ *                                 COMPONENT                                  *
+ ******************************************************************************/
 
 const TipScreen = () => {
   const {tipContent, dimensions, wasTouched, registerTouch} = useTipScreen();
@@ -101,9 +80,9 @@ const TipScreen = () => {
   );
 };
 
-/*******************************************************************************
- *                                    STYLES                                   *
- *******************************************************************************/
+/******************************************************************************
+ *                                   STYLES                                   *
+ ******************************************************************************/
 
 const styles = StyleSheet.create({
   carousel: {
@@ -115,8 +94,8 @@ const styles = StyleSheet.create({
   },
 });
 
-/*******************************************************************************
- *                                    EXPORT                                   *
- *******************************************************************************/
+/******************************************************************************
+ *                                   EXPORT                                   *
+ ******************************************************************************/
 
 export default TipScreen;

@@ -5,6 +5,10 @@ import {deepEqual} from 'fast-equals';
 
 const STORAGE_ID = 'notifications' as const;
 
+const PERSISTENT_KEYS: Array<keyof useNotificationsState> = [
+  'newVersionsNotifications',
+];
+
 const storage = new MMKV({id: STORAGE_ID});
 
 const zustandStorage: StateStorage = {
@@ -13,35 +17,61 @@ const zustandStorage: StateStorage = {
   removeItem: name => storage.delete(name),
 };
 
+type NewVersionNotification = {
+  version: string;
+  sha256?: string;
+};
+
 type useNotificationsState = {
-  appsVersionsSent: Record<string, string>;
+  newVersionsNotifications: Record<string, NewVersionNotification>;
 };
 
 type useNotificationsActions = {
-  addAppVersionSent: (appName: string, version: string) => void;
+  registerNewVersionNotification: (
+    appName: string,
+    version: string,
+    sha256?: string,
+  ) => void;
 };
 
 export type useNotificationsProps = useNotificationsState &
   useNotificationsActions;
+
 export const useNotifications = create<useNotificationsProps>()(
   persist(
     set => ({
-      appsVersionsSent: {},
-      addAppVersionSent: (appName, version) => {
+      newVersionsNotifications: {},
+      registerNewVersionNotification: (
+        appName,
+        version,
+        sha256 = undefined,
+      ) => {
         set(state => {
-          const newAppsVersionsSent = {
-            ...state.appsVersionsSent,
-            [appName]: version,
+          const newVersionsNotifications = {
+            ...state.newVersionsNotifications,
+            [appName]: {
+              version,
+              sha256,
+            },
           };
-          return deepEqual(state.appsVersionsSent, newAppsVersionsSent)
+          return deepEqual(
+            state.newVersionsNotifications,
+            newVersionsNotifications,
+          )
             ? state
-            : {appsVersionsSent: newAppsVersionsSent};
+            : {newVersionsNotifications};
         });
       },
     }),
     {
       name: STORAGE_ID,
       storage: createJSONStorage(() => zustandStorage),
+      partialize: state =>
+        Object.fromEntries(
+          Object.entries(state).filter(([key]) =>
+            PERSISTENT_KEYS.includes(key as keyof useNotificationsState),
+          ),
+        ),
     },
   ),
 );

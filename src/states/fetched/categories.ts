@@ -44,7 +44,7 @@ export const useCategories = create<useCategoriesProps>(set => ({
       );
       return newCategories;
     } catch (error) {
-      Logger.error(`Error fetching categories: ${error}`);
+      Logger.error('Categories', 'Fetch', 'Failed to fetch categories', error);
       set({isFetched: true});
       return null;
     }

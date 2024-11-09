@@ -15,31 +15,33 @@ import {Style} from 'react-native-paper/lib/typescript/components/List/utils';
 import MultiIcon from '@/components/MultiIcon';
 import {Checkbox, List} from 'react-native-paper';
 import Animated from 'react-native-reanimated';
-import {StyleSheet, View} from 'react-native';
+import {ScrollView, StyleSheet, View} from 'react-native';
 
-/*******************************************************************************
- *                                  CONSTANTS                                  *
- *******************************************************************************/
+/******************************************************************************
+ *                                 CONSTANTS                                  *
+ ******************************************************************************/
 
 const AnimatedListItem = Animated.createAnimatedComponent(List.Item);
 
-/*******************************************************************************
- *                                    UTILS                                    *
- *******************************************************************************/
+/******************************************************************************
+ *                                   UTILS                                    *
+ ******************************************************************************/
 
 const buildChevron = ({color, style}: {color: string; style?: Style}) => (
-  <MultiIcon
-    color={color}
-    style={style}
-    size={20}
-    type="material-icons"
-    name="chevron-right"
-  />
+  <View style={styles.iconWrapper}>
+    <MultiIcon
+      color={color}
+      style={style}
+      size={20}
+      type="material-icons"
+      name="chevron-right"
+    />
+  </View>
 );
 
-/*******************************************************************************
- *                                     HOOK                                    *
- *******************************************************************************/
+/******************************************************************************
+ *                                    HOOK                                    *
+ ******************************************************************************/
 
 function useCheckboxSettingsItem(data: ItemComponentDataInferred) {
   const section = data.action.data as SettingsSection;
@@ -64,11 +66,13 @@ function useCheckboxSettingsItem(data: ItemComponentDataInferred) {
 
   const rightItem = React.useCallback(
     (props: {color: string; style?: Style}) => (
-      <Checkbox
-        status={persistedValue ? 'checked' : 'unchecked'}
-        onPress={handlePress}
-        color={props.color}
-      />
+      <View style={styles.iconWrapper}>
+        <Checkbox
+          status={persistedValue ? 'checked' : 'unchecked'}
+          onPress={handlePress}
+          color={props.color}
+        />
+      </View>
     ),
     [persistedValue, handlePress],
   );
@@ -93,8 +97,12 @@ function useDialogSettingsItem(data: ItemComponentDataInferred) {
   };
 }
 
-function useSettingsItem(data: ItemComponentDataInferred) {
+function useSettingsItem(
+  data: ItemComponentDataInferred,
+  scrollViewRef: React.RefObject<ScrollView>,
+) {
   const {params} = useRoute<RouteProps>();
+  const animatedListItemRef = React.useRef<View>(null);
 
   const paramMatches = React.useMemo(
     () => !!(params && 'setting' in params && params.setting === data.key),
@@ -102,6 +110,20 @@ function useSettingsItem(data: ItemComponentDataInferred) {
   );
 
   const pulsingStyles = usePulsingStyles(paramMatches);
+
+  const handleLayout = React.useCallback(() => {
+    if (paramMatches && animatedListItemRef.current && scrollViewRef.current) {
+      animatedListItemRef.current.measureLayout(
+        scrollViewRef.current.getInnerViewNode(),
+        (x, y, _, __) => {
+          scrollViewRef.current?.scrollTo({
+            y: y - 100,
+            animated: true,
+          });
+        },
+      );
+    }
+  }, [paramMatches, animatedListItemRef, scrollViewRef]);
 
   const leftItem = React.useCallback(
     (props: {color: string; style: Style}) => (
@@ -132,36 +154,47 @@ function useSettingsItem(data: ItemComponentDataInferred) {
     handlePress,
     leftItem,
     rightItem,
+    animatedListItemRef,
+    handleLayout,
   };
 }
 
-/*******************************************************************************
- *                                  COMPONENT                                  *
- *******************************************************************************/
+/******************************************************************************
+ *                                 COMPONENT                                  *
+ ******************************************************************************/
 
 interface SettingsItemProps {
   data: ItemComponentDataInferred;
+  scrollViewRef: React.RefObject<ScrollView>;
 }
 
-const SettingsItem = ({data}: SettingsItemProps) => {
-  const {pulsingStyles, handlePress, leftItem, rightItem} =
-    useSettingsItem(data);
+const SettingsItem = ({data, scrollViewRef}: SettingsItemProps) => {
+  const {
+    pulsingStyles,
+    handlePress,
+    leftItem,
+    rightItem,
+    animatedListItemRef,
+    handleLayout,
+  } = useSettingsItem(data, scrollViewRef);
 
   return (
     <AnimatedListItem
+      ref={animatedListItemRef}
       title={data.title}
       description={data.description}
       style={pulsingStyles}
       left={leftItem}
       right={rightItem}
       onPress={handlePress}
+      onLayout={handleLayout}
     />
   );
 };
 
-/*******************************************************************************
- *                                    STYLES                                   *
- *******************************************************************************/
+/******************************************************************************
+ *                                   STYLES                                   *
+ ******************************************************************************/
 
 const styles = StyleSheet.create({
   iconWrapper: {
@@ -170,8 +203,8 @@ const styles = StyleSheet.create({
   },
 });
 
-/*******************************************************************************
- *                                    EXPORT                                   *
- *******************************************************************************/
+/******************************************************************************
+ *                                   EXPORT                                   *
+ ******************************************************************************/
 
 export default SettingsItem;

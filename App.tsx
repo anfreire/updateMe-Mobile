@@ -15,17 +15,29 @@ import PermissionsModule from '@/lib/permissions';
 import BackgroundTasksModule from '@/lib/backgroundTasks';
 import MainStack from '@/navigation';
 import {useApp} from '@/states/fetched/app';
+import {Logger} from '@/states/persistent/logs';
+
+/******************************************************************************
+ *                                   UTILS                                    *
+ ******************************************************************************/
 
 const deleteOnLeave = () => {
   if (useSettings.getState().settings.downloads.deleteOnLeave) {
-    console.log('Deleting all files');
-    FilesModule.deleteAllFiles();
+    FilesModule.deleteAllFiles().then(filesCount => {
+      const message = filesCount
+        ? `Deleted ${filesCount} files`
+        : 'No files to delete';
+      Logger.info('Settings', 'Delete on Leave', message);
+    });
   }
 };
 
-function App(): React.JSX.Element {
-  const theme = useTheme();
+/******************************************************************************
+ *                                    HOOK                                    *
+ ******************************************************************************/
 
+function useAppComponent() {
+  const theme = useTheme();
   const openDialog = useDialogs(state => state.openDialog);
   const [info, localVersion] = useApp(state => [
     state.latest,
@@ -66,6 +78,16 @@ function App(): React.JSX.Element {
     [theme.schemedTheme, theme.colorScheme],
   );
 
+  return {statusBarProps};
+}
+
+/******************************************************************************
+ *                                 COMPONENT                                  *
+ ******************************************************************************/
+
+function App(): React.JSX.Element {
+  const {statusBarProps} = useAppComponent();
+
   return (
     <>
       <StatusBar {...statusBarProps} />
@@ -80,11 +102,19 @@ function App(): React.JSX.Element {
   );
 }
 
+/******************************************************************************
+ *                                   STYLES                                   *
+ ******************************************************************************/
+
 const styles = StyleSheet.create({
   appWrapper: {
     width: '100%',
     height: '100%',
   },
 });
+
+/******************************************************************************
+ *                                   EXPORT                                   *
+ ******************************************************************************/
 
 export default App;

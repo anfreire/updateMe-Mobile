@@ -1,7 +1,6 @@
 import * as React from 'react';
 import {View, StyleSheet} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
-import {Logger} from '@/states/persistent/logs';
 import {useIndex} from '@/states/fetched';
 import {useApp} from '@/states/fetched/app';
 import {useCategories} from '@/states/fetched/categories';
@@ -10,15 +9,15 @@ import LoadingIcon from './components/LoadingIcon';
 import {useCurrPageEffect} from '@/hooks/useCurrPageEffect';
 import {useTips} from '@/states/fetched/tips';
 
-/*******************************************************************************
- *                                  CONSTANTS                                  *
- *******************************************************************************/
+/******************************************************************************
+ *                                 CONSTANTS                                  *
+ ******************************************************************************/
 
 const CURR_PAGE: Page = 'loading';
 
-/*******************************************************************************
- *                                     HOOK                                    *
- *******************************************************************************/
+/******************************************************************************
+ *                                    HOOK                                    *
+ ******************************************************************************/
 
 function useLoadingScreen() {
   const {reset} = useNavigation<NavigationProps>();
@@ -37,22 +36,18 @@ function useLoadingScreen() {
       tipsFetched = false,
     ) => {
       if (!indexFetched && (await fetchIndex()) === null) {
-        Logger.error('Failed to fetch index');
         return fetchData();
       }
 
       if (!categoriesFetched && (await fetchCategories()) === null) {
-        Logger.error('Failed to fetch categories');
         return fetchData(true);
       }
 
       if (!tipsFetched && (await fetchTips()) === null) {
-        Logger.error('Failed to fetch tips');
         return fetchData(true, true);
       }
 
       if ((await fetchLatestAppInfo()) === null) {
-        Logger.error('Failed to fetch info');
         return fetchData(true, true, true);
       }
 
@@ -71,9 +66,9 @@ function useLoadingScreen() {
   useCurrPageEffect(CURR_PAGE);
 }
 
-/*******************************************************************************
- *                                  COMPONENT                                  *
- *******************************************************************************/
+/******************************************************************************
+ *                                 COMPONENT                                  *
+ ******************************************************************************/
 
 const LoadingScreen = () => {
   useLoadingScreen();
@@ -85,9 +80,9 @@ const LoadingScreen = () => {
   );
 };
 
-/*******************************************************************************
- *                                    STYLES                                   *
- *******************************************************************************/
+/******************************************************************************
+ *                                   STYLES                                   *
+ ******************************************************************************/
 
 const styles = StyleSheet.create({
   container: {
@@ -97,8 +92,8 @@ const styles = StyleSheet.create({
   },
 });
 
-/*******************************************************************************
- *                                    EXPORT                                   *
- *******************************************************************************/
+/******************************************************************************
+ *                                   EXPORT                                   *
+ ******************************************************************************/
 
 export default LoadingScreen;

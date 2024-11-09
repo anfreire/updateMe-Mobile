@@ -1,20 +1,20 @@
 import * as React from 'react';
-import {useThemedRefreshControl} from '@/hooks/useThemedRefreshControl';
+import {useRefreshControlBuilder} from '@/hooks/useRefreshControlBuilder';
 import {FlashList} from '@shopify/flash-list';
 import HomeCategoriesSection from './HomeCategoriesSection';
 import {Categories, useCategories} from '@/states/fetched/categories';
 import {useIndex} from '@/states/fetched';
 
-/*******************************************************************************
- *                                    UTILS                                    *
- *******************************************************************************/
+/******************************************************************************
+ *                                   UTILS                                    *
+ ******************************************************************************/
 
 const refresh = () =>
   useIndex.getState().fetch().then(useCategories.getState().fetch);
 
-/*******************************************************************************
- *                                     HOOK                                    *
- *******************************************************************************/
+/******************************************************************************
+ *                                    HOOK                                    *
+ ******************************************************************************/
 
 export function useHomeCategories() {
   const [openedCategories, setOpenedCategories] = React.useState<Set<string>>(
@@ -33,7 +33,7 @@ export function useHomeCategories() {
     });
   }, []);
 
-  const refreshControl = useThemedRefreshControl(refresh);
+  const refreshControl = useRefreshControlBuilder(refresh);
 
   return {
     openedCategories,
@@ -42,9 +42,9 @@ export function useHomeCategories() {
   };
 }
 
-/*******************************************************************************
- *                                  COMPONENT                                  *
- *******************************************************************************/
+/******************************************************************************
+ *                                 COMPONENT                                  *
+ ******************************************************************************/
 
 interface HomeCategoriesProps {
   filteredCategories: Categories;
@@ -76,14 +76,13 @@ const HomeCategories = ({
       data={Object.keys(filteredCategories)}
       renderItem={renderItem}
       estimatedItemSize={100}
-      keyExtractor={item => item}
       refreshControl={refreshControl}
     />
   );
 };
 
-/*******************************************************************************
- *                                    EXPORT                                   *
- *******************************************************************************/
+/******************************************************************************
+ *                                   EXPORT                                   *
+ ******************************************************************************/
 
 export default HomeCategories;

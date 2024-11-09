@@ -11,6 +11,12 @@ export interface Settings {
     installAfterDownload: boolean;
     deleteOnLeave: boolean;
   };
+  apps: {
+    ignoredApps: string[];
+  };
+  providers: {
+    providersOrder: string[];
+  };
   security: {
     installUnsafeApps: boolean;
   };
@@ -28,6 +34,12 @@ export const DEFAULT_SETTINGS: Settings = {
   downloads: {
     installAfterDownload: true,
     deleteOnLeave: true,
+  },
+  apps: {
+    ignoredApps: [],
+  },
+  providers: {
+    providersOrder: [],
   },
   security: {
     installUnsafeApps: false,

@@ -6,18 +6,19 @@ import SettingsSection from './components/SettingsSection';
 import {useTranslations} from '@/states/persistent/translations';
 import {ScrollView} from 'react-native-gesture-handler';
 
-/*******************************************************************************
- *                                  CONSTANTS                                  *
- *******************************************************************************/
+/******************************************************************************
+ *                                 CONSTANTS                                  *
+ ******************************************************************************/
 
 const CURR_PAGE: Page = 'settings';
 
-/*******************************************************************************
- *                                     HOOK                                    *
- *******************************************************************************/
+/******************************************************************************
+ *                                    HOOK                                    *
+ ******************************************************************************/
 
 function useSettingsScreen() {
   const translations = useTranslations(state => state.translations);
+  const scrollViewRef = React.useRef<ScrollView>(null);
 
   const translatedSectionsData = React.useMemo(
     () =>
@@ -35,27 +36,31 @@ function useSettingsScreen() {
 
   useCurrPageEffect(CURR_PAGE);
 
-  return {translatedSectionsData};
+  return {translatedSectionsData, scrollViewRef};
 }
 
-/*******************************************************************************
- *                                  COMPONENT                                  *
- *******************************************************************************/
+/******************************************************************************
+ *                                 COMPONENT                                  *
+ ******************************************************************************/
 
 const SettingsScreen = () => {
-  const {translatedSectionsData} = useSettingsScreen();
+  const {translatedSectionsData, scrollViewRef} = useSettingsScreen();
 
   return (
-    <ScrollView>
+    <ScrollView ref={scrollViewRef}>
       {Object.values(translatedSectionsData).map(section => (
-        <SettingsSection key={section.title} item={section} />
+        <SettingsSection
+          key={section.title}
+          section={section}
+          scrollViewRef={scrollViewRef}
+        />
       ))}
     </ScrollView>
   );
 };
 
-/*******************************************************************************
- *                                    EXPORT                                   *
- *******************************************************************************/
+/******************************************************************************
+ *                                   EXPORT                                   *
+ ******************************************************************************/
 
 export default SettingsScreen;

@@ -3,6 +3,7 @@ import {Index} from '@/states/fetched/index';
 import {DefaultProviders} from '@/states/persistent/defaultProviders';
 import {Versions} from '@/states/computed/versions';
 import {deepEqual} from 'fast-equals';
+import {useInstallationsProps} from '../persistent/installations';
 
 export type Updates = string[];
 
@@ -15,6 +16,8 @@ interface useUpdatesActions {
     index: Index,
     populatedDefaultProviders: DefaultProviders,
     versions: Versions,
+    installations: useInstallationsProps['installations'],
+    ignoredApps: string[],
   ) => Updates;
 }
 
@@ -22,17 +25,30 @@ export type useUpdatesProps = useUpdatesState & useUpdatesActions;
 
 export const useUpdates = create<useUpdatesProps>(set => ({
   updates: [],
-  refresh: (index, populatedDefaultProviders, versions) => {
-    const newUpdates: Updates = Object.entries(
-      populatedDefaultProviders,
-    ).reduce((acc, [app, provider]) => {
+  refresh: (
+    index,
+    populatedDefaultProviders,
+    versions,
+    installations,
+    ignoredApps,
+  ) => {
+    const newUpdates: Updates = [];
+
+    for (const [app, provider] of Object.entries(populatedDefaultProviders)) {
       const currentVersion = versions[app];
       const newVersion = index[app]['providers'][provider].version;
-      if (currentVersion && newVersion > currentVersion) {
-        acc.push(app);
+
+      if (
+        !ignoredApps.includes(app) &&
+        currentVersion &&
+        (newVersion > currentVersion ||
+          (installations[app] &&
+            installations[app].sha256 !==
+              index[app]['providers'][provider].sha256))
+      ) {
+        newUpdates.push(app);
       }
-      return acc;
-    }, [] as Updates);
+    }
 
     set(state =>
       deepEqual(state.updates, newUpdates) ? state : {updates: newUpdates},

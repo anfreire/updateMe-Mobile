@@ -53,7 +53,7 @@ export const useApp = create<useAppProps>(set => ({
       );
       return newLatest;
     } catch (error) {
-      Logger.error(`Error fetching app info: ${error}`);
+      Logger.error('App', 'Fetch', 'Failed to fetch app info', error);
       return null;
     }
   },

@@ -55,7 +55,7 @@ export const useIndex = create<useIndexProps>(set => ({
       );
       return newIndex;
     } catch (error) {
-      Logger.error(`Error fetching index: ${error}`);
+      Logger.error('Index', 'Fetch', 'Failed to fetch index', error);
       return null;
     }
   },

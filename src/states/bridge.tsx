@@ -4,8 +4,15 @@ import {useIndex} from '@/states/fetched/index';
 import {useVersions} from '@/states/computed/versions';
 import {useUpdates} from '@/states/computed/updates';
 import {useShallow} from 'zustand/react/shallow';
+import {useInstallations} from './persistent/installations';
+import {useSettings} from './persistent/settings';
+
+/******************************************************************************
+ *                                    HOOK                                    *
+ ******************************************************************************/
 
 function useStatesBridge() {
+  const [ignoredApps] = useSettings(state => [state.settings.apps.ignoredApps]);
   const [isIndexFetched, index] = useIndex(state => [
     state.isFetched,
     state.index,
@@ -23,6 +30,7 @@ function useStatesBridge() {
       state.populate,
     ]),
   );
+  const installations = useInstallations(state => state.installations);
   const [versions, refreshVersions] = useVersions(state => [
     state.versions,
     state.refresh,
@@ -46,9 +54,26 @@ function useStatesBridge() {
 
   React.useEffect(() => {
     if (!isIndexFetched) return;
-    refreshUpdates(index, populatedDefaultProviders, versions);
-  }, [index, populatedDefaultProviders, versions, isIndexFetched]);
+    refreshUpdates(
+      index,
+      populatedDefaultProviders,
+      versions,
+      installations,
+      ignoredApps,
+    );
+  }, [
+    index,
+    populatedDefaultProviders,
+    versions,
+    isIndexFetched,
+    installations,
+    ignoredApps,
+  ]);
 }
+
+/******************************************************************************
+ *                                 COMPONENT                                  *
+ ******************************************************************************/
 
 const StatesBridgeManager = () => {
   useStatesBridge();
@@ -56,6 +81,8 @@ const StatesBridgeManager = () => {
   return null;
 };
 
-StatesBridgeManager.displayName = 'StatesBridgeManager';
+/******************************************************************************
+ *                                   EXPORT                                   *
+ ******************************************************************************/
 
 export default StatesBridgeManager;

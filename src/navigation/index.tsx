@@ -10,6 +10,7 @@ import UpdatesScreen from '@/pages/updates';
 import TipsStack from './tips';
 import {MainStackParams} from '@/types/navigation';
 import {useBackButton} from './buttons/useBackButton';
+import HomeLogo from '@/pages/home/components/HomeLogo';
 
 const Stack = createStackNavigator<MainStackParams>();
 
@@ -41,7 +42,9 @@ export default function MainStack() {
       <Stack.Screen
         name="apps-stack"
         options={{
-          headerShown: false,
+          headerTitle: HomeLogo,
+          headerRight: backButton,
+          headerLeft: undefined,
         }}
         component={HomeStack}
       />
@@ -56,12 +59,6 @@ export default function MainStack() {
       <Stack.Screen
         name="settings"
         options={{
-          headerStyle: {
-            backgroundColor: schemedTheme.surfaceContainer,
-          },
-          headerTitleStyle: {
-            color: schemedTheme.onSurface,
-          },
           headerTitle: translations['Settings'],
           headerLeft: backButton,
         }}
@@ -70,12 +67,6 @@ export default function MainStack() {
       <Stack.Screen
         name="updates"
         options={{
-          headerStyle: {
-            backgroundColor: schemedTheme.surfaceContainer,
-          },
-          headerTitleStyle: {
-            color: schemedTheme.onSurface,
-          },
           headerTitle: translations['Updates'],
           headerLeft: backButton,
         }}

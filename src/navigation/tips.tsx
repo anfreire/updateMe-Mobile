@@ -14,8 +14,8 @@ export default function TipsStack() {
       }}
       initialRouteName="tips"
       id="tips-stack">
-      <Stack.Screen name="tips" component={TipsScreen} />
-      <Stack.Screen name="tip" component={TipScreen} />
+      <Stack.Screen name="tips" navigationKey="tips" component={TipsScreen} />
+      <Stack.Screen name="tip" navigationKey="tip" component={TipScreen} />
     </Stack.Navigator>
   );
 }

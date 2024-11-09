@@ -1,7 +1,7 @@
 import * as React from 'react';
 import LoadingView from '@/components/loadingView';
 import {Page} from '@/types/navigation';
-import {useCurrPageEffect} from '@/hooks/useCurrPageEffect';
+import {useNestedCurrPageEffect} from '@/hooks/useCurrPageEffect';
 import {useIndex} from '@/states/fetched';
 import {useCategories} from '@/states/fetched/categories';
 import {useShallow} from 'zustand/react/shallow';
@@ -9,15 +9,15 @@ import HomeBanner from './components/HomeBanner';
 import HomeCategories from './components/HomeCategories';
 import HomeSearch from './components/HomeSearch';
 
-/*******************************************************************************
- *                                  CONSTANTS                                  *
- *******************************************************************************/
+/******************************************************************************
+ *                                 CONSTANTS                                  *
+ ******************************************************************************/
 
-const CURR_PAGE: Page = 'app';
+const CURR_PAGE: Page = 'apps';
 
-/*******************************************************************************
- *                                    UTILS                                    *
- *******************************************************************************/
+/******************************************************************************
+ *                                   UTILS                                    *
+ ******************************************************************************/
 
 const normalizeString = (str: string) =>
   str
@@ -25,9 +25,9 @@ const normalizeString = (str: string) =>
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '');
 
-/*******************************************************************************
- *                                     HOOK                                    *
- *******************************************************************************/
+/******************************************************************************
+ *                                    HOOK                                    *
+ ******************************************************************************/
 
 export function useHomeScreen() {
   const [search, setSearch] = React.useState<string>('');
@@ -63,14 +63,14 @@ export function useHomeScreen() {
     );
   }, [categories, isRefreshing, isSearchActive, searchTokens]);
 
-  useCurrPageEffect(CURR_PAGE);
+  useNestedCurrPageEffect(CURR_PAGE);
 
   return {search, setSearch, isRefreshing, isSearchActive, filteredCategories};
 }
 
-/*******************************************************************************
- *                                  COMPONENT                                  *
- *******************************************************************************/
+/******************************************************************************
+ *                                 COMPONENT                                  *
+ ******************************************************************************/
 
 const HomeScreen = () => {
   const {search, setSearch, isRefreshing, isSearchActive, filteredCategories} =
@@ -92,8 +92,8 @@ const HomeScreen = () => {
   );
 };
 
-/*******************************************************************************
- *                                    EXPORT                                   *
- *******************************************************************************/
+/******************************************************************************
+ *                                   EXPORT                                   *
+ ******************************************************************************/
 
 export default React.memo(HomeScreen);

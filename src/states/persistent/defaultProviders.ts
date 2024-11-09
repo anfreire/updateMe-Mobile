@@ -7,6 +7,10 @@ import {Index, IndexApp} from '@/states/fetched/index';
 
 const STORAGE_ID = 'default-providers' as const;
 
+const PERSISTENT_KEYS: Array<keyof useDefaultProvidersState> = [
+  'defaultProviders',
+];
+
 export type DefaultProviders = Record<IndexApp, string>;
 
 const storage = new MMKV({id: STORAGE_ID});
@@ -87,6 +91,12 @@ export const useDefaultProviders = create<useDefaultProvidersProps>()(
     {
       name: STORAGE_ID,
       storage: createJSONStorage(() => zustandStorage),
+      partialize: state =>
+        Object.fromEntries(
+          Object.entries(state).filter(([key]) =>
+            PERSISTENT_KEYS.includes(key as keyof useDefaultProvidersState),
+          ),
+        ),
     },
   ),
 );

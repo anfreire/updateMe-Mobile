@@ -19,6 +19,10 @@ import {
 import merge from 'deepmerge';
 import {useSettings} from '@/states/persistent/settings';
 
+/******************************************************************************
+ *                                   TYPES                                    *
+ ******************************************************************************/
+
 export type ColorSchemeType = 'light' | 'dark';
 export type SavedColorSchemeType = 'system' | ColorSchemeType;
 
@@ -39,7 +43,15 @@ type useThemeActions = {
 
 export type UseThemeProps = useThemeState & useThemeActions;
 
+/******************************************************************************
+ *                                  CONTEXT                                   *
+ ******************************************************************************/
+
 const ThemeContext = React.createContext<UseThemeProps | undefined>(undefined);
+
+/******************************************************************************
+ *                                  PROVIDER                                  *
+ ******************************************************************************/
 
 type ThemeProviderProps = ProviderProps & {
   sourceColor?: string;
@@ -139,14 +151,22 @@ const ThemeProvider = ({
   );
 };
 
-ThemeProvider.displayName = 'ThemeProvider';
+/******************************************************************************
+ *                                    HOOK                                    *
+ ******************************************************************************/
 
-export default ThemeProvider;
-
-export const useTheme = (): UseThemeProps => {
+const useTheme = (): UseThemeProps => {
   const context = React.useContext(ThemeContext);
   if (!context) {
     throw new Error('useTheme must be used within a ThemeProvider');
   }
   return context;
 };
+
+/******************************************************************************
+ *                                   EXPORT                                   *
+ ******************************************************************************/
+
+export default ThemeProvider;
+
+export {useTheme};

@@ -15,6 +15,10 @@ import Octicons from 'react-native-vector-icons/Octicons';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 import Zocial from 'react-native-vector-icons/Zocial';
 
+/******************************************************************************
+ *                                   TYPES                                    *
+ ******************************************************************************/
+
 const typeMapper: Record<string, React.ComponentType<IconProps>> = {
   'ant-design': AntDesign,
   entypo: Entypo,
@@ -34,6 +38,10 @@ const typeMapper: Record<string, React.ComponentType<IconProps>> = {
 
 export type MultiIconType = keyof typeof typeMapper;
 
+/******************************************************************************
+ *                                 COMPONENT                                  *
+ ******************************************************************************/
+
 interface MultiIconProps extends IconProps {
   type?: MultiIconType;
 }
@@ -50,5 +58,9 @@ const MultiIcon = (props: MultiIconProps) => {
     otherProps,
   );
 };
+
+/******************************************************************************
+ *                                   EXPORT                                   *
+ ******************************************************************************/
 
 export default React.memo(MultiIcon) as React.FC<MultiIconProps>;

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {ScrollView, StyleSheet, View} from 'react-native';
-import {useThemedRefreshControl} from '@/hooks/useThemedRefreshControl';
+import {useRefreshControlBuilder} from '@/hooks/useRefreshControlBuilder';
 import AppProvider from '@/pages/app/components/AppProviders';
 import {useVersions} from '@/states/computed/versions';
 import {
@@ -15,31 +15,33 @@ import {
 import {NavigationProps, Page, RouteProps} from '@/types/navigation';
 import {Index, useIndex} from '@/states/fetched';
 import {useCurrApp} from '@/hooks/useCurrApp';
-import {useCurrPageEffect} from '@/hooks/useCurrPageEffect';
+import {useNestedCurrPageEffect} from '@/hooks/useCurrPageEffect';
 import LoadingView from '@/components/loadingView';
 import RelatedAppBanner from './components/RelatedAppBanner';
 import AppLogo from './components/AppLogo';
 import AppInfo from './components/AppInfo';
 import AppFeatures from './components/AppFeatures';
 
-/*******************************************************************************
- *                                  CONSTANTS                                  *
- *******************************************************************************/
+/******************************************************************************
+ *                                 CONSTANTS                                  *
+ ******************************************************************************/
 
 const CURR_PAGE: Page = 'app';
 
-/*******************************************************************************
- *                                    UTILS                                    *
- *******************************************************************************/
+const REFRESH_INTERVAL = 1000;
+
+/******************************************************************************
+ *                                   UTILS                                    *
+ ******************************************************************************/
 
 const refreshVersions = (
   index: Index,
   populatedDefaultProviders: DefaultProviders,
 ) => useVersions.getState().refresh(index, populatedDefaultProviders);
 
-/*******************************************************************************
- *                                     HOOK                                    *
- *******************************************************************************/
+/******************************************************************************
+ *                                    HOOK                                    *
+ ******************************************************************************/
 
 function useAppScreen() {
   const index = useIndex(state => state.index);
@@ -68,7 +70,7 @@ function useAppScreen() {
 
   useFocusEffect(
     React.useCallback(() => {
-      const interval: NodeJS.Timeout = setInterval(refresh, 2500);
+      const interval: NodeJS.Timeout = setInterval(refresh, REFRESH_INTERVAL);
 
       return () => {
         clearInterval(interval);
@@ -76,16 +78,16 @@ function useAppScreen() {
     }, [refresh]),
   );
 
-  useCurrPageEffect(CURR_PAGE);
+  useNestedCurrPageEffect(CURR_PAGE, {app: appTitle});
 
-  const refreshControl = useThemedRefreshControl(refresh);
+  const refreshControl = useRefreshControlBuilder(refresh);
 
   return {currApp, refreshControl};
 }
 
-/*******************************************************************************
- *                                  COMPONENT                                  *
- *******************************************************************************/
+/******************************************************************************
+ *                                 COMPONENT                                  *
+ ******************************************************************************/
 
 const AppScreen = () => {
   const {currApp, refreshControl} = useAppScreen();
@@ -109,9 +111,9 @@ const AppScreen = () => {
   );
 };
 
-/*******************************************************************************
- *                                    STYLES                                   *
- *******************************************************************************/
+/******************************************************************************
+ *                                   STYLES                                   *
+ ******************************************************************************/
 
 const styles = StyleSheet.create({
   contentContainer: {
@@ -125,8 +127,8 @@ const styles = StyleSheet.create({
   },
 });
 
-/*******************************************************************************
- *                                    EXPORT                                   *
- *******************************************************************************/
+/******************************************************************************
+ *                                   EXPORT                                   *
+ ******************************************************************************/
 
 export default React.memo(AppScreen);

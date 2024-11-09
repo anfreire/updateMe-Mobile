@@ -7,9 +7,9 @@ import {
 } from '@/types/settings';
 import {Translation} from '@/types/translations';
 
-/*******************************************************************************
- *                                    TYPES                                    *
- *******************************************************************************/
+/******************************************************************************
+ *                                   TYPES                                    *
+ ******************************************************************************/
 
 export type ItemActionData<
   Section extends SettingsSection,
@@ -66,7 +66,7 @@ const SourceColor: ItemComponentData<'appearance'> = {
 
 const ColorScheme: ItemComponentData<'appearance'> = {
   key: 'colorScheme',
-  title: 'Dusk till Dawn',
+  title: 'Dusk Till Dawn',
   description: 'Change the color scheme of the app',
   icon: {
     type: 'material-community',
@@ -102,7 +102,7 @@ const InstallAfterDownload: ItemComponentData<'downloads'> = {
 const DeleteOnLeave: ItemComponentData<'downloads'> = {
   key: 'deleteOnLeave',
   title: 'Fresh Start',
-  description: 'Delete all downloads when leaving the app',
+  description: 'Deletes all downloads when leaving the app',
   icon: {
     type: 'material-icons',
     name: 'delete-sweep',
@@ -114,6 +114,48 @@ export const DownloadsSection: SectionComponentData<'downloads'> = {
   title: 'Downloads',
   key: 'downloads',
   items: [InstallAfterDownload, DeleteOnLeave],
+};
+
+/******************************************************************************
+ *                                    Apps                                    *
+ ******************************************************************************/
+
+const IgnoredApps: ItemComponentData<'apps'> = {
+  key: 'ignoredApps',
+  title: 'Update Dodger',
+  description: 'Select apps to exclude from updates',
+  icon: {
+    type: 'material-icons',
+    name: 'hide-source',
+  },
+  action: {type: 'dialog', data: 'ignoredApps'},
+};
+
+const AppsSection: SectionComponentData<'apps'> = {
+  title: 'Apps',
+  key: 'apps',
+  items: [IgnoredApps],
+};
+
+/******************************************************************************
+ *                                 Providers                                  *
+ ******************************************************************************/
+
+const ProvidersOrder: ItemComponentData<'providers'> = {
+  key: 'providersOrder',
+  title: 'Sort It Out',
+  description: 'Change the order of the providers',
+  icon: {
+    type: 'material-community',
+    name: 'sort',
+  },
+  action: {type: 'dialog', data: 'providersOrder'},
+};
+
+const ProvidersSection: SectionComponentData<'providers'> = {
+  title: 'Providers',
+  key: 'providers',
+  items: [ProvidersOrder],
 };
 
 /*******************************************************************************
@@ -175,6 +217,8 @@ const SecuritySection: SectionComponentData<'security'> = {
 
 export const SectionsData: SectionComponentDataInferred[] = [
   AppearanceSection,
+  AppsSection,
+  ProvidersSection,
   NotificationsSection,
   DownloadsSection,
   SecuritySection,

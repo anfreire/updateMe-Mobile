@@ -4,19 +4,31 @@ import ReactNativeBlobUtil, {
   StatefulPromise,
 } from 'react-native-blob-util';
 
+/******************************************************************************
+ *                                 CONSTANTS                                  *
+ ******************************************************************************/
+
 const dir: string = ReactNativeBlobUtil.fs.dirs.DownloadDir;
+
+/******************************************************************************
+ *                                   UTILS                                    *
+ ******************************************************************************/
 
 const buildFileName = (appName: string, version: string): string =>
   `${appName} ${version}.apk`;
 
-function buildAbsolutePath(fileName: string): string {
-  return `${dir}/${fileName}`;
-}
+const buildAbsolutePath = (fileName: string) => `${dir}/${fileName}`;
 
-//----------------------------------------------------------------------------
-// FUNCTIONS
+const isAbsolutePath = (path: string): boolean => path.startsWith(dir);
+
+/******************************************************************************
+ *                                 FUNCTIONS                                  *
+ ******************************************************************************/
+
 async function getFileInfo(path: string): Promise<ReactNativeBlobUtilStat> {
-  return await ReactNativeBlobUtil.fs.stat(path);
+  return await ReactNativeBlobUtil.fs.stat(
+    isAbsolutePath(path) ? path : buildAbsolutePath(path),
+  );
 }
 
 async function listDir(): Promise<string[]> {
@@ -28,33 +40,36 @@ async function listDir(): Promise<string[]> {
 async function getAllFilesInfo(): Promise<
   Record<string, ReactNativeBlobUtilStat>
 > {
+  const filesInfo: Record<string, ReactNativeBlobUtilStat> = {};
+
   const files = await listDir();
-  return await files.reduce(async (accPromise, file) => {
-    const acc = await accPromise;
-    const fileInfo = await ReactNativeBlobUtil.fs.stat(buildAbsolutePath(file));
-    return {...acc, [file]: fileInfo};
-  }, Promise.resolve({}));
+  for (const file of files) {
+    filesInfo[file] = await getFileInfo(file);
+  }
+
+  return filesInfo;
 }
 
 async function installApk(path: string): Promise<boolean | null> {
   return await ReactNativeBlobUtil.android.actionViewIntent(
-    path,
+    isAbsolutePath(path) ? path : buildAbsolutePath(path),
     'application/vnd.android.package-archive',
   );
 }
 
 async function deleteFile(path: string): Promise<void> {
-  await ReactNativeBlobUtil.fs.unlink(path);
-}
-
-async function deleteMultipleFiles(paths: string[]): Promise<void> {
-  await Promise.all(paths.map(async path => await deleteFile(path)));
-}
-
-async function deleteAllFiles(): Promise<void> {
-  await deleteMultipleFiles(
-    (await listDir()).map(file => buildAbsolutePath(file)),
+  await ReactNativeBlobUtil.fs.unlink(
+    isAbsolutePath(path) ? path : buildAbsolutePath(path),
   );
+}
+
+async function deleteMultipleFiles(paths: string[]): Promise<number> {
+  await Promise.all(paths.map(async path => await deleteFile(path)));
+  return paths.length;
+}
+
+async function deleteAllFiles(): Promise<number> {
+  return await deleteMultipleFiles(await listDir());
 }
 
 function downloadFile(

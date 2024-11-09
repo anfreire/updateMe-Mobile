@@ -75,16 +75,17 @@ export const useSession = create<useSessionProps>()(
       partialize: state => ({token: state.token}),
       onRehydrateStorage: () => (state, error) => {
         if (error) {
-          Logger.error(`Failed to rehydrate ${STORAGE_ID} state: ${error}`);
+          Logger.error('Session', 'Rehydrate', 'Failed to rehydrate', error);
         }
         if (!state?.token) {
-          useSession.getState().generateToken();
+          state?.generateToken();
         }
-        useSession.setState({
+        return {
+          ...state,
           currPage: 'loading',
           flags: INITIAL_SESSION_FLAGS,
           trackers: INITIAL_SESSION_TRACKERS,
-        });
+        };
       },
     },
   ),

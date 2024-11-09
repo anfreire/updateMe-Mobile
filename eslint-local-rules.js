@@ -19,6 +19,7 @@ const useZustandStores = [
   'useSession',
   'useToast',
   'usePulsingStyles',
+  'useInstallations',
 ];
 
 const zustandFunctions = [

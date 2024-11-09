@@ -43,9 +43,9 @@ const RefreshButton = ({onPress}: {onPress: () => void}) => (
   <IconButton icon="refresh" onPress={onPress} />
 );
 
-/*******************************************************************************
- *                                     HOOK                                    *
- *******************************************************************************/
+/******************************************************************************
+ *                                    HOOK                                    *
+ ******************************************************************************/
 
 export function useDownloadsHeaderRight(
   selectedFiles: string[],
@@ -59,7 +59,7 @@ export function useDownloadsHeaderRight(
     Share.open({
       urls: selectedFiles.map(file => `file://${files[file].path}`),
     }).catch(error => {
-      Logger.error(`Error sharing files: ${error}`);
+      Logger.error('Downloads', 'Share', 'Error sharing files', error);
     });
   }, [selectedFiles, files]);
 
@@ -71,7 +71,7 @@ export function useDownloadsHeaderRight(
       updateFiles();
       setSelectedFiles([]);
     } catch (error) {
-      Logger.error(`Error deleting files: ${error}`);
+      Logger.error('Downloads', 'Delete', 'Error deleting files', error);
     }
   }, [selectedFiles, updateFiles, setSelectedFiles, files]);
 
@@ -108,9 +108,9 @@ export function useDownloadsHeaderRight(
   ]);
 }
 
-/*******************************************************************************
- *                                    STYLES                                   *
- *******************************************************************************/
+/******************************************************************************
+ *                                   STYLES                                   *
+ ******************************************************************************/
 const styles = StyleSheet.create({
   headerRightWrapper: {
     flexDirection: 'row',

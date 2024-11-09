@@ -1,5 +1,6 @@
 import {create} from 'zustand';
 import {deepEqual} from 'fast-equals';
+import {Logger} from '../persistent/logs';
 
 const TIPS_URL =
   'https://raw.githubusercontent.com/anfreire/updateMe-Data/main/tips.json';
@@ -42,7 +43,8 @@ export const useTips = create<useTipsProps>(set => ({
           : {tips: newTips, isFetched: true},
       );
       return newTips;
-    } catch (_) {
+    } catch (error) {
+      Logger.error('Tips', 'Fetch', 'Failed to fetch tips', error);
       set({isFetched: true});
       return null;
     }

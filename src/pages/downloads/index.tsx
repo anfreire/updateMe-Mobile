@@ -4,7 +4,7 @@ import {Icon, Text} from 'react-native-paper';
 import {ReactNativeBlobUtilStat} from 'react-native-blob-util';
 import {useFocusEffect} from '@react-navigation/native';
 import FilesModule from '@/lib/files';
-import {useThemedRefreshControl} from '@/hooks/useThemedRefreshControl';
+import {useRefreshControlBuilder} from '@/hooks/useRefreshControlBuilder';
 import Downloading from './components/downloading';
 import Downloaded from './components/downloaded';
 import {useDownloads} from '@/states/runtime/downloads';
@@ -12,16 +12,16 @@ import {useTranslations} from '@/states/persistent/translations';
 import {Page} from '@/types/navigation';
 import {useCurrPageEffect} from '@/hooks/useCurrPageEffect';
 
-/*******************************************************************************
- *                                  CONSTANTS                                  *
- *******************************************************************************/
+/******************************************************************************
+ *                                 CONSTANTS                                  *
+ ******************************************************************************/
 
 const CURR_PAGE: Page = 'downloads';
 const REFRESH_INTERVAL = 1000;
 
-/*******************************************************************************
- *                                     HOOK                                    *
- *******************************************************************************/
+/******************************************************************************
+ *                                    HOOK                                    *
+ ******************************************************************************/
 
 function useDownloadsScreen() {
   const downloads = useDownloads(state => state.downloads);
@@ -49,7 +49,7 @@ function useDownloadsScreen() {
 
   useCurrPageEffect(CURR_PAGE);
 
-  const refreshControl = useThemedRefreshControl(updateFiles);
+  const refreshControl = useRefreshControlBuilder(updateFiles);
 
   return {
     downloads,
@@ -61,9 +61,9 @@ function useDownloadsScreen() {
   };
 }
 
-/*******************************************************************************
- *                                  COMPONENT                                  *
- *******************************************************************************/
+/******************************************************************************
+ *                                 COMPONENT                                  *
+ ******************************************************************************/
 
 const DownloadsScreen = () => {
   const {
@@ -91,9 +91,9 @@ const DownloadsScreen = () => {
   );
 };
 
-/*******************************************************************************
- *                                    STYLES                                   *
- *******************************************************************************/
+/******************************************************************************
+ *                                   STYLES                                   *
+ ******************************************************************************/
 
 const styles = StyleSheet.create({
   emptyContainer: {
@@ -106,8 +106,8 @@ const styles = StyleSheet.create({
   },
 });
 
-/*******************************************************************************
- *                                    EXPORT                                   *
- *******************************************************************************/
+/******************************************************************************
+ *                                   EXPORT                                   *
+ ******************************************************************************/
 
 export default DownloadsScreen;

@@ -9,6 +9,11 @@ import {
 
 const STORAGE_ID = 'translations' as const;
 
+const PERSISTENT_KEYS: Array<keyof useTranslationsState> = [
+  'language',
+  'translations',
+];
+
 export const interpolate = (template: string, ...values: string[]): string =>
   template.replace(/\$(\d+)/g, (match, index) => values[+index - 1] ?? match);
 
@@ -60,6 +65,12 @@ export const useTranslations = create<useTranslationsProps>()(
     {
       name: STORAGE_ID,
       storage: createJSONStorage(() => zustandStorage),
+      partialize: state =>
+        Object.fromEntries(
+          Object.entries(state).filter(([key]) =>
+            PERSISTENT_KEYS.includes(key as keyof useTranslationsState),
+          ),
+        ),
     },
   ),
 );

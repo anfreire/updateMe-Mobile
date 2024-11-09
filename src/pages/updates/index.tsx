@@ -3,7 +3,7 @@ import {View, StyleSheet} from 'react-native';
 import {Button, Icon, Text} from 'react-native-paper';
 import {useDefaultProviders} from '@/states/persistent/defaultProviders';
 import {useVersions} from '@/states/computed/versions';
-import {useThemedRefreshControl} from '@/hooks/useThemedRefreshControl';
+import {useRefreshControlBuilder} from '@/hooks/useRefreshControlBuilder';
 import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import {useTranslations} from '@/states/persistent/translations';
 import {useIndex} from '@/states/fetched';
@@ -13,16 +13,16 @@ import {useCurrPageEffect} from '@/hooks/useCurrPageEffect';
 import {useInstall} from '@/hooks/useInstall';
 import UpdatesList from './components/UpdatesList';
 
-/*******************************************************************************
- *                                  CONSTANTS                                  *
- *******************************************************************************/
+/******************************************************************************
+ *                                 CONSTANTS                                  *
+ ******************************************************************************/
 
 const CURR_PAGE: Page = 'updates';
 const REFRESH_UPDATES_INTERVAL = 1000;
 
-/*******************************************************************************
- *                                     HOOK                                    *
- *******************************************************************************/
+/******************************************************************************
+ *                                    HOOK                                    *
+ ******************************************************************************/
 
 function useUpdateScreen() {
   const [updating, setUpdating] = React.useState<Record<string, string>>({});
@@ -64,7 +64,7 @@ function useUpdateScreen() {
     [install, index, populatedDefaultProviders],
   );
 
-  const refreshControl = useThemedRefreshControl(refresh);
+  const refreshControl = useRefreshControlBuilder(refresh);
 
   useCurrPageEffect(CURR_PAGE);
 
@@ -91,9 +91,9 @@ function useUpdateScreen() {
   return {updates, refreshControl, updating, updateApp, translations};
 }
 
-/*******************************************************************************
- *                                  COMPONENT                                  *
- *******************************************************************************/
+/******************************************************************************
+ *                                 COMPONENT                                  *
+ ******************************************************************************/
 
 const UpdatesScreen = () => {
   const {updates, refreshControl, updating, updateApp, translations} =
@@ -117,9 +117,9 @@ const UpdatesScreen = () => {
   );
 };
 
-/*******************************************************************************
- *                                    STYLES                                   *
- *******************************************************************************/
+/******************************************************************************
+ *                                   STYLES                                   *
+ ******************************************************************************/
 
 const styles = StyleSheet.create({
   wrapper: {
@@ -131,8 +131,8 @@ const styles = StyleSheet.create({
   },
 });
 
-/*******************************************************************************
- *                                    EXPORT                                   *
- *******************************************************************************/
+/******************************************************************************
+ *                                   EXPORT                                   *
+ ******************************************************************************/
 
 export default UpdatesScreen;
