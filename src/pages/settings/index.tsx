@@ -4,7 +4,8 @@ import {useCurrPageEffect} from '@/hooks/useCurrPageEffect';
 import {SectionsData} from './data';
 import SettingsSection from './components/SettingsSection';
 import {useTranslations} from '@/states/persistent/translations';
-import {ScrollView} from 'react-native-gesture-handler';
+import {useScrollTo} from '@/hooks/useScrollTo';
+import Animated from 'react-native-reanimated';
 
 /******************************************************************************
  *                                 CONSTANTS                                  *
@@ -18,7 +19,7 @@ const CURR_PAGE: Page = 'settings';
 
 function useSettingsScreen() {
   const translations = useTranslations(state => state.translations);
-  const scrollViewRef = React.useRef<ScrollView>(null);
+  const {scrollViewRef, scrollToItem} = useScrollTo();
 
   const translatedSectionsData = React.useMemo(
     () =>
@@ -36,7 +37,7 @@ function useSettingsScreen() {
 
   useCurrPageEffect(CURR_PAGE);
 
-  return {translatedSectionsData, scrollViewRef};
+  return {translatedSectionsData, scrollViewRef, scrollToItem};
 }
 
 /******************************************************************************
@@ -44,18 +45,18 @@ function useSettingsScreen() {
  ******************************************************************************/
 
 const SettingsScreen = () => {
-  const {translatedSectionsData, scrollViewRef} = useSettingsScreen();
+  const {translatedSectionsData, scrollViewRef, scrollToItem} = useSettingsScreen();
 
   return (
-    <ScrollView ref={scrollViewRef}>
+    <Animated.ScrollView ref={scrollViewRef}>
       {Object.values(translatedSectionsData).map(section => (
         <SettingsSection
           key={section.title}
           section={section}
-          scrollViewRef={scrollViewRef}
+          scrollToItem={scrollToItem}
         />
       ))}
-    </ScrollView>
+    </Animated.ScrollView>
   );
 };
 

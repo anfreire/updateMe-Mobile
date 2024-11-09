@@ -12,8 +12,10 @@ import DrawerListItem, {DrawerListItemProps} from './DrawerListItem';
 /******************************************************************************
  *                                 CONSTANTS                                  *
  ******************************************************************************/
-const OPEN_NEW_ISSUE_URL =
-  'https://github.com/anfreire/updateMe-Mobile/issues/new';
+const REPORT_BUG_URL =
+  'https://github.com/anfreire/updateMe-Mobile/issues/new?assignees=&labels=bug&projects=&template=bug_report.md&title=%5BBUG%5D';
+const SUGGEST_APP_URL =
+  'https://github.com/anfreire/updateMe-Scraping/issues/new?assignees=&labels=&projects=&template=app-request.md&title=%5BAPP+REQUEST%5D+';
 
 /******************************************************************************
  *                                    HOOK                                    *
@@ -72,6 +74,13 @@ const useDrawerList = () => {
         onClick: () => navigateTo('settings'),
       },
       {
+        key: "suggest",
+        title: translations["Suggest"],
+        description: translations["Suggest a new app"],
+        icon: "lightbulb-on",
+        onClick: () => Linking.openURL(SUGGEST_APP_URL),
+      },
+      {
         title: translations['Share'],
         description: translations['Share the app with friends'],
         icon: 'share-variant',
@@ -82,7 +91,7 @@ const useDrawerList = () => {
         title: translations['Report'],
         description: translations['Report a problem with the app'],
         icon: 'bug',
-        onClick: () => Linking.openURL(OPEN_NEW_ISSUE_URL),
+        onClick: () => Linking.openURL(REPORT_BUG_URL),
       },
     ],
     [navigateTo, handleOpenDialog, translations],

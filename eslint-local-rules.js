@@ -55,7 +55,12 @@ function isZustandFunction(variableName, calleeName) {
   );
 }
 
-const ReactReanimatedFunctions = ['useSharedValue', 'useAnimatedStyle'];
+const ReactReanimatedFunctions = [
+  'useSharedValue',
+  'useAnimatedStyle',
+  'useAnimatedRef',
+  'useScrollViewOffset',
+];
 const ReactReanimatedHooks = {
   usePulsing: 'pulsingStyles',
   useRotate: 'rotatingStyles',

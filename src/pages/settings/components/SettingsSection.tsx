@@ -2,7 +2,7 @@ import * as React from 'react';
 import {List} from 'react-native-paper';
 import {SectionComponentDataInferred} from '../data';
 import SettingsItem from './SettingsItem';
-import {ScrollView} from 'react-native';
+import {View} from 'react-native';
 
 /******************************************************************************
  *                                 COMPONENT                                  *
@@ -10,18 +10,14 @@ import {ScrollView} from 'react-native';
 
 interface SettingsSectionProps {
   section: SectionComponentDataInferred;
-  scrollViewRef: React.RefObject<ScrollView>;
+  scrollToItem: (itemRef: React.RefObject<View>) => void;
 }
 
-const SettingsSection = ({section, scrollViewRef}: SettingsSectionProps) => {
+const SettingsSection = ({section, scrollToItem}: SettingsSectionProps) => {
   return (
     <List.Section title={section.title}>
       {section.items.map(item => (
-        <SettingsItem
-          key={item.key}
-          data={item}
-          scrollViewRef={scrollViewRef}
-        />
+        <SettingsItem key={item.key} data={item} scrollToItem={scrollToItem} />
       ))}
     </List.Section>
   );

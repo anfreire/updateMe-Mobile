@@ -15,7 +15,7 @@ import {Style} from 'react-native-paper/lib/typescript/components/List/utils';
 import MultiIcon from '@/components/MultiIcon';
 import {Checkbox, List} from 'react-native-paper';
 import Animated from 'react-native-reanimated';
-import {ScrollView, StyleSheet, View} from 'react-native';
+import {StyleSheet, View} from 'react-native';
 
 /******************************************************************************
  *                                 CONSTANTS                                  *
@@ -99,7 +99,7 @@ function useDialogSettingsItem(data: ItemComponentDataInferred) {
 
 function useSettingsItem(
   data: ItemComponentDataInferred,
-  scrollViewRef: React.RefObject<ScrollView>,
+  scrollToItem: (itemRef: React.RefObject<View>) => void,
 ) {
   const {params} = useRoute<RouteProps>();
   const animatedListItemRef = React.useRef<View>(null);
@@ -112,18 +112,10 @@ function useSettingsItem(
   const pulsingStyles = usePulsingStyles(paramMatches);
 
   const handleLayout = React.useCallback(() => {
-    if (paramMatches && animatedListItemRef.current && scrollViewRef.current) {
-      animatedListItemRef.current.measureLayout(
-        scrollViewRef.current.getInnerViewNode(),
-        (x, y, _, __) => {
-          scrollViewRef.current?.scrollTo({
-            y: y - 100,
-            animated: true,
-          });
-        },
-      );
+    if (paramMatches && animatedListItemRef.current) {
+      scrollToItem(animatedListItemRef);
     }
-  }, [paramMatches, animatedListItemRef, scrollViewRef]);
+  }, [paramMatches, animatedListItemRef, scrollToItem]);
 
   const leftItem = React.useCallback(
     (props: {color: string; style: Style}) => (
@@ -165,10 +157,10 @@ function useSettingsItem(
 
 interface SettingsItemProps {
   data: ItemComponentDataInferred;
-  scrollViewRef: React.RefObject<ScrollView>;
+  scrollToItem: (itemRef: React.RefObject<View>) => void;
 }
 
-const SettingsItem = ({data, scrollViewRef}: SettingsItemProps) => {
+const SettingsItem = ({data, scrollToItem}: SettingsItemProps) => {
   const {
     pulsingStyles,
     handlePress,
@@ -176,7 +168,7 @@ const SettingsItem = ({data, scrollViewRef}: SettingsItemProps) => {
     rightItem,
     animatedListItemRef,
     handleLayout,
-  } = useSettingsItem(data, scrollViewRef);
+  } = useSettingsItem(data, scrollToItem);
 
   return (
     <AnimatedListItem
