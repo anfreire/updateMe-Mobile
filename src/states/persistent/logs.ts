@@ -1,12 +1,17 @@
 import {create} from 'zustand';
 import {MMKV} from 'react-native-mmkv';
 import {StateStorage, createJSONStorage, persist} from 'zustand/middleware';
+import {migrate} from '../utils';
 
 const STORAGE_ID = 'logs' as const;
 
 const MAX_LOGS = 1000;
 
-const PERSISTENT_KEYS: Array<keyof useLogsState> = ['logs'];
+const PERSISTED_KEYS: Array<keyof useLogsState> = ['logs'];
+
+const DEFAULT_STATE = {
+  logs: [],
+};
 
 const storage = new MMKV({id: STORAGE_ID});
 
@@ -87,10 +92,12 @@ export const useLogs = create<useLogsProps>()(
     {
       name: STORAGE_ID,
       storage: createJSONStorage(() => zustandStorage),
+      migrate: (persistedState, version) =>
+        migrate(DEFAULT_STATE, persistedState, version),
       partialize: state =>
         Object.fromEntries(
           Object.entries(state).filter(([key]) =>
-            PERSISTENT_KEYS.includes(key as keyof useLogsState),
+            PERSISTED_KEYS.includes(key as keyof useLogsState),
           ),
         ),
     },

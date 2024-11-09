@@ -2,10 +2,15 @@ import {StateStorage, createJSONStorage, persist} from 'zustand/middleware';
 import {MMKV} from 'react-native-mmkv';
 import {create} from 'zustand';
 import {deepEqual} from 'fast-equals';
+import { migrate } from '../utils';
 
 const STORAGE_ID = 'installations' as const;
 
-const PERSISTENT_KEYS: Array<keyof useInstallationsState> = ['installations'];
+const PERSISTED_KEYS: Array<keyof useInstallationsState> = ['installations'];
+
+const DEFAULT_STATE = {
+  installations: {},
+};
 
 const storage = new MMKV({id: STORAGE_ID});
 
@@ -57,10 +62,12 @@ export const useInstallations = create<useInstallationsProps>()(
     {
       name: STORAGE_ID,
       storage: createJSONStorage(() => zustandStorage),
+      migrate: (persistedState, version) =>
+        migrate(DEFAULT_STATE, persistedState, version),
       partialize: state =>
         Object.fromEntries(
           Object.entries(state).filter(([key]) =>
-            PERSISTENT_KEYS.includes(key as keyof useInstallationsState),
+            PERSISTED_KEYS.includes(key as keyof useInstallationsState),
           ),
         ),
     },

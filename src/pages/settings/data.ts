@@ -126,7 +126,7 @@ const IgnoredApps: ItemComponentData<'apps'> = {
   description: 'Select apps to exclude from updates',
   icon: {
     type: 'material-icons',
-    name: 'hide-source',
+    name: 'update-disabled',
   },
   action: {type: 'dialog', data: 'ignoredApps'},
 };

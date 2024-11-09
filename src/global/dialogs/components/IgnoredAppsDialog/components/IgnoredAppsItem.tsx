@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
     width: 30,
     height: 30,
     borderRadius: 5,
-    opacity: 0.5,
+    opacity: 0.75,
   },
 });
 

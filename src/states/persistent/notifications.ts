@@ -2,12 +2,17 @@ import {StateStorage, createJSONStorage, persist} from 'zustand/middleware';
 import {MMKV} from 'react-native-mmkv';
 import {create} from 'zustand';
 import {deepEqual} from 'fast-equals';
+import {migrate} from '../utils';
 
 const STORAGE_ID = 'notifications' as const;
 
-const PERSISTENT_KEYS: Array<keyof useNotificationsState> = [
+const PERSISTED_KEYS: Array<keyof useNotificationsState> = [
   'newVersionsNotifications',
 ];
+
+const DEFAULT_STATE = {
+  newVersionsNotifications: {},
+};
 
 const storage = new MMKV({id: STORAGE_ID});
 
@@ -66,10 +71,12 @@ export const useNotifications = create<useNotificationsProps>()(
     {
       name: STORAGE_ID,
       storage: createJSONStorage(() => zustandStorage),
+      migrate: (persistedState, version) =>
+        migrate(DEFAULT_STATE, persistedState, version),
       partialize: state =>
         Object.fromEntries(
           Object.entries(state).filter(([key]) =>
-            PERSISTENT_KEYS.includes(key as keyof useNotificationsState),
+            PERSISTED_KEYS.includes(key as keyof useNotificationsState),
           ),
         ),
     },

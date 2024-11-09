@@ -11,10 +11,13 @@ import {
 import {deepEqual} from 'fast-equals';
 import {Logger} from './logs';
 import deepmerge from 'deepmerge';
+import {migrate} from '../utils';
 
 const STORAGE_ID = 'settings' as const;
 
-const PERSISTENT_KEYS: Array<keyof useSettingsState> = ['settings'];
+const PERSISTED_KEYS: Array<keyof useSettingsState> = ['settings'];
+
+const DEFAULT_STATE = DEFAULT_SETTINGS;
 
 const storage = new MMKV({id: STORAGE_ID});
 
@@ -88,9 +91,11 @@ export const useSettings = create<useSettingsProps>()(
       partialize: state =>
         Object.fromEntries(
           Object.entries(state).filter(([key]) =>
-            PERSISTENT_KEYS.includes(key as keyof useSettingsState),
+            PERSISTED_KEYS.includes(key as keyof useSettingsState),
           ),
         ),
+      migrate: (persistedState, version) =>
+        migrate(DEFAULT_STATE, persistedState, version),
       onRehydrateStorage: () => (state, error) => {
         if (error) {
           Logger.error('Settings', 'Rehydrate', 'Failed to rehydrate', error);
