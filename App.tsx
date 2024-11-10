@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import FilesModule from '@/lib/files';
 import {useTheme} from '@/theme';
-import DrawerWrapper from '@/global/drawer';
+import DrawerWrapper from '@/global/Drawer';
 import {useSettings} from '@/states/persistent/settings';
 import {useDialogs} from '@/states/runtime/dialogs';
 import PermissionsModule from '@/lib/permissions';

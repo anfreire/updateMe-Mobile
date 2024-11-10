@@ -6,6 +6,7 @@ import ShareDialog from './components/ShareDialog';
 import NewVersionDialog from './components/NewVersionDialog';
 import CustomDialog from './components/CustomDialog';
 import IgnoredAppsDialog from './components/IgnoredAppsDialog';
+import ProvidersOrderDialog from './components/ProvidersOrderDialog';
 
 /******************************************************************************
  *                                 COMPONENT                                  *
@@ -18,6 +19,7 @@ const Dialogs = () => (
     <ColorSchemePickerDialog />
     <ShareDialog />
     <IgnoredAppsDialog />
+    <ProvidersOrderDialog />
     <NewVersionDialog />
   </Portal>
 );

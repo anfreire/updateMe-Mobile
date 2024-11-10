@@ -1,18 +1,39 @@
 import * as React from 'react';
-import {StyleSheet, useWindowDimensions, View} from 'react-native';
-import {Button, Dialog, Text} from 'react-native-paper';
 import {useDialogs} from '@/states/runtime/dialogs';
 import {useTranslations} from '@/states/persistent/translations';
 import {useSettings} from '@/states/persistent/settings';
 import {Index, useIndex} from '@/states/fetched';
 import IgnoredAppsList from './components/IgnoredAppsList';
-import IgnoredAppsFilterButton from './components/IgnoredAppsFilterButton';
+import MultiPagesDialog, {PageButton} from '@/components/MultiPagesDialog';
 
 /******************************************************************************
  *                                 CONSTANTS                                  *
  ******************************************************************************/
 
 const DIALOG_KEY = 'ignoredApps' as const;
+
+const IGNORE_APPS_DIALOG_PAGES_BUTTONS: PageButton[] = [
+  {
+    value: 'all',
+    label: 'All',
+    icon: 'asterisk',
+  },
+  {
+    value: 'notIgnored',
+    label: 'Active',
+    icon: 'sync',
+  },
+  {
+    value: 'ignored',
+    label: 'Disabled',
+    icon: 'sync-off',
+  },
+];
+
+/******************************************************************************
+ *                                   TYPES                                    *
+ ******************************************************************************/
+type IgnoredAppsDialogPages = 'all' | 'notIgnored' | 'ignored';
 
 /******************************************************************************
  *                                   UTILS                                    *
@@ -26,6 +47,24 @@ function getApps(index: Index, ignoredApps: string[] = []) {
   );
 }
 
+function filterApps(
+  apps: Record<string, boolean>,
+  filter: IgnoredAppsDialogPages,
+) {
+  switch (filter) {
+    case 'notIgnored':
+      return Object.fromEntries(
+        Object.entries(apps).filter(([, ignored]) => !ignored),
+      );
+    case 'ignored':
+      return Object.fromEntries(
+        Object.entries(apps).filter(([, ignored]) => ignored),
+      );
+    default:
+      return apps;
+  }
+}
+
 /******************************************************************************
  *                                    HOOK                                    *
  ******************************************************************************/
@@ -37,25 +76,17 @@ function useIgnoredAppsDialog() {
     state.setSetting,
   ]);
   const translations = useTranslations(state => state.translations);
-  const [activeDialog, closeDialog] = useDialogs(state => [
-    state.activeDialog,
-    state.closeDialog,
-  ]);
+  const activeDialog = useDialogs(state => state.activeDialog);
 
   const [apps, setApps] = React.useState(getApps(index, ignoredApps));
   const [filteredApps, setFilteredApps] = React.useState(apps);
-  const {height: screenHeight} = useWindowDimensions();
-
-  const listDynamicStyle = React.useMemo(
-    () => ({height: screenHeight * 0.6}),
-    [screenHeight],
-  );
+  const [activePage, setActivePage] =
+    React.useState<IgnoredAppsDialogPages>('all');
 
   const labels = React.useMemo(
     () => ({
-      title: translations['Updates Manager'],
-      save: translations['Save'],
-      cancel: translations['Cancel'],
+      title: translations['Apps to Update'],
+      info: translations['Disabled apps will not receive updates'],
     }),
     [translations],
   );
@@ -67,31 +98,37 @@ function useIgnoredAppsDialog() {
     }));
   }, []);
 
-  const handleSave = React.useCallback(() => {
-    setSetting(
-      'apps',
-      DIALOG_KEY,
-      Object.keys(apps).filter(app => apps[app]),
-    );
-    closeDialog();
-  }, [apps]);
+  const onSave = React.useCallback(
+    (closeDialog: () => void) => {
+      setSetting(
+        'apps',
+        DIALOG_KEY,
+        Object.keys(apps).filter(app => apps[app]),
+      );
+      closeDialog();
+    },
+    [apps],
+  );
+
+  React.useEffect(() => {
+    setFilteredApps(filterApps(apps, activePage));
+  }, [apps, activePage]);
 
   React.useEffect(() => {
     if (activeDialog !== DIALOG_KEY) return;
 
+    setActivePage('all');
     setApps(getApps(index, ignoredApps));
   }, [index, ignoredApps, activeDialog]);
 
   return {
     activeDialog,
-    apps,
-    filteredApps,
     labels,
-    listDynamicStyle,
     handleToggle,
-    handleSave,
-    closeDialog,
-    setFilteredApps,
+    onSave,
+    filteredApps,
+    activePage,
+    setActivePage,
   };
 }
 
@@ -102,71 +139,32 @@ function useIgnoredAppsDialog() {
 const IgnoredAppsDialog = () => {
   const {
     activeDialog,
-    apps,
     filteredApps,
     labels,
-    listDynamicStyle,
     handleToggle,
-    handleSave,
-    closeDialog,
-    setFilteredApps,
+    onSave,
+    activePage,
+    setActivePage,
   } = useIgnoredAppsDialog();
 
   if (activeDialog !== 'ignoredApps') return null;
 
   return (
-    <Dialog visible onDismiss={closeDialog} style={styles.dialog}>
-      <View style={styles.header}>
-        <Text variant="headlineSmall">{labels.title}</Text>
-        <IgnoredAppsFilterButton
-          apps={apps}
-          setFilteredApps={setFilteredApps}
-        />
-      </View>
-      <Dialog.ScrollArea style={[styles.listWrapper, listDynamicStyle]}>
-        <IgnoredAppsList
-          filteredApps={filteredApps}
-          handleToggle={handleToggle}
-        />
-      </Dialog.ScrollArea>
-      <Dialog.Actions style={styles.actions}>
-        <Button onPress={closeDialog}>{labels.cancel}</Button>
-        <Button onPress={handleSave}>{labels.save}</Button>
-      </Dialog.Actions>
-    </Dialog>
+    <MultiPagesDialog
+      {...labels}
+      activePage={activePage}
+      onSave={onSave}
+      setActivePage={
+        setActivePage as React.Dispatch<React.SetStateAction<string>>
+      }
+      buttons={IGNORE_APPS_DIALOG_PAGES_BUTTONS}>
+      <IgnoredAppsList
+        filteredApps={filteredApps}
+        handleToggle={handleToggle}
+      />
+    </MultiPagesDialog>
   );
 };
-
-/******************************************************************************
- *                                   STYLES                                   *
- ******************************************************************************/
-
-const styles = StyleSheet.create({
-  dialog: {
-    position: 'relative',
-  },
-  header: {
-    width: '100%',
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginTop: 0,
-    padding: 10,
-    paddingRight: 16,
-    paddingLeft: 26,
-  },
-  listWrapper: {
-    width: '100%',
-    paddingHorizontal: 0,
-    margin: 0,
-  },
-  actions: {
-    flexDirection: 'row',
-    paddingHorizontal: 0,
-    justifyContent: 'space-around',
-  },
-});
 
 /******************************************************************************
  *                                   EXPORT                                   *

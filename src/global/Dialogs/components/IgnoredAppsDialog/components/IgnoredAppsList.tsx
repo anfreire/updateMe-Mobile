@@ -15,15 +15,19 @@ const useIgnoredAppsList = (
   const index = useIndex(state => state.index);
   const {schemedTheme} = useTheme();
 
+  const backgroundColor = schemedTheme.elevation.level3;
+
   const iconColors = React.useMemo(
     () => ({
       true: {
         icon: schemedTheme.onSecondary,
         container: schemedTheme.secondary,
+        wrapper: schemedTheme.elevation.level5,
       },
       false: {
         icon: schemedTheme.onPrimary,
         container: schemedTheme.primary,
+        wrapper: schemedTheme.elevation.level1,
       },
     }),
     [schemedTheme],
@@ -44,6 +48,7 @@ const useIgnoredAppsList = (
   );
 
   return {
+    backgroundColor,
     listData,
   };
 };
@@ -61,10 +66,14 @@ const IgnoredAppsList = ({
   filteredApps,
   handleToggle,
 }: IgnoredAppsListProps) => {
-  const {listData} = useIgnoredAppsList(filteredApps, handleToggle);
+  const {backgroundColor, listData} = useIgnoredAppsList(
+    filteredApps,
+    handleToggle,
+  );
 
   return (
     <FlashList
+      contentContainerStyle={{backgroundColor}}
       data={listData}
       renderItem={IgnoredAppsItem}
       estimatedItemSize={50}

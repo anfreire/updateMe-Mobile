@@ -35,6 +35,7 @@
     "react-native-background-fetch": "^4.2.5",
     "react-native-blob-util": "^0.19.9",
     "react-native-color-picker": "^0.6.0",
+    "react-native-draggable-flatlist": "^4.0.1",
     "react-native-drawer-layout": "^3.3.0",
     "react-native-fast-image": "^8.6.3",
     "react-native-flipper": "^0.212.0",

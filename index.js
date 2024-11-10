@@ -5,8 +5,8 @@ import BackgroundFetch from 'react-native-background-fetch';
 import BackgroundTasksModule from '@/lib/backgroundTasks';
 import ThemeProvider from '@/theme';
 import App from './App';
-import Toast from '@/global/toast';
-import Dialogs from '@/global/dialogs';
+import Toast from '@/global/Toast';
+import Dialogs from '@/global/Dialogs';
 import StatesBridgeManager from '@/states/bridge';
 
 BackgroundFetch.registerHeadlessTask(BackgroundTasksModule.headlessTask);

@@ -1,14 +1,12 @@
 import * as React from 'react';
 import {Linking, StyleSheet, View} from 'react-native';
-import {Button, Dialog, ProgressBar} from 'react-native-paper';
+import {Button, Dialog} from 'react-native-paper';
 import {useDialogs} from '@/states/runtime/dialogs';
 import Carousel from 'react-native-reanimated-carousel';
-import Animated, {useAnimatedStyle} from 'react-native-reanimated';
-import {useTheme} from '@/theme';
 import {interpolate, useTranslations} from '@/states/persistent/translations';
 import {useApp} from '@/states/fetched/app';
-import NewVersionFeature from './NewVersionFeature';
-import {useDownloadAnimation} from './useDownloadAnimation';
+import NewVersionFeature from './components/NewVersionFeature';
+import NewVersionDownloadProgress from './components/NewVersionDownloadProgress';
 
 /******************************************************************************
  *                                    HOOK                                    *
@@ -18,20 +16,11 @@ function useNewVersionDialog() {
   const activeDialog = useDialogs(state => state.activeDialog);
   const latestApp = useApp(state => state.latest);
   const translations = useTranslations(state => state.translations);
-  const {schemedTheme} = useTheme();
-  const {downloadProgress, downloadProgressBarHeight, handleUpdate} =
-    useDownloadAnimation();
+  const [handleUpdate, setHandleUpdate] = React.useState(() => () => {});
 
   const handleManualUpdate = React.useCallback(() => {
     Linking.openURL(latestApp.download);
   }, [latestApp.download]);
-
-  const progressBarStyle = useAnimatedStyle(() => ({
-    width: 300,
-    marginBottom: -25,
-    height: downloadProgressBarHeight.value,
-    overflow: 'hidden',
-  }));
 
   const labels = React.useMemo(
     () => ({
@@ -49,12 +38,9 @@ function useNewVersionDialog() {
     activeDialog,
     latestApp,
     labels,
-    schemedTheme,
-    downloadProgress,
-    downloadProgressBarHeight,
-    handleUpdate,
     handleManualUpdate,
-    progressBarStyle,
+    handleUpdate,
+    setHandleUpdate,
   };
 }
 
@@ -67,11 +53,9 @@ const NewVersionDialog = () => {
     activeDialog,
     latestApp,
     labels,
-    schemedTheme,
-    downloadProgress,
-    handleUpdate,
     handleManualUpdate,
-    progressBarStyle,
+    handleUpdate,
+    setHandleUpdate,
   } = useNewVersionDialog();
 
   if (activeDialog !== 'newVersion') return null;
@@ -95,13 +79,7 @@ const NewVersionDialog = () => {
             data={latestApp.releaseNotes}
             renderItem={NewVersionFeature}
           />
-          <Animated.View style={progressBarStyle}>
-            <ProgressBar
-              animatedValue={downloadProgress}
-              color={schemedTheme.primary}
-              style={styles.progressBar}
-            />
-          </Animated.View>
+          <NewVersionDownloadProgress setHandleUpdate={setHandleUpdate} />
         </View>
       </Dialog.Content>
       <Dialog.Actions style={styles.actions}>
@@ -134,10 +112,6 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'space-evenly',
     display: 'flex',
-  },
-  progressBar: {
-    height: 10,
-    borderRadius: 5,
   },
   actions: {
     display: 'flex',

@@ -62,6 +62,9 @@ importers:
       react-native-color-picker:
         specifier: ^0.6.0
         version: 0.6.0
+      react-native-draggable-flatlist:
+        specifier: ^4.0.1
+        version: 4.0.1(@babel/core@7.24.5)(react-native-gesture-handler@2.16.2(react-native@0.73.8(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(react@18.2.0))(react@18.2.0))(react-native-reanimated@3.11.0(@babel/core@7.24.5)(react-native@0.73.8(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(react@18.2.0))(react@18.2.0))(react-native@0.73.8(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(react@18.2.0))
       react-native-drawer-layout:
         specifier: ^3.3.0
         version: 3.3.0(react-native-gesture-handler@2.16.2(react-native@0.73.8(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(react@18.2.0))(react@18.2.0))(react-native-reanimated@3.11.0(@babel/core@7.24.5)(react-native@0.73.8(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(react@18.2.0))(react@18.2.0))(react-native@0.73.8(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(react@18.2.0))(react@18.2.0)
@@ -4527,6 +4530,13 @@ packages:
 
   react-native-color-picker@0.6.0:
     resolution: {integrity: sha512-CptAssfTEGww97ev5GfaGTwu3IMBbBFi9ZDai1fgYRurQ7oQTcDp00lOoFIgLXr/acHNME2PjL7Ks/c+leVKFg==}
+
+  react-native-draggable-flatlist@4.0.1:
+    resolution: {integrity: sha512-ZO1QUTNx64KZfXGXeXcBfql67l38X7kBcJ3rxUVZzPHt5r035GnGzIC0F8rqSXp6zgnwgUYMfB6zQc5PKmPL9Q==}
+    peerDependencies:
+      react-native: '>=0.64.0'
+      react-native-gesture-handler: '>=2.0.0'
+      react-native-reanimated: '>=2.8.0'
 
   react-native-drawer-layout@3.3.0:
     resolution: {integrity: sha512-Wz+UVUEQyXy32gpQ4WrDMvTqfNBGYvGXnf79Xi5w3r58G9X+WSQL6Rr96AQz8O3xE9mPF0oWx1oSqCriosaS6Q==}
@@ -11476,6 +11486,15 @@ snapshots:
     dependencies:
       prop-types: 15.8.1
       tinycolor2: 1.6.0
+
+  react-native-draggable-flatlist@4.0.1(@babel/core@7.24.5)(react-native-gesture-handler@2.16.2(react-native@0.73.8(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(react@18.2.0))(react@18.2.0))(react-native-reanimated@3.11.0(@babel/core@7.24.5)(react-native@0.73.8(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(react@18.2.0))(react@18.2.0))(react-native@0.73.8(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(react@18.2.0)):
+    dependencies:
+      '@babel/preset-typescript': 7.24.1(@babel/core@7.24.5)
+      react-native: 0.73.8(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(react@18.2.0)
+      react-native-gesture-handler: 2.16.2(react-native@0.73.8(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(react@18.2.0))(react@18.2.0)
+      react-native-reanimated: 3.11.0(@babel/core@7.24.5)(react-native@0.73.8(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(react@18.2.0))(react@18.2.0)
+    transitivePeerDependencies:
+      - '@babel/core'
 
   react-native-drawer-layout@3.3.0(react-native-gesture-handler@2.16.2(react-native@0.73.8(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(react@18.2.0))(react@18.2.0))(react-native-reanimated@3.11.0(@babel/core@7.24.5)(react-native@0.73.8(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(react@18.2.0))(react@18.2.0))(react-native@0.73.8(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(react@18.2.0))(react@18.2.0):
     dependencies:

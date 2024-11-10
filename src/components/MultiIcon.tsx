@@ -36,7 +36,21 @@ const typeMapper: Record<string, React.ComponentType<IconProps>> = {
   zocial: Zocial,
 };
 
-export type MultiIconType = keyof typeof typeMapper;
+export type MultiIconType =
+  | 'ant-design'
+  | 'entypo'
+  | 'evil-icons'
+  | 'feather'
+  | 'font-awesome'
+  | 'font-awesome-5'
+  | 'fontisto'
+  | 'foundation'
+  | 'ionicons'
+  | 'material-community'
+  | 'material-icons'
+  | 'octicons'
+  | 'simple-line-icons'
+  | 'zocial';
 
 /******************************************************************************
  *                                 COMPONENT                                  *

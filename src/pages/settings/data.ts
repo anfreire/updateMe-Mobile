@@ -144,7 +144,7 @@ const AppsSection: SectionComponentData<'apps'> = {
 const ProvidersOrder: ItemComponentData<'providers'> = {
   key: 'providersOrder',
   title: 'Sort It Out',
-  description: 'Change the order of the providers',
+  description: 'Change the priority of the providers',
   icon: {
     type: 'material-community',
     name: 'sort',

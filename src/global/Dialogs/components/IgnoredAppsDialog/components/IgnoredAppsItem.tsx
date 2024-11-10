@@ -16,7 +16,7 @@ function buildCheckbox(
 ) {
   return (props: {color: string; style?: Style}) => (
     <IconButton
-      icon={checked ? 'eye-off' : 'eye'}
+      icon={checked ? 'sync-off' : 'sync'}
       style={props.style}
       iconColor={colors.icon}
       containerColor={colors.container}
@@ -54,25 +54,27 @@ interface IgnoredAppsItemProps {
   icon: string;
   app: string;
   checked: boolean;
-  colors: {icon: string; container: string};
+  colors: {icon: string; container: string; wrapper: string};
   onPress: () => void;
 }
 
-const IgnoredAppsItem: ListRenderItem<IgnoredAppsItemProps> = ({item}) => {
-  return (
-    <List.Item
-      title={item.app}
-      left={buildAppIcon(item.icon, item.checked)}
-      titleStyle={item.checked ? styles.strikedText : undefined}
-      right={buildCheckbox(item.checked, item.onPress, item.colors)}
-    />
-  );
-};
+const IgnoredAppsItem: ListRenderItem<IgnoredAppsItemProps> = ({item}) => (
+  <List.Item
+    title={item.app}
+    left={buildAppIcon(item.icon, item.checked)}
+    titleStyle={item.checked ? styles.strikedText : undefined}
+    right={buildCheckbox(item.checked, item.onPress, item.colors)}
+    style={[styles.container, {backgroundColor: item.colors.wrapper}]}
+  />
+);
 
 /******************************************************************************
  *                                   STYLES                                   *
  ******************************************************************************/
 const styles = StyleSheet.create({
+  container: {
+    marginVertical: 0.5,
+  },
   iconWrapper: {
     position: 'relative',
     display: 'flex',

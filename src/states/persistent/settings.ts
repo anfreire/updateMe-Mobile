@@ -9,8 +9,6 @@ import {
   SettingsSectionItemValue,
 } from '@/types/settings';
 import {deepEqual} from 'fast-equals';
-import {Logger} from './logs';
-import deepmerge from 'deepmerge';
 import {migrate} from '../utils';
 
 const STORAGE_ID = 'settings' as const;
@@ -88,22 +86,14 @@ export const useSettings = create<useSettingsProps>()(
     {
       name: STORAGE_ID,
       storage: createJSONStorage(() => zustandStorage),
+      migrate: (persistedState, version) =>
+        migrate(DEFAULT_STATE, persistedState, version),
       partialize: state =>
         Object.fromEntries(
           Object.entries(state).filter(([key]) =>
             PERSISTED_KEYS.includes(key as keyof useSettingsState),
           ),
         ),
-      migrate: (persistedState, version) =>
-        migrate(DEFAULT_STATE, persistedState, version),
-      onRehydrateStorage: () => (state, error) => {
-        if (error) {
-          Logger.error('Settings', 'Rehydrate', 'Failed to rehydrate', error);
-        }
-        if (state) {
-          state.settings = deepmerge(DEFAULT_SETTINGS, state?.settings ?? {});
-        }
-      },
     },
   ),
 );
