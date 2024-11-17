@@ -76,7 +76,7 @@ const IgnoredAppsList = ({
       contentContainerStyle={{backgroundColor}}
       data={listData}
       renderItem={IgnoredAppsItem}
-      estimatedItemSize={50}
+      estimatedItemSize={124}
     />
   );
 };

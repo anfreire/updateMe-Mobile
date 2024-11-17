@@ -5,10 +5,10 @@ export type Dialog =
   | 'sourceColorPicker'
   | 'colorSchemePicker'
   | 'share'
-  | 'homeLayoutPicker'
   | 'newVersion'
   | 'providersOrder'
   | 'ignoredApps'
+  | 'defaultProviders';
 
 export type CustomDialogProps = {
   title: string;

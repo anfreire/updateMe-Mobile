@@ -35,6 +35,16 @@ type useSettingsActions = {
     item: K,
     value: SettingsSectionItemValue<T, K>,
   ) => void;
+  setSettingWithPrevious: <
+    T extends SettingsSection,
+    K extends SettingsSectionItem<T>,
+  >(
+    key: T,
+    item: K,
+    callback: (
+      prev: SettingsSectionItemValue<T, K>,
+    ) => SettingsSectionItemValue<T, K>,
+  ) => void;
   resetSetting: <T extends SettingsSection, K extends SettingsSectionItem<T>>(
     key: T,
     item: K,
@@ -56,6 +66,31 @@ export const useSettings = create<useSettingsProps>()(
           const newSettings = {
             ...state.settings,
             [key]: {...state.settings[key], [item]: value},
+          };
+          return deepEqual(state.settings, newSettings)
+            ? state
+            : {settings: newSettings};
+        });
+      },
+      setSettingWithPrevious: <
+        T extends SettingsSection,
+        K extends SettingsSectionItem<T>,
+      >(
+        key: T,
+        item: K,
+        callback: (
+          prev: SettingsSectionItemValue<T, K>,
+        ) => SettingsSectionItemValue<T, K>,
+      ) => {
+        set(state => {
+          const newSettings = {
+            ...state.settings,
+            [key]: {
+              ...state.settings[key],
+              [item]: callback(
+                state.settings[key]?.[item] ?? DEFAULT_SETTINGS[key][item],
+              ),
+            },
           };
           return deepEqual(state.settings, newSettings)
             ? state

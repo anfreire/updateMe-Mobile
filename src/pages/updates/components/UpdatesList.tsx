@@ -1,7 +1,6 @@
 import * as React from 'react';
 import {useUpdates} from '@/states/computed/updates';
 import {IndexAppProviderProps, useIndex} from '@/states/fetched';
-import {useDefaultProviders} from '@/states/persistent/defaultProviders';
 import {interpolate, useTranslations} from '@/states/persistent/translations';
 import {Download, useDownloads} from '@/states/runtime/downloads';
 import {useToast} from '@/states/runtime/toast';
@@ -9,6 +8,7 @@ import {NavigationProps} from '@/types/navigation';
 import {useNavigation} from '@react-navigation/native';
 import {FlashList} from '@shopify/flash-list';
 import UpdatesListItem from './UpdatesListItem';
+import {useProviders} from '@/states/computed/providers';
 
 /******************************************************************************
  *                                   TYPES                                    *
@@ -36,7 +36,7 @@ const useUpdatesList = (
   updating: Record<string, string>,
 ) => {
   const index = useIndex(state => state.index);
-  const populatedDefaultProviders = useDefaultProviders(
+  const populatedDefaultProviders = useProviders(
     state => state.populatedDefaultProviders,
   );
   const updates = useUpdates(state => state.updates);
@@ -107,7 +107,7 @@ const UpdatesList = ({
       data={updateListItemsData}
       renderItem={renderItem}
       refreshControl={refreshControl}
-      estimatedItemSize={100}
+      estimatedItemSize={124}
     />
   );
 };

@@ -15,6 +15,7 @@ export interface Settings {
     ignoredApps: string[];
   };
   providers: {
+    defaultProviders: Record<string, string>;
     providersOrder: string[];
   };
   security: {
@@ -39,6 +40,7 @@ export const DEFAULT_SETTINGS: Settings = {
     ignoredApps: [],
   },
   providers: {
+    defaultProviders: {},
     providersOrder: [],
   },
   security: {

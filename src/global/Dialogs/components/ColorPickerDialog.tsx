@@ -16,10 +16,7 @@ import {Logger} from '@/states/persistent/logs';
 function useSourceColorPickerDialog() {
   const {sourceColor, setSourceColor, resetSourceColor} = useTheme();
   const initialSourceColor = React.useRef<string | null>(null);
-  const [activeDialog, closeDialog] = useDialogs(state => [
-    state.activeDialog,
-    state.closeDialog,
-  ]);
+  const closeDialog = useDialogs(state => state.closeDialog);
   const [openToast, closeToast] = useToast(state => [
     state.openToast,
     state.closeToast,
@@ -35,7 +32,7 @@ function useSourceColorPickerDialog() {
     () => ({
       title: translations['Source Color'],
       info: translations['Tap on the middle circle to test the color'],
-      cancel: translations['Cancel'],
+      cancel: translations['Revert'],
       useSystem: translations['Use System'],
       save: translations['Save'],
     }),
@@ -76,17 +73,13 @@ function useSourceColorPickerDialog() {
   }, [activeColor, handleClose, setSourceColor]);
 
   React.useEffect(() => {
-    if (
-      activeDialog === 'sourceColorPicker' &&
-      initialSourceColor.current === null
-    ) {
+    if (initialSourceColor.current === null) {
       initialSourceColor.current = sourceColor;
       setActiveColor(toHsv(sourceColor));
     }
-  }, [activeDialog, sourceColor]);
+  }, [sourceColor]);
 
   return {
-    activeDialog,
     labels,
     activeColor,
     sourceColor,
@@ -105,7 +98,6 @@ function useSourceColorPickerDialog() {
 
 const SourceColorPickerDialog = () => {
   const {
-    activeDialog,
     labels,
     activeColor,
     sourceColor,
@@ -116,10 +108,6 @@ const SourceColorPickerDialog = () => {
     handleUseSystem,
     handleSave,
   } = useSourceColorPickerDialog();
-
-  if (activeDialog !== 'sourceColorPicker') {
-    return null;
-  }
 
   return (
     <Dialog

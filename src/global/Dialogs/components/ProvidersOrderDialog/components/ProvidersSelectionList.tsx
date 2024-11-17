@@ -65,7 +65,7 @@ const ProvidersSelectionList = ({
     <FlashList
       data={providersSelectionData}
       renderItem={ProvidersSelectionListItem}
-      estimatedItemSize={100}
+      estimatedItemSize={124}
     />
   );
 };

@@ -48,13 +48,10 @@ function useColorSchemePickerDialog() {
   const colorScheme = useSettings(
     state => state.settings.appearance.colorScheme,
   );
-  const initialColorScheme = React.useRef<SavedColorSchemeType | null>(null);
+  const initialColorScheme = React.useRef<SavedColorSchemeType>(colorScheme);
   const {setColorScheme} = useTheme();
   const translations = useTranslations(state => state.translations);
-  const [activeDialog, closeDialog] = useDialogs(state => [
-    state.activeDialog,
-    state.closeDialog,
-  ]);
+  const closeDialog = useDialogs(state => state.closeDialog);
 
   const labels = React.useMemo(
     () => ({
@@ -94,18 +91,7 @@ function useColorSchemePickerDialog() {
     closeDialog();
   }, [setColorScheme]);
 
-  React.useEffect(() => {
-    if (activeDialog !== 'colorSchemePicker') {
-      initialColorScheme.current = null;
-      return;
-    }
-    if (initialColorScheme.current === null) {
-      initialColorScheme.current = colorScheme;
-    }
-  }, [activeDialog, colorScheme]);
-
   return {
-    activeDialog,
     colorScheme,
     labels,
     translatedColorSchemeOptions,
@@ -121,7 +107,6 @@ function useColorSchemePickerDialog() {
 
 const ColorSchemePickerDialog = () => {
   const {
-    activeDialog,
     colorScheme,
     labels,
     translatedColorSchemeOptions,
@@ -132,7 +117,7 @@ const ColorSchemePickerDialog = () => {
 
   return (
     <Dialog
-      visible={activeDialog === 'colorSchemePicker'}
+      visible
       onDismiss={undefined}
       dismissable={false}
       dismissableBackButton={false}>

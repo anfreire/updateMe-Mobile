@@ -1,11 +1,11 @@
 import * as React from 'react';
 import {Menu, Text, TextInput} from 'react-native-paper';
 import {Linking, StyleSheet, View} from 'react-native';
-import {useDefaultProviders} from '@/states/persistent/defaultProviders';
 import {useTheme} from '@/theme';
 import {useDialogs} from '@/states/runtime/dialogs';
 import {useTranslations} from '@/states/persistent/translations';
 import {CurrAppProps} from '@/hooks/useCurrApp';
+import {useSettings} from '@/states/persistent/settings';
 
 /******************************************************************************
  *                                    HOOK                                    *
@@ -14,8 +14,8 @@ import {CurrAppProps} from '@/hooks/useCurrApp';
 function useAppProvidersMenu(currApp: CurrAppProps) {
   const [isMenuVisible, setIsMenuVisible] = React.useState(false);
   const {schemedTheme} = useTheme();
-  const setDefaultProvider = useDefaultProviders(
-    state => state.setDefaultProvider,
+  const setSettingWithPrevious = useSettings(
+    state => state.setSettingWithPrevious,
   );
   const openDialog = useDialogs(state => state.openDialog);
   const translations = useTranslations(state => state.translations);
@@ -47,7 +47,12 @@ function useAppProvidersMenu(currApp: CurrAppProps) {
             },
             {
               title: translations['Continue'],
-              action: () => setDefaultProvider(currApp.title, provider),
+              action: () =>
+                setSettingWithPrevious(
+                  'providers',
+                  'defaultProviders',
+                  prev => ({...prev, [currApp.title]: provider}),
+                ),
             },
           ],
         });
@@ -56,7 +61,10 @@ function useAppProvidersMenu(currApp: CurrAppProps) {
           currApp.providers[currApp.defaultProviderTitle].packageName ||
         currApp.version == null
       ) {
-        setDefaultProvider(currApp.title, provider);
+        setSettingWithPrevious('providers', 'defaultProviders', prev => ({
+          ...prev,
+          [currApp.title]: provider,
+        }));
       } else {
         openDialog({
           title: translations['Warning'],
@@ -68,7 +76,12 @@ function useAppProvidersMenu(currApp: CurrAppProps) {
             {title: translations['Cancel'], action: () => {}},
             {
               title: translations['Continue'],
-              action: () => setDefaultProvider(currApp.title, provider),
+              action: () =>
+                setSettingWithPrevious(
+                  'providers',
+                  'defaultProviders',
+                  prev => ({...prev, [currApp.title]: provider}),
+                ),
             },
           ],
         });
@@ -134,6 +147,7 @@ const AppProvidersMenu = ({
       <TextInput
         editable={false}
         mode="outlined"
+        numberOfLines={1}
         placeholder={currApp.defaultProviderTitle}
         style={styles.textInput}
         dense

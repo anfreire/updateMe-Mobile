@@ -74,10 +74,10 @@ const useDrawerList = () => {
         onClick: () => navigateTo('settings'),
       },
       {
-        key: "suggest",
-        title: translations["Suggest"],
-        description: translations["Suggest a new app"],
-        icon: "lightbulb-on",
+        key: 'suggest',
+        title: translations['Suggest'],
+        description: translations['Suggest a new app'],
+        icon: 'lightbulb-on',
         onClick: () => Linking.openURL(SUGGEST_APP_URL),
       },
       {
@@ -92,6 +92,13 @@ const useDrawerList = () => {
         description: translations['Report a problem with the app'],
         icon: 'bug',
         onClick: () => Linking.openURL(REPORT_BUG_URL),
+      },
+      {
+        key: 'sha256',
+        title: 'SHA256',
+        description: 'Calculate the SHA256 hash of a file',
+        icon: 'lock',
+        onClick: () => navigateTo('sha256'),
       },
     ],
     [navigateTo, handleOpenDialog, translations],

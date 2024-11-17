@@ -1,26 +1,22 @@
 import * as React from 'react';
 import {Button, Dialog, Text} from 'react-native-paper';
 import {useDialogs} from '@/states/runtime/dialogs';
-import {useShallow} from 'zustand/react/shallow';
 
 /******************************************************************************
  *                                    HOOK                                    *
  ******************************************************************************/
 function useCustomDialog() {
-  const [activeDialog, customDialog, closeDialog] = useDialogs(
-    useShallow(state => [
-      state.activeDialog,
-      state.customDialog,
-      state.closeDialog,
-    ]),
-  );
+  const [customDialog, closeDialog] = useDialogs(state => [
+    state.customDialog,
+    state.closeDialog,
+  ]);
 
   const handleActionPress = React.useCallback((action: () => void) => {
     action();
     closeDialog();
   }, []);
 
-  return {activeDialog, customDialog, closeDialog, handleActionPress};
+  return {customDialog, closeDialog, handleActionPress};
 }
 
 /******************************************************************************
@@ -28,12 +24,7 @@ function useCustomDialog() {
  ******************************************************************************/
 
 const CustomDialog = () => {
-  const {activeDialog, customDialog, closeDialog, handleActionPress} =
-    useCustomDialog();
-
-  if (activeDialog !== 'custom' || !customDialog) {
-    return null;
-  }
+  const {customDialog, closeDialog, handleActionPress} = useCustomDialog();
 
   return (
     <Dialog visible onDismiss={closeDialog}>

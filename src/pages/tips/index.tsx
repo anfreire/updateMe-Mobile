@@ -77,7 +77,7 @@ const TipsScreen = () => {
       data={Object.keys(tips)}
       renderItem={renderItem}
       refreshControl={refreshControl}
-      estimatedItemSize={100}
+      estimatedItemSize={124}
     />
   );
 };

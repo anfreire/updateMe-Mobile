@@ -141,6 +141,17 @@ const AppsSection: SectionComponentData<'apps'> = {
  *                                 Providers                                  *
  ******************************************************************************/
 
+const defaultProviders: ItemComponentData<'providers'> = {
+  key: 'defaultProviders',
+  title: 'Top Choice',
+  description: 'Select the default provider for each app',
+  icon: {
+    type: 'material-community',
+    name: 'archive-star',
+  },
+  action: {type: 'dialog', data: 'defaultProviders'},
+};
+
 const ProvidersOrder: ItemComponentData<'providers'> = {
   key: 'providersOrder',
   title: 'Sort It Out',
@@ -155,7 +166,7 @@ const ProvidersOrder: ItemComponentData<'providers'> = {
 const ProvidersSection: SectionComponentData<'providers'> = {
   title: 'Providers',
   key: 'providers',
-  items: [ProvidersOrder],
+  items: [defaultProviders, ProvidersOrder],
 };
 
 /*******************************************************************************

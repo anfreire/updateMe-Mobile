@@ -33,7 +33,8 @@ export type MainStackPage =
   | 'loading'
   | 'settings'
   | 'tips-stack'
-  | 'updates';
+  | 'updates'
+  | 'sha256';
 
 export type MainStackParams = {
   'apps-stack': undefined;
@@ -42,6 +43,7 @@ export type MainStackParams = {
   settings: undefined | {setting: SettingsSectionItemInferred};
   'tips-stack': undefined;
   updates: undefined;
+  sha256: undefined;
 };
 
 /*******************************************************************************

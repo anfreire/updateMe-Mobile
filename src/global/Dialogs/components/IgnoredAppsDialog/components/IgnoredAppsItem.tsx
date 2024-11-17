@@ -62,7 +62,6 @@ const IgnoredAppsItem: ListRenderItem<IgnoredAppsItemProps> = ({item}) => (
   <List.Item
     title={item.app}
     left={buildAppIcon(item.icon, item.checked)}
-    titleStyle={item.checked ? styles.strikedText : undefined}
     right={buildCheckbox(item.checked, item.onPress, item.colors)}
     style={[styles.container, {backgroundColor: item.colors.wrapper}]}
   />
@@ -87,9 +86,7 @@ const styles = StyleSheet.create({
     height: 30,
     borderRadius: 5,
   },
-  strikedText: {
-    textDecorationLine: 'line-through',
-  },
+
   grayFilter: {
     position: 'absolute',
     width: 30,

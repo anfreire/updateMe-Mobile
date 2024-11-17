@@ -75,7 +75,7 @@ const HomeCategories = ({
     <FlashList
       data={Object.keys(filteredCategories)}
       renderItem={renderItem}
-      estimatedItemSize={100}
+      estimatedItemSize={124}
       refreshControl={refreshControl}
     />
   );

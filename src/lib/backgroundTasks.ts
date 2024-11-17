@@ -2,13 +2,13 @@ import {useVersions} from '@/states/computed/versions';
 import {useSettings} from '@/states/persistent/settings';
 import BackgroundFetch, {HeadlessEvent} from 'react-native-background-fetch';
 import {useNotifications} from '@/states/persistent/notifications';
-import {useDefaultProviders} from '@/states/persistent/defaultProviders';
 import NotificationsModule from '@/lib/notifications';
 import {interpolate, useTranslations} from '@/states/persistent/translations';
 import {useApp} from '@/states/fetched/app';
 import {useIndex} from '@/states/fetched';
 import {useUpdates} from '@/states/computed/updates';
 import {useInstallations} from '@/states/persistent/installations';
+import {useProviders} from '@/states/computed/providers';
 
 async function handleBackgroundNewRelease() {
   const {fetch: fetchLatestApp, getLocalVersion} = useApp.getState();
@@ -43,8 +43,15 @@ async function handleBackgroundUpdates() {
   const index = await useIndex.getState().fetch();
   if (!index) return;
 
-  const populatedDefaultProviders =
-    useDefaultProviders.getState().populatedDefaultProviders;
+  const providersSettings = useSettings.getState().settings.providers;
+
+  const populatedDefaultProviders = useProviders
+    .getState()
+    .populate(
+      index,
+      providersSettings.defaultProviders,
+      providersSettings.providersOrder,
+    );
 
   const installations = useInstallations.getState().installations;
 

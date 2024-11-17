@@ -62,6 +62,9 @@ importers:
       react-native-color-picker:
         specifier: ^0.6.0
         version: 0.6.0
+      react-native-document-picker:
+        specifier: ^9.3.1
+        version: 9.3.1(react-native-windows@0.73.12(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(react-native@0.73.8(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(react@18.2.0))(react@18.2.0))(react-native@0.73.8(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(react@18.2.0))(react@18.2.0)
       react-native-draggable-flatlist:
         specifier: ^4.0.1
         version: 4.0.1(@babel/core@7.24.5)(react-native-gesture-handler@2.16.2(react-native@0.73.8(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(react@18.2.0))(react@18.2.0))(react-native-reanimated@3.11.0(@babel/core@7.24.5)(react-native@0.73.8(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(react@18.2.0))(react@18.2.0))(react-native@0.73.8(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(react@18.2.0))
@@ -4530,6 +4533,16 @@ packages:
 
   react-native-color-picker@0.6.0:
     resolution: {integrity: sha512-CptAssfTEGww97ev5GfaGTwu3IMBbBFi9ZDai1fgYRurQ7oQTcDp00lOoFIgLXr/acHNME2PjL7Ks/c+leVKFg==}
+
+  react-native-document-picker@9.3.1:
+    resolution: {integrity: sha512-Vcofv9wfB0j67zawFjfq9WQPMMzXxOZL9kBmvWDpjVuEcVK73ndRmlXHlkeFl5ZHVsv4Zb6oZYhqm9u5omJOPA==}
+    peerDependencies:
+      react: '*'
+      react-native: '*'
+      react-native-windows: '*'
+    peerDependenciesMeta:
+      react-native-windows:
+        optional: true
 
   react-native-draggable-flatlist@4.0.1:
     resolution: {integrity: sha512-ZO1QUTNx64KZfXGXeXcBfql67l38X7kBcJ3rxUVZzPHt5r035GnGzIC0F8rqSXp6zgnwgUYMfB6zQc5PKmPL9Q==}
@@ -11486,6 +11499,14 @@ snapshots:
     dependencies:
       prop-types: 15.8.1
       tinycolor2: 1.6.0
+
+  react-native-document-picker@9.3.1(react-native-windows@0.73.12(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(react-native@0.73.8(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(react@18.2.0))(react@18.2.0))(react-native@0.73.8(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(react@18.2.0))(react@18.2.0):
+    dependencies:
+      invariant: 2.2.4
+      react: 18.2.0
+      react-native: 0.73.8(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(react@18.2.0)
+    optionalDependencies:
+      react-native-windows: 0.73.12(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(react-native@0.73.8(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(react@18.2.0))(react@18.2.0)
 
   react-native-draggable-flatlist@4.0.1(@babel/core@7.24.5)(react-native-gesture-handler@2.16.2(react-native@0.73.8(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(react@18.2.0))(react@18.2.0))(react-native-reanimated@3.11.0(@babel/core@7.24.5)(react-native@0.73.8(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(react@18.2.0))(react@18.2.0))(react-native@0.73.8(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(react@18.2.0)):
     dependencies:

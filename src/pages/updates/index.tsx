@@ -1,7 +1,6 @@
 import * as React from 'react';
 import {View, StyleSheet} from 'react-native';
 import {Button, Icon, Text} from 'react-native-paper';
-import {useDefaultProviders} from '@/states/persistent/defaultProviders';
 import {useVersions} from '@/states/computed/versions';
 import {useRefreshControlBuilder} from '@/hooks/useRefreshControlBuilder';
 import {useFocusEffect, useNavigation} from '@react-navigation/native';
@@ -12,6 +11,7 @@ import {NavigationProps, Page} from '@/types/navigation';
 import {useCurrPageEffect} from '@/hooks/useCurrPageEffect';
 import {useInstall} from '@/hooks/useInstall';
 import UpdatesList from './components/UpdatesList';
+import {useProviders} from '@/states/computed/providers';
 
 /******************************************************************************
  *                                 CONSTANTS                                  *
@@ -28,7 +28,7 @@ function useUpdateScreen() {
   const [updating, setUpdating] = React.useState<Record<string, string>>({});
 
   const index = useIndex(state => state.index);
-  const populatedDefaultProviders = useDefaultProviders(
+  const populatedDefaultProviders = useProviders(
     state => state.populatedDefaultProviders,
   );
   const translations = useTranslations(state => state.translations);
@@ -52,7 +52,7 @@ function useUpdateScreen() {
           disableNotice: true,
           disableDrawer: true,
           onStart: path => setUpdating(prev => ({...prev, [appName]: path})),
-          onFinished: () =>
+          onFinish: () =>
             setUpdating(prev => {
               // eslint-disable-next-line @typescript-eslint/no-unused-vars
               const {[appName]: _, ...rest} = prev;

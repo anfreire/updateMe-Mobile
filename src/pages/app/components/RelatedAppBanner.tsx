@@ -106,8 +106,11 @@ const useRelatedAppsBanner = (currApp: CurrAppProps) => {
   );
 
   const message = React.useMemo(
-    () => generateMessage(data, appsDismissed, currApp.title, translations),
-    [data, appsDismissed, currApp.title, translations],
+    () =>
+      versions[currApp.title] !== null
+        ? generateMessage(data, appsDismissed, currApp.title, translations)
+        : null,
+    [data, appsDismissed, currApp.title, translations, versions],
   );
 
   const updateLabel = React.useMemo(

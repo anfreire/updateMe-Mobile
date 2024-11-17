@@ -8,10 +8,7 @@ import {
   useNavigation,
   useRoute,
 } from '@react-navigation/native';
-import {
-  DefaultProviders,
-  useDefaultProviders,
-} from '@/states/persistent/defaultProviders';
+
 import {NavigationProps, Page, RouteProps} from '@/types/navigation';
 import {Index, useIndex} from '@/states/fetched';
 import {useCurrApp} from '@/hooks/useCurrApp';
@@ -21,6 +18,10 @@ import RelatedAppBanner from './components/RelatedAppBanner';
 import AppLogo from './components/AppLogo';
 import AppInfo from './components/AppInfo';
 import AppFeatures from './components/AppFeatures';
+import {
+  PopulatedDefaultProviders,
+  useProviders,
+} from '@/states/computed/providers';
 
 /******************************************************************************
  *                                 CONSTANTS                                  *
@@ -36,7 +37,7 @@ const REFRESH_INTERVAL = 1000;
 
 const refreshVersions = (
   index: Index,
-  populatedDefaultProviders: DefaultProviders,
+  populatedDefaultProviders: PopulatedDefaultProviders,
 ) => useVersions.getState().refresh(index, populatedDefaultProviders);
 
 /******************************************************************************
@@ -45,7 +46,7 @@ const refreshVersions = (
 
 function useAppScreen() {
   const index = useIndex(state => state.index);
-  const populatedDefaultProviders = useDefaultProviders(
+  const populatedDefaultProviders = useProviders(
     state => state.populatedDefaultProviders,
   );
   const {setOptions} = useNavigation<NavigationProps>();

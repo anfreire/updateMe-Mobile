@@ -87,7 +87,7 @@ export function useInstall() {
       const absolutePath = FilesModule.buildAbsolutePath(fileName);
 
       FilesModule.deleteFile(absolutePath)
-        .catch()
+        .catch(e => console.log(e))
         .finally(() => {
           addDownload(
             fileName,

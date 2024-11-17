@@ -1,6 +1,9 @@
 import FilesModule from '../../lib/files';
 import {create} from 'zustand';
-import {FetchBlobResponse, StatefulPromise} from 'react-native-blob-util';
+import ReactNativeBlobUtil, {
+  FetchBlobResponse,
+  StatefulPromise,
+} from 'react-native-blob-util';
 import {Logger} from '../persistent/logs';
 
 export interface Download {
@@ -68,9 +71,7 @@ export const useDownloads = create<useDownloadsProps>((set, get) => ({
     }));
 
     task
-      .then(result => {
-        onFinished(result.path());
-      })
+      .then(res => onFinished(res.path()))
       .catch(reason => {
         Logger.error(
           'Downloads',
@@ -78,8 +79,6 @@ export const useDownloads = create<useDownloadsProps>((set, get) => ({
           'Failed to download file',
           reason,
         );
-      })
-      .finally(() => {
         get().removeDownload(fileName);
       });
   },

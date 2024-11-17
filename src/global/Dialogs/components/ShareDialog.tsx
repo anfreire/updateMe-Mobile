@@ -30,10 +30,7 @@ function getImageSize(windowWidth: number, windowHeight: number) {
 function useShareDialog() {
   const latestAppInfo = useApp(state => state.latest);
   const translations = useTranslations(state => state.translations);
-  const [activeDialog, closeDialog] = useDialogs(state => [
-    state.activeDialog,
-    state.closeDialog,
-  ]);
+  const closeDialog = useDialogs(state => state.closeDialog);
   const {width, height} = useWindowDimensions();
 
   const labels = React.useMemo(
@@ -62,7 +59,6 @@ function useShareDialog() {
   }, [latestAppInfo.download, translations]);
 
   return {
-    activeDialog,
     closeDialog,
     labels,
     imageSize,
@@ -75,10 +71,7 @@ function useShareDialog() {
  ******************************************************************************/
 
 const ShareDialog = () => {
-  const {activeDialog, closeDialog, labels, imageSize, handleShare} =
-    useShareDialog();
-
-  if (activeDialog !== 'share') return null;
+  const {closeDialog, labels, imageSize, handleShare} = useShareDialog();
 
   return (
     <Dialog visible onDismiss={closeDialog} style={styles.dialog}>

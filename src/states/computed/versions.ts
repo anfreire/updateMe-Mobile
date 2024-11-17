@@ -1,8 +1,8 @@
 import AppsModule from '@/lib/apps';
 import {create} from 'zustand';
 import {Index} from '@/states/fetched/index';
-import {DefaultProviders} from '@/states/persistent/defaultProviders';
 import {deepEqual} from 'fast-equals';
+import {PopulatedDefaultProviders} from './providers';
 
 export type Versions = Record<string, string | null>;
 
@@ -13,7 +13,7 @@ interface useVersionsState {
 interface useVersionsActions {
   refresh: (
     index: Index,
-    populatedDefaultProviders: DefaultProviders,
+    populatedDefaultProviders: PopulatedDefaultProviders,
   ) => Promise<Versions>;
 }
 

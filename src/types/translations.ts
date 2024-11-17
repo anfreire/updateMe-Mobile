@@ -152,6 +152,11 @@ const translations = [
   'Disabled apps will not receive updates',
   'Arrange providers in your preferred order',
   'Choose providers to include in priority order',
+  'Top Choice',
+  'Select the default provider for each app',
+  'Set',
+  'Unset',
+  'Default Providers',
 ] as const;
 
 export type Translation = (typeof translations)[number];

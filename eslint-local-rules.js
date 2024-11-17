@@ -7,7 +7,6 @@ const useZustandStores = [
   'useCategories',
   'useIndex',
   'useTips',
-  'useDefaultProviders',
   'useFeedback',
   'useLogs',
   'useNotifications',
@@ -20,6 +19,7 @@ const useZustandStores = [
   'useToast',
   'usePulsingStyles',
   'useInstallations',
+  'useProviders',
 ];
 
 const zustandFunctions = [

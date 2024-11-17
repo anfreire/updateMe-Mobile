@@ -11,6 +11,7 @@ import TipsStack from './tips';
 import {MainStackParams} from '@/types/navigation';
 import {useBackButton} from './buttons/useBackButton';
 import HomeLogo from '@/pages/home/components/HomeLogo';
+import Sha256Screen from '@/pages/sha256';
 
 const Stack = createStackNavigator<MainStackParams>();
 
@@ -78,6 +79,13 @@ export default function MainStack() {
           title: translations['Tips'],
         }}
         component={TipsStack}
+      />
+      <Stack.Screen
+        name="sha256"
+        component={Sha256Screen}
+        options={{
+          title: 'SHA256',
+        }}
       />
     </Stack.Navigator>
   );

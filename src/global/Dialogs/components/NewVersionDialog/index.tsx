@@ -1,7 +1,6 @@
 import * as React from 'react';
 import {Linking, StyleSheet, View} from 'react-native';
 import {Button, Dialog} from 'react-native-paper';
-import {useDialogs} from '@/states/runtime/dialogs';
 import Carousel from 'react-native-reanimated-carousel';
 import {interpolate, useTranslations} from '@/states/persistent/translations';
 import {useApp} from '@/states/fetched/app';
@@ -13,7 +12,6 @@ import NewVersionDownloadProgress from './components/NewVersionDownloadProgress'
  ******************************************************************************/
 
 function useNewVersionDialog() {
-  const activeDialog = useDialogs(state => state.activeDialog);
   const latestApp = useApp(state => state.latest);
   const translations = useTranslations(state => state.translations);
   const [handleUpdate, setHandleUpdate] = React.useState(() => () => {});
@@ -35,7 +33,6 @@ function useNewVersionDialog() {
   );
 
   return {
-    activeDialog,
     latestApp,
     labels,
     handleManualUpdate,
@@ -49,16 +46,8 @@ function useNewVersionDialog() {
  ******************************************************************************/
 
 const NewVersionDialog = () => {
-  const {
-    activeDialog,
-    latestApp,
-    labels,
-    handleManualUpdate,
-    handleUpdate,
-    setHandleUpdate,
-  } = useNewVersionDialog();
-
-  if (activeDialog !== 'newVersion') return null;
+  const {latestApp, labels, handleManualUpdate, handleUpdate, setHandleUpdate} =
+    useNewVersionDialog();
 
   return (
     <Dialog

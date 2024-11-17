@@ -1,14 +1,17 @@
+import {Logger} from '@/states/persistent/logs';
 import ReactNativeBlobUtil, {
   FetchBlobResponse,
   ReactNativeBlobUtilStat,
   StatefulPromise,
 } from 'react-native-blob-util';
+import DocumentPicker from 'react-native-document-picker';
 
 /******************************************************************************
  *                                 CONSTANTS                                  *
  ******************************************************************************/
 
-const dir: string = ReactNativeBlobUtil.fs.dirs.DownloadDir;
+const DIR: string = ReactNativeBlobUtil.fs.dirs.DownloadDir;
+const APK_MIME_TYPE: string = 'application/vnd.android.package-archive';
 
 /******************************************************************************
  *                                   UTILS                                    *
@@ -17,9 +20,9 @@ const dir: string = ReactNativeBlobUtil.fs.dirs.DownloadDir;
 const buildFileName = (appName: string, version: string): string =>
   `${appName} ${version}.apk`;
 
-const buildAbsolutePath = (fileName: string) => `${dir}/${fileName}`;
+const buildAbsolutePath = (fileName: string) => `${DIR}/${fileName}`;
 
-const isAbsolutePath = (path: string): boolean => path.startsWith(dir);
+const isAbsolutePath = (path: string): boolean => path.startsWith(DIR);
 
 /******************************************************************************
  *                                 FUNCTIONS                                  *
@@ -32,7 +35,7 @@ async function getFileInfo(path: string): Promise<ReactNativeBlobUtilStat> {
 }
 
 async function listDir(): Promise<string[]> {
-  return (await ReactNativeBlobUtil.fs.ls(dir)).filter(file =>
+  return (await ReactNativeBlobUtil.fs.ls(DIR)).filter(file =>
     file.endsWith('.apk'),
   );
 }
@@ -53,7 +56,7 @@ async function getAllFilesInfo(): Promise<
 async function installApk(path: string): Promise<boolean | null> {
   return await ReactNativeBlobUtil.android.actionViewIntent(
     isAbsolutePath(path) ? path : buildAbsolutePath(path),
-    'application/vnd.android.package-archive',
+    APK_MIME_TYPE,
   );
 }
 
@@ -93,6 +96,25 @@ function downloadFile(
     );
 }
 
+async function pickExternalFile(): Promise<string | null> {
+  try {
+    const result = await DocumentPicker.pick({
+      type: [
+        APK_MIME_TYPE,
+        // DocumentPicker.types.allFiles
+      ],
+    });
+    return result[0].uri;
+  } catch (err) {
+    Logger.error('FilesModule', 'File Picker', 'Failed to pick a file', err);
+    return null;
+  }
+}
+
+function hashFile(path: string): Promise<string> {
+  return ReactNativeBlobUtil.fs.hash(path, 'sha256');
+}
+
 export default {
   buildAbsolutePath,
   getFileInfo,
@@ -104,4 +126,6 @@ export default {
   deleteAllFiles,
   downloadFile,
   buildFileName,
+  pickExternalFile,
+  hashFile,
 };

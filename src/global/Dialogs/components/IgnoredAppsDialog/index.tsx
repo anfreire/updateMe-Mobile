@@ -1,5 +1,4 @@
 import * as React from 'react';
-import {useDialogs} from '@/states/runtime/dialogs';
 import {useTranslations} from '@/states/persistent/translations';
 import {useSettings} from '@/states/persistent/settings';
 import {Index, useIndex} from '@/states/fetched';
@@ -9,8 +8,6 @@ import MultiPagesDialog, {PageButton} from '@/components/MultiPagesDialog';
 /******************************************************************************
  *                                 CONSTANTS                                  *
  ******************************************************************************/
-
-const DIALOG_KEY = 'ignoredApps' as const;
 
 const IGNORE_APPS_DIALOG_PAGES_BUTTONS: PageButton[] = [
   {
@@ -76,7 +73,6 @@ function useIgnoredAppsDialog() {
     state.setSetting,
   ]);
   const translations = useTranslations(state => state.translations);
-  const activeDialog = useDialogs(state => state.activeDialog);
 
   const [apps, setApps] = React.useState(getApps(index, ignoredApps));
   const [filteredApps, setFilteredApps] = React.useState(apps);
@@ -102,7 +98,7 @@ function useIgnoredAppsDialog() {
     (closeDialog: () => void) => {
       setSetting(
         'apps',
-        DIALOG_KEY,
+        'ignoredApps',
         Object.keys(apps).filter(app => apps[app]),
       );
       closeDialog();
@@ -115,14 +111,11 @@ function useIgnoredAppsDialog() {
   }, [apps, activePage]);
 
   React.useEffect(() => {
-    if (activeDialog !== DIALOG_KEY) return;
-
     setActivePage('all');
     setApps(getApps(index, ignoredApps));
-  }, [index, ignoredApps, activeDialog]);
+  }, [index, ignoredApps]);
 
   return {
-    activeDialog,
     labels,
     handleToggle,
     onSave,
@@ -138,7 +131,6 @@ function useIgnoredAppsDialog() {
 
 const IgnoredAppsDialog = () => {
   const {
-    activeDialog,
     filteredApps,
     labels,
     handleToggle,
@@ -146,8 +138,6 @@ const IgnoredAppsDialog = () => {
     activePage,
     setActivePage,
   } = useIgnoredAppsDialog();
-
-  if (activeDialog !== 'ignoredApps') return null;
 
   return (
     <MultiPagesDialog

@@ -1,9 +1,9 @@
 import {create} from 'zustand';
 import {Index} from '@/states/fetched/index';
-import {DefaultProviders} from '@/states/persistent/defaultProviders';
 import {Versions} from '@/states/computed/versions';
 import {deepEqual} from 'fast-equals';
 import {useInstallationsProps} from '../persistent/installations';
+import {PopulatedDefaultProviders} from './providers';
 
 export type Updates = string[];
 
@@ -14,7 +14,7 @@ interface useUpdatesState {
 interface useUpdatesActions {
   refresh: (
     index: Index,
-    populatedDefaultProviders: DefaultProviders,
+    populatedDefaultProviders: PopulatedDefaultProviders,
     versions: Versions,
     installations: useInstallationsProps['installations'],
     ignoredApps: string[],
