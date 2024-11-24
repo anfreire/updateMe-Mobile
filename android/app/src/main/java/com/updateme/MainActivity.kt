@@ -1,5 +1,6 @@
 package com.updateme
 import expo.modules.ReactActivityDelegateWrapper
+import android.os.Bundle;
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.fabricEnabled
@@ -7,6 +8,7 @@ import com.facebook.react.defaults.DefaultReactActivityDelegate
 
 class MainActivity : ReactActivity() {
 
+	// React Navigation
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(null)
   }
