@@ -1,4 +1,6 @@
 package com.updateme
+import cl.json.RNSharePackage;
+import cl.json.ShareApplication;
 import android.content.res.Configuration
 import expo.modules.ApplicationLifecycleDispatcher
 import expo.modules.ReactNativeHostWrapper
@@ -19,7 +21,10 @@ class MainApplication : Application(), ReactApplication {
   override val reactNativeHost: ReactNativeHost =
       ReactNativeHostWrapper(this, object : DefaultReactNativeHost(this) {
         override fun getPackages(): List<ReactPackage> {
-            val packages = PackageList(this).packages
+            val packages = PackageList(this).packages;
+            packages.add(AppPackage())
+            packages.add(NotificationsPackage())
+            packages.add(RNSharePackage())
             // Packages that cannot be autolinked yet can be added manually here, for example:
             // packages.add(new MyReactNativePackage());
             return packages
