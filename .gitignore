@@ -65,10 +65,16 @@ yarn-error.log
 # testing
 /coverage
 
-# Yarn
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/sdks
-!.yarn/versions
+
+android/app/debug.keystore
+
+.git_safe_backup
+
+updateMe*.apk
+
+updateMe.apk.idsig
+
+
+.gitignore
+android/app/debug.keystore
+android/app/debug.keystore

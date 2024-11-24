@@ -1,0 +1,5 @@
+eslint-local-rules.js
+rules
+rules/**
+.eslintrc.js
+metro.config.js
