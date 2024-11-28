@@ -22,11 +22,8 @@ class MainApplication : Application(), ReactApplication {
       ReactNativeHostWrapper(this, object : DefaultReactNativeHost(this) {
         override fun getPackages(): List<ReactPackage> {
             val packages = PackageList(this).packages;
-            packages.add(AppPackage())
-            packages.add(NotificationsPackage())
+            packages.add(AppManager())
             packages.add(RNSharePackage())
-            // Packages that cannot be autolinked yet can be added manually here, for example:
-            // packages.add(new MyReactNativePackage());
             return packages
         }
 

@@ -1,9 +1,7 @@
 import {useEffect, useRef} from 'react';
-import {DefaultStyle} from 'react-native-reanimated/lib/typescript/hook/commonTypes';
 
 export function useAnimation(
   animate: boolean,
-  animatedStyles: DefaultStyle,
   startAnimation: (onComplete?: () => void) => void,
   cancelAnimation: () => void,
 ) {
@@ -33,7 +31,5 @@ export function useAnimation(
         isAnimating.current = false;
       }
     };
-  }, [animate, animatedStyles, startAnimation, cancelAnimation]);
-
-  return animatedStyles;
+  }, [animate, startAnimation, cancelAnimation]);
 }

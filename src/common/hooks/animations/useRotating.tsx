@@ -31,8 +31,6 @@ const ROTATION_END = 360;
 export function useRotating(indefinitely: boolean = false) {
   const rotation = useSharedValue(ROTATION_START);
 
-  const repeats = indefinitely ? -1 : 1;
-
   const rotatingStyles = useAnimatedStyle(() => ({
     transform: [{rotate: `${rotation.value}deg`}],
   }));
@@ -47,12 +45,12 @@ export function useRotating(indefinitely: boolean = false) {
         withSpring(ROTATION_END, SPRING_CONFIG, () => {
           rotation.value = ROTATION_START;
         }),
-        repeats,
+        indefinitely ? -1 : 1,
         INVERSE,
         onComplete ? runOnJS(onComplete) : undefined,
       );
     },
-    [repeats],
+    [indefinitely],
   );
 
   const cancelRotating = useCallback(() => {
