@@ -22,7 +22,7 @@ class MainApplication : Application(), ReactApplication {
       ReactNativeHostWrapper(this, object : DefaultReactNativeHost(this) {
         override fun getPackages(): List<ReactPackage> {
             val packages = PackageList(this).packages;
-            packages.add(AppManager())
+            packages.add(AppManagerPackage())
             packages.add(RNSharePackage())
             return packages
         }

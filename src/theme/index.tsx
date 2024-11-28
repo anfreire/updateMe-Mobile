@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import {useColorScheme} from 'react-native';
 import {
   Material3Theme,
@@ -18,6 +18,8 @@ import {
 } from '@react-navigation/native';
 import merge from 'deepmerge';
 import {useSettings} from '@/store/persistent/settings';
+import {createContext, useCallback, useContext, useMemo} from 'react';
+import {useShallow} from 'zustand/shallow';
 
 /******************************************************************************
  *                                   TYPES                                    *
@@ -48,7 +50,7 @@ export type UseThemeProps = useThemeState & useThemeActions;
  *                                  CONTEXT                                   *
  ******************************************************************************/
 
-const ThemeContext = React.createContext<UseThemeProps | undefined>(undefined);
+const ThemeContext = createContext<UseThemeProps | undefined>(undefined);
 
 /******************************************************************************
  *                                  PROVIDER                                  *
@@ -65,22 +67,32 @@ const ThemeProvider = ({
   ...otherProps
 }: ThemeProviderProps) => {
   const systemColorScheme = useColorScheme() === 'dark' ? 'dark' : 'light';
-  const {colorScheme: rawColorScheme, sourceColor} = useSettings(state => ({
-    colorScheme: state.settings.appearance.colorScheme,
-    sourceColor: state.settings.appearance.sourceColor,
-  }));
-  const {setSetting, resetSetting} = useSettings();
+  const [
+    rawColorScheme,
+    sourceColor,
+    setSettingWithPrevious,
+    setSetting,
+    resetSetting,
+  ] = useSettings(
+    useShallow(state => [
+      state.settings.appearance.colorScheme,
+      state.settings.appearance.sourceColor,
+      state.setSettingWithPrevious,
+      state.setSetting,
+      state.resetSetting,
+    ]),
+  );
   const {theme, updateTheme, resetTheme} = useMaterial3Theme({
     sourceColor: sourceColor,
     fallbackSourceColor,
   });
 
-  const colorScheme = React.useMemo(
+  const colorScheme = useMemo(
     () => (rawColorScheme === 'system' ? systemColorScheme : rawColorScheme),
     [rawColorScheme, systemColorScheme],
   );
 
-  const derivedThemes = React.useMemo(
+  const derivedThemes = useMemo(
     () => ({
       combinedTheme:
         colorScheme === 'dark'
@@ -97,27 +109,29 @@ const ThemeProvider = ({
     [theme, colorScheme],
   );
 
-  const setSourceColor = React.useCallback(
+  const setSourceColor = useCallback(
     (color: string) => {
-      setSetting('appearance', 'sourceColor', color);
-      updateTheme(color);
+      setSettingWithPrevious('appearance', 'sourceColor', prevSourceColor => {
+        if (prevSourceColor === color) {
+          return prevSourceColor;
+        }
+        updateTheme(color);
+        return color;
+      });
     },
     [updateTheme],
   );
 
-  const setColorScheme = React.useCallback(
-    (newColorScheme: SavedColorSchemeType) => {
-      setSetting('appearance', 'colorScheme', newColorScheme);
-    },
-    [],
-  );
+  const setColorScheme = useCallback((newColorScheme: SavedColorSchemeType) => {
+    setSetting('appearance', 'colorScheme', newColorScheme);
+  }, []);
 
-  const resetSourceColor = React.useCallback(() => {
+  const resetSourceColor = useCallback(() => {
     resetTheme();
     resetSetting('appearance', 'sourceColor');
   }, [resetTheme]);
 
-  const contextValue = React.useMemo(
+  const contextValue = useMemo(
     () => ({
       theme,
       colorScheme,
@@ -157,7 +171,7 @@ const ThemeProvider = ({
  ******************************************************************************/
 
 const useTheme = (): UseThemeProps => {
-  const context = React.useContext(ThemeContext);
+  const context = useContext(ThemeContext);
   if (!context) {
     throw new Error('useTheme must be used within a ThemeProvider');
   }

@@ -4,25 +4,45 @@
  *
  * @format
  */
+import {
+  getAppVersion,
+  getInstalledApps,
+  installApk,
+  openApp,
+  uninstallApp,
+} from '@/lib/appManager';
+import {pickFile} from '@/lib/files';
 import {checkPermission} from '@/lib/permissions';
-import React, {useEffect} from 'react';
+import React, {useCallback, useEffect} from 'react';
 import {SafeAreaView, StatusBar, StyleSheet, View} from 'react-native';
+import {Button} from 'react-native-paper';
 
 /******************************************************************************
  *                                 COMPONENT                                  *
  ******************************************************************************/
 
 function App(): React.JSX.Element {
-  useEffect(() => {
-    checkPermission('android.permission.REQUEST_INSTALL_PACKAGES').then(res =>
-      console.log(res),
+  const install = useCallback(() => {
+    pickFile().then(file => {
+      if (file) {
+        installApk(file).then(res => console.log(`Install result: ${res}`));
+      }
+    });
+  }, []);
+
+  const uninstall = useCallback(() => {
+    uninstallApp('com.wuliang.xapkinstaller').then(res =>
+      console.log(`Uninstall result: ${res}`),
     );
   }, []);
   return (
     <>
       <StatusBar />
-      <SafeAreaView>
-        <View style={styles.appWrapper}></View>
+      <SafeAreaView style={styles.appWrapper}>
+        <View style={styles.appWrapper}>
+          <Button onPress={install}>Install</Button>
+          <Button onPress={uninstall}>Uninstall</Button>
+        </View>
       </SafeAreaView>
     </>
   );

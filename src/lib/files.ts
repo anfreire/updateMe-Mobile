@@ -2,12 +2,16 @@ import ReactNativeBlobUtil, {
   FetchBlobResponse,
   ReactNativeBlobUtilStat,
 } from 'react-native-blob-util';
+import DocumentPicker from 'react-native-document-picker';
+import {Logger} from '@/store/persistent/logs';
 
 /******************************************************************************
  *                                 CONSTANTS                                  *
  ******************************************************************************/
 
 export const DOWNLOADS_DIR: string = ReactNativeBlobUtil.fs.dirs.DownloadDir;
+
+export const APK_MIME_TYPE: string = 'application/vnd.android.package-archive';
 
 export const APK_NAME_EXCLUDE_PATTERN = /[^a-zA-Z0-9]/g;
 
@@ -27,7 +31,11 @@ export function buildFileName(appName: string, version: string): string {
 }
 
 export function makeAbsolutePath(path: string) {
-  return path.startsWith(DOWNLOADS_DIR) ? path : `${DOWNLOADS_DIR}/${path}`;
+  return path.startsWith(DOWNLOADS_DIR) ||
+    path.startsWith('content://') ||
+    path.startsWith('file://')
+    ? path
+    : `${DOWNLOADS_DIR}/${path}`;
 }
 
 export function getFileName(path: string): string {
@@ -99,9 +107,16 @@ export async function uploadFile(
   ]).uploadProgress((written, total) => onProgress(written / total));
 }
 
-export async function installApk(path: string): Promise<boolean | null> {
-  return await ReactNativeBlobUtil.android.actionViewIntent(
-    makeAbsolutePath(path),
-    'application/vnd.android.package-archive',
-  );
+export async function pickFile(
+  onlyApkFiles: boolean = true,
+): Promise<string | null> {
+  try {
+    const result = await DocumentPicker.pick({
+      type: [onlyApkFiles ? APK_MIME_TYPE : DocumentPicker.types.allFiles],
+    });
+    return result[0].uri;
+  } catch (err) {
+    Logger.error('FilesModule', 'File Picker', 'Failed to pick a file', err);
+    return null;
+  }
 }

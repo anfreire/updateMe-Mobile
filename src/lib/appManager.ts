@@ -45,9 +45,9 @@ export async function getInstalledApps(): Promise<InstalledApp[]> {
   return [];
 }
 
-export async function uninstallApp(packageName: string): Promise<void> {
+export async function uninstallApp(packageName: string): Promise<boolean> {
   try {
-    await AppManager.uninstallApp(packageName);
+    return await AppManager.uninstallApp(packageName);
   } catch (error) {
     Logger.error(
       'AppManager',
@@ -56,6 +56,7 @@ export async function uninstallApp(packageName: string): Promise<void> {
       error,
     );
   }
+  return false;
 }
 
 export async function openApp(packageName: string): Promise<boolean> {
@@ -73,18 +74,24 @@ export async function openApp(packageName: string): Promise<boolean> {
 }
 
 export async function installApk(apkPath: string): Promise<boolean> {
+  let filename: string;
+  try {
+    filename = decodeURIComponent(apkPath).split('/').pop() || '';
+  } catch (e) {
+    filename = apkPath.split('/').pop() || '';
+  }
   try {
     const success = await AppManager.installApk(apkPath);
     if (success) {
-      Logger.info('AppManager', 'installApp', `Installed ${apkPath}`);
+      Logger.info('AppManager', 'installApp', `Installed ${filename}`);
       return true;
     }
-    Logger.error('AppManager', 'installApp', `Failed to install ${apkPath}`);
+    Logger.error('AppManager', 'installApp', `Failed to install ${filename}`);
   } catch (error) {
     Logger.error(
       'AppManager',
       'installApp',
-      `Failed to install ${apkPath}`,
+      `Failed to install ${filename}`,
       error,
     );
   }
