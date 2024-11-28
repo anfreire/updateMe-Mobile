@@ -7,11 +7,14 @@ import {AppRegistry, StyleSheet} from 'react-native';
 import App from './App';
 import {name as appName} from './app.json';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
+import ThemeProvider from '@/theme';
 
 const Root = () => (
-  <GestureHandlerRootView style={styles.gestureHandlerWrapper}>
-    <App />
-  </GestureHandlerRootView>
+  <ThemeProvider>
+    <GestureHandlerRootView style={styles.gestureHandlerWrapper}>
+      <App />
+    </GestureHandlerRootView>
+  </ThemeProvider>
 );
 
 AppRegistry.registerComponent(appName, () => Root);

@@ -4,23 +4,25 @@
  *
  * @format
  */
-import React from 'react';
+import {checkPermission} from '@/lib/permissions';
+import React, {useEffect} from 'react';
 import {SafeAreaView, StatusBar, StyleSheet, View} from 'react-native';
-import {Text} from 'react-native-paper';
 
 /******************************************************************************
  *                                 COMPONENT                                  *
  ******************************************************************************/
 
 function App(): React.JSX.Element {
+  useEffect(() => {
+    checkPermission('android.permission.REQUEST_INSTALL_PACKAGES').then(res =>
+      console.log(res),
+    );
+  }, []);
   return (
     <>
       <StatusBar />
       <SafeAreaView>
-        <View style={styles.appWrapper}>
-          <View style={{}}></View>
-          <Text>Teste</Text>
-        </View>
+        <View style={styles.appWrapper}></View>
       </SafeAreaView>
     </>
   );
@@ -33,7 +35,6 @@ function App(): React.JSX.Element {
 const styles = StyleSheet.create({
   appWrapper: {
     flex: 1,
-    backgroundColor: 'red',
   },
 });
 
