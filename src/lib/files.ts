@@ -67,7 +67,9 @@ export async function listDir(): Promise<string[]> {
 }
 
 export async function deleteFile(path: string): Promise<void> {
-  return await ReactNativeBlobUtil.fs.unlink(makeAbsolutePath(path));
+  try {
+    return await ReactNativeBlobUtil.fs.unlink(makeAbsolutePath(path));
+  } catch {}
 }
 
 export async function downloadFile(
@@ -75,20 +77,30 @@ export async function downloadFile(
   fileName: string,
   path: string,
   onProgress: (progress: number) => void,
-): Promise<FetchBlobResponse> {
-  return await ReactNativeBlobUtil.config({
-    addAndroidDownloads: {
-      useDownloadManager: true,
-      notification: true,
-      title: fileName,
-      path,
-      mediaScannable: true,
-    },
-  })
-    .fetch('GET', url, {})
-    .progress((received, total) =>
-      onProgress(Number(received) / Number(total)),
+): Promise<FetchBlobResponse | null> {
+  try {
+    return await ReactNativeBlobUtil.config({
+      addAndroidDownloads: {
+        useDownloadManager: true,
+        notification: true,
+        title: fileName,
+        path,
+        mediaScannable: true,
+      },
+    })
+      .fetch('GET', url, {})
+      .progress((received, total) =>
+        onProgress(Number(received) / Number(total)),
+      );
+  } catch (err) {
+    Logger.error(
+      'FilesModule',
+      'Download File',
+      `Failed to download ${url}`,
+      err,
     );
+    return null;
+  }
 }
 
 export async function uploadFile(
@@ -96,15 +108,20 @@ export async function uploadFile(
   path: string,
   headers: Record<string, string>,
   onProgress: (progress: number) => void,
-): Promise<FetchBlobResponse> {
-  return await ReactNativeBlobUtil.fetch('POST', url, headers, [
-    {
-      name: 'file',
-      filename: getFileName(path),
-      type: 'application/octet-stream',
-      data: ReactNativeBlobUtil.wrap(makeAbsolutePath(path)),
-    },
-  ]).uploadProgress((written, total) => onProgress(written / total));
+): Promise<FetchBlobResponse | null> {
+  try {
+    return await ReactNativeBlobUtil.fetch('POST', url, headers, [
+      {
+        name: 'file',
+        filename: getFileName(path),
+        type: 'application/octet-stream',
+        data: ReactNativeBlobUtil.wrap(makeAbsolutePath(path)),
+      },
+    ]).uploadProgress((written, total) => onProgress(written / total));
+  } catch (err) {
+    Logger.error('FilesModule', 'Upload File', `Failed to upload ${path}`, err);
+    return null;
+  }
 }
 
 export async function pickFile(

@@ -4,16 +4,9 @@
  *
  * @format
  */
-import {
-  getAppVersion,
-  getInstalledApps,
-  installApk,
-  openApp,
-  uninstallApp,
-} from '@/lib/appManager';
-import {pickFile} from '@/lib/files';
-import {checkPermission} from '@/lib/permissions';
-import React, {useCallback, useEffect} from 'react';
+import {getApkInfo, installApk, uninstallApp} from '@/lib/appManager';
+import {getFileHash, pickFile} from '@/lib/files';
+import React, {useCallback} from 'react';
 import {SafeAreaView, StatusBar, StyleSheet, View} from 'react-native';
 import {Button} from 'react-native-paper';
 
@@ -35,6 +28,22 @@ function App(): React.JSX.Element {
       console.log(`Uninstall result: ${res}`),
     );
   }, []);
+
+  const apkInfo = useCallback(() => {
+    pickFile().then(file => {
+      if (file) {
+        getApkInfo(file).then(res => console.log(res));
+      }
+    });
+  }, []);
+
+  const apkHash = useCallback(() => {
+    pickFile().then(file => {
+      if (file) {
+        getFileHash(file).then(res => console.log(res));
+      }
+    });
+  }, []);
   return (
     <>
       <StatusBar />
@@ -42,6 +51,8 @@ function App(): React.JSX.Element {
         <View style={styles.appWrapper}>
           <Button onPress={install}>Install</Button>
           <Button onPress={uninstall}>Uninstall</Button>
+          <Button onPress={apkInfo}>APK Info</Button>
+          <Button onPress={apkHash}>APK Hash</Button>
         </View>
       </SafeAreaView>
     </>

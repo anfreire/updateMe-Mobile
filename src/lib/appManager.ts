@@ -5,10 +5,26 @@ const {AppManager} = NativeModules;
 /******************************************************************************
  *                                   TYPES                                    *
  ******************************************************************************/
-export interface InstalledApp {
+
+export interface ApkInfo {
   packageName: string;
   versionName: string;
+}
+
+export interface AppInfo extends ApkInfo {
   appName: string;
+}
+
+/******************************************************************************
+ *                                   UTILS                                    *
+ ******************************************************************************/
+
+function getFileName(path: string): string {
+  try {
+    return decodeURIComponent(path).split('/').pop() || '';
+  } catch (e) {
+    return path.split('/').pop() || '';
+  }
 }
 
 /******************************************************************************
@@ -31,7 +47,7 @@ export async function getAppVersion(
   return null;
 }
 
-export async function getInstalledApps(): Promise<InstalledApp[]> {
+export async function getInstalledApps(): Promise<AppInfo[]> {
   try {
     return await AppManager.getInstalledApps();
   } catch (error) {
@@ -74,12 +90,7 @@ export async function openApp(packageName: string): Promise<boolean> {
 }
 
 export async function installApk(apkPath: string): Promise<boolean> {
-  let filename: string;
-  try {
-    filename = decodeURIComponent(apkPath).split('/').pop() || '';
-  } catch (e) {
-    filename = apkPath.split('/').pop() || '';
-  }
+  const filename = getFileName(apkPath);
   try {
     const success = await AppManager.installApk(apkPath);
     if (success) {
@@ -96,4 +107,19 @@ export async function installApk(apkPath: string): Promise<boolean> {
     );
   }
   return false;
+}
+
+export async function getApkInfo(apkPath: string): Promise<ApkInfo | null> {
+  const filename = getFileName(apkPath);
+  try {
+    return await AppManager.getApkInfo(apkPath);
+  } catch (error) {
+    Logger.error(
+      'AppManager',
+      'getApkInfo',
+      `Failed to get info of ${filename}`,
+      error,
+    );
+  }
+  return null;
 }

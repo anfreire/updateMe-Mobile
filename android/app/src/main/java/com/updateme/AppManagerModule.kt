@@ -13,6 +13,7 @@ import android.os.Handler
 import android.os.Looper
 import android.provider.Settings
 import com.facebook.react.bridge.*
+import java.io.File
 
 class AppManagerModule(reactContext: ReactApplicationContext) :
         ReactContextBaseJavaModule(reactContext), ActivityEventListener {
@@ -303,6 +304,54 @@ class AppManagerModule(reactContext: ReactApplicationContext) :
                     "Installation failed: ${e.message ?: "Unknown error"}"
             )
             cleanupInstallation()
+        }
+    }
+
+
+    @ReactMethod
+    fun getApkInfo(apkPath: String, promise: Promise) {
+        try {
+            val uri = Uri.parse(apkPath)
+            val packageInfo = when {
+                uri.scheme == "content" -> {
+                    val tempFile = File(reactApplicationContext.cacheDir, "temp.apk")
+                    reactApplicationContext.contentResolver.openInputStream(uri)?.use { input ->
+                        tempFile.outputStream().use { output ->
+                            input.copyTo(output)
+                        }
+                    }
+                    reactApplicationContext.packageManager.getPackageArchiveInfo(
+                        tempFile.absolutePath,
+                        PackageManager.GET_META_DATA
+                    )?.also {
+                        tempFile.delete()
+                    }
+                }
+                uri.scheme == "file" -> {
+                    reactApplicationContext.packageManager.getPackageArchiveInfo(
+                        uri.path!!,
+                        PackageManager.GET_META_DATA
+                    )
+                }
+                else -> {
+                    reactApplicationContext.packageManager.getPackageArchiveInfo(
+                        apkPath,
+                        PackageManager.GET_META_DATA
+                    )
+                }
+            }
+
+            if (packageInfo != null) {
+                val appInfo = WritableNativeMap().apply {
+                    putString("packageName", packageInfo.packageName)
+                    putString("versionName", packageInfo.versionName)
+                }
+                promise.resolve(appInfo)
+            } else {
+                promise.reject("ERROR", "Unable to get APK information")
+            }
+        } catch (e: Exception) {
+            promise.reject("ERROR", "Failed to get APK version: ${e.message}")
         }
     }
 
