@@ -118,16 +118,16 @@ class AppManagerModule(reactContext: ReactApplicationContext) :
                                 val errorMessage =
                                         when (status) {
                                             PackageInstaller.STATUS_FAILURE_ABORTED ->
-                                                    "Installation aborted"
+                                                    "INSTALLATION_ABORTED"
                                             PackageInstaller.STATUS_FAILURE_BLOCKED ->
-                                                    "Installation blocked"
+                                                    "INSTALLATION_BLOCKED"
                                             PackageInstaller.STATUS_FAILURE_CONFLICT ->
-                                                    "Package conflicts with an existing package"
+                                                    "PACKAGE_CONFLICT"
                                             PackageInstaller.STATUS_FAILURE_INCOMPATIBLE ->
-                                                    "Package is incompatible with this device"
-                                            PackageInstaller.STATUS_FAILURE_INVALID -> "Invalid APK"
+                                                    "INCOMPATIBLE"
+                                            PackageInstaller.STATUS_FAILURE_INVALID -> "INVALID_APK"
                                             PackageInstaller.STATUS_FAILURE_STORAGE ->
-                                                    "Not enough storage space"
+                                                    "INSUFFICIENT_STORAGE"
                                             else -> message
                                                             ?: "Unknown installation error ($status)"
                                         }

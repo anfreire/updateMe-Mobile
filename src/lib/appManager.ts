@@ -15,6 +15,17 @@ export interface AppInfo extends ApkInfo {
   appName: string;
 }
 
+export enum AppInstallError {
+  INSTALLATION_ABORTED = 'INSTALLATION_ABORTED',
+  INSTALLATION_BLOCKED = 'INSTALLATION_BLOCKED',
+  MISSING_PERMISSION = 'MISSING_PERMISSION',
+  PACKAGE_CONFLICT = 'PACKAGE_CONFLICT',
+  INCOMPATIBLE = 'INCOMPATIBLE',
+  INVALID_APK = 'INVALID_APK',
+  INSUFFICIENT_STORAGE = 'INSUFFICIENT_STORAGE',
+  UNKNOWN = 'UNKNOWN',
+}
+
 /******************************************************************************
  *                                   UTILS                                    *
  ******************************************************************************/
@@ -22,8 +33,8 @@ export interface AppInfo extends ApkInfo {
 function getFileName(path: string): string {
   try {
     return decodeURIComponent(path).split('/').pop() || '';
-  } catch (e) {
-    return path.split('/').pop() || '';
+  } catch {
+    return path.split('/').pop() || path;
   }
 }
 
@@ -89,24 +100,39 @@ export async function openApp(packageName: string): Promise<boolean> {
   return false;
 }
 
-export async function installApk(apkPath: string): Promise<boolean> {
+export async function installApk(
+  apkPath: string,
+): Promise<true | AppInstallError> {
   const filename = getFileName(apkPath);
+  let catchedError: unknown;
+  let returnError: AppInstallError = AppInstallError.UNKNOWN;
   try {
     const success = await AppManager.installApk(apkPath);
     if (success) {
       Logger.info('AppManager', 'installApp', `Installed ${filename}`);
       return true;
     }
-    Logger.error('AppManager', 'installApp', `Failed to install ${filename}`);
   } catch (error) {
-    Logger.error(
-      'AppManager',
-      'installApp',
-      `Failed to install ${filename}`,
-      error,
-    );
+    catchedError = error;
+    if (error instanceof Error) {
+      if (error.message in AppInstallError) {
+        returnError = error.message as AppInstallError;
+      } else if (
+        ['unknown sources', 'permission'].some(str =>
+          error.message.toLowerCase().includes(str),
+        )
+      ) {
+        returnError = AppInstallError.MISSING_PERMISSION;
+      }
+    }
   }
-  return false;
+  Logger.error(
+    'AppManager',
+    'installApp',
+    `Failed to install ${filename}`,
+    catchedError,
+  );
+  return returnError;
 }
 
 export async function getApkInfo(apkPath: string): Promise<ApkInfo | null> {

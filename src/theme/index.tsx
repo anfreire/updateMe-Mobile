@@ -17,7 +17,7 @@ import {
   DefaultTheme as NavigationDefaultTheme,
 } from '@react-navigation/native';
 import merge from 'deepmerge';
-import {useSettings} from '@/store/persistent/settings';
+import {useSettings} from '@/state/stores/persistent/settings';
 import {createContext, useCallback, useContext, useMemo} from 'react';
 import {useShallow} from 'zustand/shallow';
 
