@@ -4,34 +4,26 @@
  *
  * @format
  */
+import LoadingNavigator from '@/navigation/Loading';
+import {useTheme} from '@/theme';
 import React from 'react';
-import {SafeAreaView, StatusBar, StyleSheet} from 'react-native';
-import DrawerNavigator from '@/navigation';
+import {SafeAreaView, StatusBar} from 'react-native';
 
 /******************************************************************************
  *                                 COMPONENT                                  *
  ******************************************************************************/
 
 function App(): React.JSX.Element {
+  const {cssVars} = useTheme();
   return (
     <>
       <StatusBar />
-      <SafeAreaView style={styles.appWrapper}>
-        <DrawerNavigator />
+      <SafeAreaView className="flex-1" style={cssVars}>
+        <LoadingNavigator />
       </SafeAreaView>
     </>
   );
 }
-
-/******************************************************************************
- *                                   STYLES                                   *
- ******************************************************************************/
-
-const styles = StyleSheet.create({
-  appWrapper: {
-    flex: 1,
-  },
-});
 
 /******************************************************************************
  *                                   EXPORT                                   *

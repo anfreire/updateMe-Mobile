@@ -1,4 +1,5 @@
 package com.updateme
+import com.facebook.react.common.assets.ReactFontManager
 import cl.json.RNSharePackage;
 import cl.json.ShareApplication;
 import android.content.res.Configuration
@@ -40,6 +41,7 @@ class MainApplication : Application(), ReactApplication {
 
   override fun onCreate() {
     super.onCreate()
+    ReactFontManager.getInstance().addCustomFont(this, "JetBrains Mono", R.font.jetbrainsmono)
     SoLoader.init(this, OpenSourceMergedSoMapping)
     if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
       // If you opted-in for the New Architecture, we load the native entry point for this app.

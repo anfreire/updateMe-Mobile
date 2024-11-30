@@ -12,8 +12,12 @@ const {withNativeWind} = require('nativewind/metro');
  */
 const config = {};
 
-module.exports = wrapWithReanimatedMetroConfig(
-  withNativeWind(mergeConfig(getDefaultConfig(__dirname), config), {
-    input: './global.css',
-  }),
-);
+const mergedConfig = mergeConfig(getDefaultConfig(__dirname), config);
+
+const reanimatedConfig = wrapWithReanimatedMetroConfig(mergedConfig);
+
+const nativeWindConfig = withNativeWind(reanimatedConfig, {
+  input: './global.css',
+});
+
+module.exports = nativeWindConfig;

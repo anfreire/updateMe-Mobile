@@ -1,13 +1,8 @@
 module.exports = {
-  presets: ['module:@react-native/babel-preset'],
+  presets: ['module:@react-native/babel-preset', 'nativewind/babel'],
   env: {
     production: {
-      plugins: [
-        'react-native-paper/babel',
-        'nativewind/babel',
-        // react-native-reanimated/plugin has to be listed last.
-        'react-native-reanimated/plugin',
-      ],
+      plugins: ['react-native-paper/babel'],
     },
   },
   plugins: [

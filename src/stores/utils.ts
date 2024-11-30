@@ -25,7 +25,8 @@ export function cleanObject(
 }
 
 export function migrate(
-  defaultState: Record<string, unknown>,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  defaultState: Record<string, any>,
   persistedState: unknown,
   version: number,
 ): Record<string, unknown> {
