@@ -1,0 +1,7 @@
+{
+    "i18n-ally.extract.ignoredByFiles": {
+        "src/screens/Loading/components/Signature.tsx": [
+            "JetBrains Mono"
+        ]
+    }
+}

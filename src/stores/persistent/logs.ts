@@ -1,7 +1,19 @@
 import {create} from 'zustand';
-import {MMKV} from 'react-native-mmkv';
-import {StateStorage, createJSONStorage, persist} from 'zustand/middleware';
-import {migrate} from '../utils';
+import {createJSONStorage, persist} from 'zustand/middleware';
+import {buildPersistentStorage, migrate} from '../utils';
+
+/******************************************************************************
+ *                                   TYPES                                    *
+ ******************************************************************************/
+
+interface LogEntry {
+  timestamp: string;
+  level: 'info' | 'warn' | 'error' | 'debug';
+  category: string;
+  subCategory: string;
+  message: string;
+  reason?: unknown;
+}
 
 /******************************************************************************
  *                                 CONSTANTS                                  *
@@ -18,17 +30,8 @@ const DEFAULT_STATE = {
 };
 
 /******************************************************************************
- *                                   TYPES                                    *
+ *                                   STORE                                    *
  ******************************************************************************/
-
-interface LogEntry {
-  timestamp: string;
-  level: 'info' | 'warn' | 'error' | 'debug';
-  category: string;
-  subCategory: string;
-  message: string;
-  reason?: unknown;
-}
 
 type useLogsState = {
   logs: LogEntry[];
@@ -48,21 +51,7 @@ type useLogsActions = {
 
 export type useLogsProps = useLogsState & useLogsActions;
 
-/******************************************************************************
- *                                   STORE                                    *
- ******************************************************************************/
-
-const storage = new MMKV({id: STORAGE_ID});
-
-const zustandStorage: StateStorage = {
-  setItem: (name, value) => storage.set(name, value),
-  getItem: name => storage.getString(name) ?? null,
-  removeItem: name => storage.delete(name),
-};
-
-/******************************************************************************
- *                                    HOOK                                    *
- ******************************************************************************/
+const zustandStorage = buildPersistentStorage(STORAGE_ID);
 
 export const useLogs = create<useLogsProps>()(
   persist(

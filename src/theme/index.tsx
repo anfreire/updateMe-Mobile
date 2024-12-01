@@ -106,7 +106,7 @@ const ThemeProvider = ({
   );
 
   const cssVars = useMemo(() => {
-    let nativeWindCssVars: {[key: string]: string} = {};
+    const nativeWindCssVars: {[key: string]: string} = {};
     for (const [key, value] of Object.entries(derivedThemes.schemedTheme)) {
       if (typeof value !== 'string') {
         continue;

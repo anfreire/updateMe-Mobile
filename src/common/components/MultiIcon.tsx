@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { memo } from 'react';
 import {IconProps} from 'react-native-vector-icons/Icon';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Entypo from 'react-native-vector-icons/Entypo';
@@ -88,4 +88,4 @@ export function buildMultiIcon<Props extends Omit<IconProps, 'name'> = object>(
  *                                   EXPORT                                   *
  ******************************************************************************/
 
-export default React.memo(MultiIcon) as React.FC<MultiIconProps>;
+export default memo(MultiIcon) as React.FC<MultiIconProps>;

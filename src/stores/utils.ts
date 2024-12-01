@@ -1,5 +1,19 @@
 import deepmerge from 'deepmerge';
-import {APP_VERSION_NUMBER} from '@/../data';
+import {APP_VERSION_NUMBER} from 'data';
+import {StateStorage} from 'zustand/middleware';
+import {MMKV} from 'react-native-mmkv';
+
+export function buildPersistentStorage(storageId: string): StateStorage {
+  const storage = new MMKV({id: storageId});
+
+  const zustandStorage: StateStorage = {
+    setItem: (name, value) => storage.set(name, value),
+    getItem: name => storage.getString(name) ?? name,
+    removeItem: name => storage.delete(name),
+  };
+
+  return zustandStorage;
+}
 
 export function cleanObject(
   source: Record<string, unknown>,

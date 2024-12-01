@@ -1,6 +1,5 @@
 import {create} from 'zustand';
 import {deepEqual} from 'fast-equals';
-import {Translation} from '@/translations';
 
 /******************************************************************************
  *                                   TYPES                                    *
@@ -9,9 +8,9 @@ import {Translation} from '@/translations';
 export type Dialog = 'share';
 
 export type CustomDialogProps = {
-  title: Translation;
-  content: Translation;
-  actions: {title: Translation; action: () => void}[];
+  title: string;
+  content: string;
+  actions: {title: string; onPress: () => void}[];
 };
 
 export type ActiveDialogType = Dialog | 'custom' | null;
@@ -31,10 +30,6 @@ type useDialogsActions = {
 };
 
 export type useDialogsProps = useDialogsState & useDialogsActions;
-
-/******************************************************************************
- *                                    HOOK                                    *
- ******************************************************************************/
 
 export const useDialogs = create<useDialogsProps>(set => ({
   activeDialog: null,

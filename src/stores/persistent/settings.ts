@@ -1,8 +1,7 @@
-import {StateStorage, createJSONStorage, persist} from 'zustand/middleware';
-import {MMKV} from 'react-native-mmkv';
+import {createJSONStorage, persist} from 'zustand/middleware';
 import {create} from 'zustand';
 import {deepEqual} from 'fast-equals';
-import {migrate} from '../utils';
+import {buildPersistentStorage, migrate} from '../utils';
 
 /******************************************************************************
  *                                 CONSTANTS                                  *
@@ -81,13 +80,7 @@ type useSettingsActions = {
 
 export type useSettingsProps = useSettingsState & useSettingsActions;
 
-const storage = new MMKV({id: STORAGE_ID});
-
-const zustandStorage: StateStorage = {
-  setItem: (name, value) => storage.set(name, value),
-  getItem: name => storage.getString(name) ?? null,
-  removeItem: name => storage.delete(name),
-};
+const zustandStorage = buildPersistentStorage(STORAGE_ID);
 
 /******************************************************************************
  *                                    HOOK                                    *

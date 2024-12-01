@@ -1,5 +1,6 @@
-import {Logger} from '@/store/persistent/logs';
+import { Logger } from '@/stores/persistent/logs';
 import {
+  // eslint-disable-next-line react-native/split-platform-components
   PermissionsAndroid,
   NativeModules,
   type Permission as ReactNativePermission,

@@ -4,24 +4,19 @@
  *
  * @format
  */
-import LoadingNavigator from '@/navigation/Loading';
-import {useTheme} from '@/theme';
 import React from 'react';
-import {SafeAreaView, StatusBar} from 'react-native';
+import LoadingNavigator from '@/routes/Loading';
+import Layout from '@/layout';
 
 /******************************************************************************
  *                                 COMPONENT                                  *
  ******************************************************************************/
 
 function App(): React.JSX.Element {
-  const {cssVars} = useTheme();
   return (
-    <>
-      <StatusBar />
-      <SafeAreaView className="flex-1" style={cssVars}>
-        <LoadingNavigator />
-      </SafeAreaView>
-    </>
+    <Layout>
+      <LoadingNavigator />
+    </Layout>
   );
 }
 
