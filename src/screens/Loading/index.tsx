@@ -1,42 +1,21 @@
-import React, {memo, useEffect} from 'react';
+import React, {memo} from 'react';
 import {View} from 'react-native';
-import LoadingIcon from './components/LoadingIcon';
-import {Page, LoadingStackPageProps} from '@/routes';
-import Signature from './components/Signature';
 import {useCurrPageEffect} from '@/common/hooks/useCurrPageEffect';
+import LoadingIcon from './components/LoadingIcon';
+import Signature from './components/Signature';
 
 /******************************************************************************
  *                                 CONSTANTS                                  *
  ******************************************************************************/
 
-const CURR_PAGE: Page = 'loading';
-
-/******************************************************************************
- *                                    HOOK                                    *
- ******************************************************************************/
-
-function useLoadingScreen(navigation: LoadingScreenProps['navigation']) {
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      navigation.replace('drawer-stack');
-    }, 500);
-
-    return () => {
-      clearTimeout(timeout);
-    };
-  }, [navigation]);
-
-  useCurrPageEffect(CURR_PAGE);
-}
+const CURR_PAGE = 'loading' as const;
 
 /******************************************************************************
  *                                 COMPONENT                                  *
  ******************************************************************************/
 
-type LoadingScreenProps = LoadingStackPageProps<'loading'>;
-
-const LoadingScreen = ({navigation}: LoadingScreenProps) => {
-  useLoadingScreen(navigation);
+const LoadingScreen = () => {
+  useCurrPageEffect(CURR_PAGE);
 
   return (
     <View className="flex-1 justify-center items-center relative">

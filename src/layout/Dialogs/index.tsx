@@ -1,6 +1,5 @@
 import React, {memo, useMemo} from 'react';
 import {ActiveDialogType, useDialogs} from '@/stores/runtime/dialogs';
-import {Portal} from 'react-native-paper';
 import ShareDialog from './ShareDialog';
 import CustomDialog from './CustomDialog';
 
@@ -31,11 +30,7 @@ const Dialogs = () => {
     return null;
   }
 
-  return (
-    <Portal>
-      <DialogComponent />
-    </Portal>
-  );
+  return <DialogComponent />;
 };
 
 /******************************************************************************

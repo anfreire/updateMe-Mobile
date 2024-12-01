@@ -1,9 +1,10 @@
+import {Logger} from '@/stores/persistent/logs';
 import ReactNativeBlobUtil, {
   FetchBlobResponse,
   ReactNativeBlobUtilStat,
 } from 'react-native-blob-util';
 import DocumentPicker from 'react-native-document-picker';
-import {Logger} from '@/store/persistent/logs';
+import Share from 'react-native-share';
 
 /******************************************************************************
  *                                 CONSTANTS                                  *
@@ -135,5 +136,20 @@ export async function pickFile(
   } catch (err) {
     Logger.error('FilesModule', 'File Picker', 'Failed to pick a file', err);
     return null;
+  }
+}
+
+export async function shareFiles(paths: string[]): Promise<void> {
+  try {
+    const result = await Share.open({
+      urls: paths.map(path => 'file://' + makeAbsolutePath(path)),
+    });
+    if (result.dismissedAction) {
+      Logger.debug('FilesModule', 'Share Files', 'Share action dismissed');
+    } else if (!result.success) {
+      Logger.error('FilesModule', 'Share Files', 'Failed to share files');
+    }
+  } catch (err) {
+    Logger.error('FilesModule', 'Share Files', 'Failed to share files', err);
   }
 }

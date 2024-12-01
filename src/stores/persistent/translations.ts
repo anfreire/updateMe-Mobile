@@ -21,12 +21,21 @@ const TRANSLATIONS = [
   'Developed by $1',
   'Report',
   'Downloads',
+  'Tools',
   'Updates',
   'Providers',
   'Settings',
   'Done',
   'Share the download link',
   '$1 download link',
+  'Source Color',
+  'Change the source color',
+  'Color Scheme',
+  'Change the color scheme',
+  'System',
+  'Light',
+  'Dark',
+  'Appearance',
 ] as const;
 
 const DEFAULT_TRANSLATIONS: Record<Translation, string> = Object.fromEntries(

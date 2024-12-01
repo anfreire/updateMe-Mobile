@@ -1,4 +1,4 @@
-import React, {useCallback} from 'react';
+import React, {memo, useCallback} from 'react';
 import {TouchableWithoutFeedback, View} from 'react-native';
 import {Path, Svg} from 'react-native-svg';
 import Animated, {
@@ -8,7 +8,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import {Text} from 'react-native-paper';
 import {cssInterop} from 'nativewind';
-import {APP_TITLE} from 'data';
+import {APP_TITLE} from '@/../data';
 
 const AnimatedSvg = Animated.createAnimatedComponent(Svg);
 const AnimatedPath = Animated.createAnimatedComponent(Path);
@@ -38,10 +38,10 @@ cssInterop(AnimatedPath, {
 });
 
 /******************************************************************************
- *                                    HOOK                                    *
+ *                                 COMPONENT                                  *
  ******************************************************************************/
 
-function useHomeLogo() {
+const HomeLogo = () => {
   const rotation = useSharedValue<number>(0);
 
   const rotatingStyles = useAnimatedStyle(() => ({
@@ -68,16 +68,6 @@ function useHomeLogo() {
     startRotating();
   }, [startRotating]);
 
-  return {handleOnPress, rotatingStyles};
-}
-
-/******************************************************************************
- *                                 COMPONENT                                  *
- ******************************************************************************/
-
-const HomeLogo = () => {
-  const {rotatingStyles, handleOnPress} = useHomeLogo();
-
   return (
     <TouchableWithoutFeedback className="w-100 h-100" onPress={handleOnPress}>
       <View className="w-100 h-100 flex-row items-center justify-start">
@@ -103,4 +93,4 @@ const HomeLogo = () => {
  *                                   EXPORT                                   *
  ******************************************************************************/
 
-export default HomeLogo;
+export default memo(HomeLogo);

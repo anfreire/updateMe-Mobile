@@ -1,4 +1,4 @@
-import {Page} from '@/routes';
+import {Page} from '@/navigation';
 import {create} from 'zustand';
 
 /******************************************************************************

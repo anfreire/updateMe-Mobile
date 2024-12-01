@@ -1,23 +1,19 @@
-import React, {useCallback} from 'react';
+import React, {useMemo} from 'react';
 import {
   DrawerContentComponentProps,
   DrawerContentScrollView,
   DrawerItem,
   DrawerItemList,
 } from '@react-navigation/drawer';
-import {buildMultiIcon, MultiIconType} from '@/common/components/MultiIcon';
+import {buildMultiIcon} from '@/common/components/MultiIcon';
 import {Dialog, useDialogs} from '@/stores/runtime/dialogs';
 import {Linking} from 'react-native';
-import {Translation, useTranslations} from '@/stores/persistent/translations';
+import {useTranslations} from '@/stores/persistent/translations';
+import {DrawerItemBase} from '..';
 
 /******************************************************************************
  *                                   TYPES                                    *
  ******************************************************************************/
-
-export interface DrawerItemBase {
-  title: Translation;
-  icon: {name: string; type?: MultiIconType};
-}
 
 export interface DrawerItemLink extends DrawerItemBase {
   type: 'link';
@@ -59,29 +55,30 @@ const DrawerContent = (props: DrawerContentComponentProps) => {
   const translations = useTranslations(state => state.translations);
   const openDialog = useDialogs(state => state.openDialog);
 
-  const buildOnPress = useCallback(
-    (item: DrawerItemLink | DrawerItemDialog) => {
-      return () => {
-        if (item.type === 'link') {
-          Linking.openURL(item.data);
-        } else {
-          openDialog(item.data);
-        }
-      };
-    },
-    [],
+  const items = useMemo(
+    () =>
+      DRAWER_ITEMS.map(item => ({
+        label: translations[item.title],
+        icon: buildMultiIcon(item.icon.name, item.icon.type),
+        onPress:
+          item.type === 'link'
+            ? () => {
+                props.navigation.closeDrawer();
+                Linking.openURL(item.data);
+              }
+            : () => {
+                props.navigation.closeDrawer();
+                openDialog(item.data);
+              },
+      })),
+    [props.navigation, translations],
   );
 
   return (
     <DrawerContentScrollView {...props}>
       <DrawerItemList {...props} />
-      {DRAWER_ITEMS.map(item => (
-        <DrawerItem
-          key={item.title}
-          label={translations[item.title]}
-          icon={buildMultiIcon(item.icon.name)}
-          onPress={buildOnPress(item)}
-        />
+      {items.map(item => (
+        <DrawerItem key={item.label} {...item} />
       ))}
     </DrawerContentScrollView>
   );

@@ -1,36 +1,19 @@
 import React from 'react';
-import {NavigationProp, RouteProp} from '@react-navigation/native';
 import {
   createNativeStackNavigator,
-  type NativeStackScreenProps,
+  NativeStackNavigationOptions,
 } from '@react-navigation/native-stack';
-import {SettingsSectionItemInferred} from '@/stores/persistent/settings';
+import {SettingsStackPage, SettingsStackParams} from '@/navigation/types';
 import SettingsScreen from '@/screens/Settings';
-
-/******************************************************************************
- *                                   TYPES                                    *
- ******************************************************************************/
-
-export type SettingsStackPage = 'settings';
-
-export type SettingsStackParams = {
-  settings: undefined | {setting: SettingsSectionItemInferred};
-};
-
-export type SettingsStackNavigationProps = NavigationProp<SettingsStackPage>;
-
-export type SettingsStackRouteProps = RouteProp<SettingsStackParams>;
-
-export type SettingsStackPageProps<T extends SettingsStackPage> =
-  NativeStackScreenProps<SettingsStackParams, T>;
+import SourceColorScreen from '@/screens/Settings/screens/SourceColor';
 
 /******************************************************************************
  *                                 CONSTANTS                                  *
  ******************************************************************************/
 
-const INITIAL_ROUTE_NAME = 'settings' as const;
+const INITIAL_ROUTE: SettingsStackPage = 'settings' as const;
 
-const SCREEN_OPTIONS = {
+const SCREEN_OPTIONS: NativeStackNavigationOptions = {
   headerShown: false,
 } as const;
 
@@ -40,12 +23,21 @@ const SCREEN_OPTIONS = {
 
 const Stack = createNativeStackNavigator<SettingsStackParams>();
 
-const SettingsNavigator = () => {
+const SettingsStack = () => {
   return (
     <Stack.Navigator
-      initialRouteName={INITIAL_ROUTE_NAME}
+      initialRouteName={INITIAL_ROUTE}
       screenOptions={SCREEN_OPTIONS}>
-      <Stack.Screen name="settings" component={SettingsScreen} />
+      <Stack.Screen
+        name="settings"
+        navigationKey="settings"
+        component={SettingsScreen}
+      />
+      <Stack.Screen
+        name="sourceColor"
+        navigationKey="sourceColor"
+        component={SourceColorScreen}
+      />
     </Stack.Navigator>
   );
 };
@@ -54,4 +46,4 @@ const SettingsNavigator = () => {
  *                                   EXPORT                                   *
  ******************************************************************************/
 
-export default SettingsNavigator;
+export default SettingsStack;

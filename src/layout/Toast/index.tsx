@@ -1,7 +1,9 @@
 import React, {memo, useMemo} from 'react';
-import {Portal, Snackbar} from 'react-native-paper';
+import {Snackbar} from 'react-native-paper';
 import {useToast} from '@/stores/runtime/toast';
 import {useTheme} from '@/theme';
+import {useShallow} from 'zustand/shallow';
+import {ViewStyle} from 'react-native';
 
 /******************************************************************************
  *                                 CONSTANTS                                  *
@@ -33,15 +35,14 @@ type ToastType = keyof typeof TOAST_COLORS;
  ******************************************************************************/
 
 function useToastComponent() {
-  const [activeToast, closeToast] = useToast(state => [
-    state.activeToast,
-    state.closeToast,
-  ]);
+  const [activeToast, closeToast] = useToast(
+    useShallow(state => [state.activeToast, state.closeToast]),
+  );
   const {colorScheme} = useTheme();
 
-  const snackbarStyle = useMemo(() => {
+  const snackbarStyle: ViewStyle = useMemo(() => {
     return {
-      zIndex: 10000000,
+      zIndex: 100,
       ...(activeToast?.type && {
         backgroundColor:
           TOAST_COLORS[activeToast.type as ToastType][colorScheme],
@@ -59,17 +60,19 @@ function useToastComponent() {
 const Toast = () => {
   const {activeToast, closeToast, snackbarStyle} = useToastComponent();
 
+  if (!activeToast) {
+    return null;
+  }
+
   return (
-    <Portal>
-      <Snackbar
-        style={snackbarStyle}
-        action={activeToast?.action}
-        visible={!!activeToast}
-        onDismiss={closeToast}
-        duration={3000}>
-        {activeToast?.message}
-      </Snackbar>
-    </Portal>
+    <Snackbar
+      style={snackbarStyle}
+      action={activeToast?.action}
+      visible={true}
+      onDismiss={closeToast}
+      duration={3000}>
+      {activeToast?.message}
+    </Snackbar>
   );
 };
 

@@ -4,20 +4,26 @@
  *
  * @format
  */
-import React from 'react';
-import LoadingNavigator from '@/routes/Loading';
+import React, {useEffect, useState} from 'react';
 import Layout from '@/layout';
+import LoadingScreen from '@/screens/Loading';
+import MainStack from '@/navigation';
 
 /******************************************************************************
  *                                 COMPONENT                                  *
  ******************************************************************************/
 
 function App(): React.JSX.Element {
-  return (
-    <Layout>
-      <LoadingNavigator />
-    </Layout>
-  );
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const timeot = setTimeout(() => {
+      setIsLoading(false);
+    }, 500);
+    return () => clearTimeout(timeot);
+  }, []);
+
+  return <Layout>{isLoading ? <LoadingScreen /> : <MainStack />}</Layout>;
 }
 
 /******************************************************************************

@@ -1,4 +1,4 @@
-import {Logger} from '@/store/persistent/logs';
+import {Logger} from '@/stores/persistent/logs';
 import {NativeModules} from 'react-native';
 const {AppManager} = NativeModules;
 

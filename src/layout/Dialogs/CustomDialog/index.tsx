@@ -1,16 +1,16 @@
 import {useDialogs} from '@/stores/runtime/dialogs';
 import React, {memo, useMemo} from 'react';
 import {Button, Dialog, Text} from 'react-native-paper';
+import {useShallow} from 'zustand/shallow';
 
 /******************************************************************************
  *                                 COMPONENT                                  *
  ******************************************************************************/
 
 const CustomDialog = () => {
-  const [customDialog, closeDialog] = useDialogs(state => [
-    state.customDialog,
-    state.closeDialog,
-  ]);
+  const [customDialog, closeDialog] = useDialogs(
+    useShallow(state => [state.customDialog, state.closeDialog]),
+  );
 
   const dialogActions = useMemo(() => {
     return customDialog

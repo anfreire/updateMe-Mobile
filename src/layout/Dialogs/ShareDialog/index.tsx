@@ -1,11 +1,12 @@
-import React, {memo, useCallback, useMemo} from 'react';
+import React, {memo, useCallback, useEffect, useMemo} from 'react';
 import {useWindowDimensions} from 'react-native';
 import {Button, Dialog} from 'react-native-paper';
 import {Share} from 'react-native';
 import {useDialogs} from '@/stores/runtime/dialogs';
-import {APP_RELEASES_URL, APP_TITLE} from 'data';
+import {APP_RELEASES_URL, APP_TITLE} from '@/../data';
 import FastImage from 'react-native-fast-image';
 import {interpolate, useTranslations} from '@/stores/persistent/translations';
+import {useToast} from '@/stores/runtime/toast';
 
 /******************************************************************************
  *                                 CONSTANTS                                  *
@@ -70,6 +71,11 @@ function useShareDialog() {
 
 const ShareDialog = () => {
   const {closeDialog, labels, imageSize, handleShare} = useShareDialog();
+  const openToast = useToast(state => state.openToast);
+
+  useEffect(() => {
+    openToast('hello');
+  }, []);
 
   return (
     <Dialog visible onDismiss={closeDialog}>

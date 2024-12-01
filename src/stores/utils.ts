@@ -1,5 +1,5 @@
 import deepmerge from 'deepmerge';
-import {APP_VERSION_NUMBER} from 'data';
+import {APP_VERSION_NUMBER} from '@/../data';
 import {StateStorage} from 'zustand/middleware';
 import {MMKV} from 'react-native-mmkv';
 

@@ -1,35 +1,27 @@
 import React from 'react';
-import {NavigationProp, RouteProp} from '@react-navigation/native';
-import LoadingScreen from '@/screens/Loading';
-import {
-  createNativeStackNavigator,
-  type NativeStackScreenProps,
-} from '@react-navigation/native-stack';
-import DrawerNavigator from '@/routes/Drawer';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
+
+import ToolsScreen from './screens/Tools';
+import AnalyzeScreen from './screens/Analyze';
+import Sha256Screen from './screens/Sha256';
 
 /******************************************************************************
  *                                   TYPES                                    *
  ******************************************************************************/
 
-export type LoadingStackPage = 'loading' | 'drawer-stack';
+export type ToolsStackPage = 'tools' | 'analyze' | 'sha256';
 
-export type LoadingStackParams = {
-  loading: undefined;
-  'drawer-stack': undefined;
+export type ToolsStackParams = {
+  tools: undefined;
+  analyze: undefined;
+  sha256: undefined;
 };
-
-export type LoadingStackNavigationProps = NavigationProp<LoadingStackPage>;
-
-export type LoadingStackRouteProps = RouteProp<LoadingStackParams>;
-
-export type LoadingStackPageProps<T extends LoadingStackPage> =
-  NativeStackScreenProps<LoadingStackParams, T>;
 
 /******************************************************************************
  *                                 CONSTANTS                                  *
  ******************************************************************************/
 
-const INITIAL_ROUTE_NAME = 'loading' as const;
+const INITIAL_ROUTE_NAME: ToolsStackPage = 'tools' as const;
 
 const SCREEN_OPTIONS = {
   headerShown: false,
@@ -39,15 +31,28 @@ const SCREEN_OPTIONS = {
  *                                 COMPONENT                                  *
  ******************************************************************************/
 
-const Stack = createNativeStackNavigator<LoadingStackParams>();
+const Stack = createNativeStackNavigator<ToolsStackParams>();
 
-const LoadingNavigator = () => {
+const ToolsNavigator = () => {
   return (
     <Stack.Navigator
       initialRouteName={INITIAL_ROUTE_NAME}
       screenOptions={SCREEN_OPTIONS}>
-      <Stack.Screen name="loading" component={LoadingScreen} />
-      <Stack.Screen name="drawer-stack" component={DrawerNavigator} />
+      <Stack.Screen
+        name="tools"
+        navigationKey="tools"
+        component={ToolsScreen}
+      />
+      <Stack.Screen
+        name="analyze"
+        navigationKey="analyze"
+        component={AnalyzeScreen}
+      />
+      <Stack.Screen
+        name="sha256"
+        navigationKey="sha256"
+        component={Sha256Screen}
+      />
     </Stack.Navigator>
   );
 };
@@ -56,4 +61,4 @@ const LoadingNavigator = () => {
  *                                   EXPORT                                   *
  ******************************************************************************/
 
-export default LoadingNavigator;
+export default ToolsNavigator;

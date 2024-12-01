@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, {memo} from 'react';
 import {IconProps} from 'react-native-vector-icons/Icon';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Entypo from 'react-native-vector-icons/Entypo';
@@ -58,6 +58,7 @@ export type MultiIconType =
 
 interface MultiIconProps extends IconProps {
   type?: MultiIconType;
+  className?: string;
 }
 
 const MultiIcon = (props: MultiIconProps) => {
