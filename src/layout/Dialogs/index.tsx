@@ -3,6 +3,7 @@ import {ActiveDialogType, useDialogs} from '@/stores/runtime/dialogs';
 import ShareDialog from './ShareDialog';
 import CustomDialog from './CustomDialog';
 import ColorSchemeDialog from './ColorSchemeDialog';
+import SourceColorDialog from './SourceColorDialog';
 
 /******************************************************************************
  *                                 CONSTANTS                                  *
@@ -15,6 +16,7 @@ const ACTIVE_DIALOG_TO_COMPONENT: Record<
   custom: CustomDialog,
   share: ShareDialog,
   colorScheme: ColorSchemeDialog,
+  sourceColor: SourceColorDialog,
 } as const;
 
 /******************************************************************************

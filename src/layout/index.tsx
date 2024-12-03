@@ -18,18 +18,20 @@ import {Portal} from 'react-native-paper';
 type LayoutProps = React.PropsWithChildren;
 
 const Layout = ({children}: LayoutProps) => {
-  const {colorScheme} = useTheme();
-  const {colors} = useReactNavigationTheme();
+  const {colorScheme, schemedTheme} = useTheme();
 
   const statusBarProps: {
     backgroundColor: string;
     barStyle: StatusBarStyle;
   } = useMemo(
     () => ({
-      backgroundColor: colors.card,
+      backgroundColor:
+        colorScheme === 'dark'
+          ? schemedTheme.surfaceDim
+          : schemedTheme.surfaceBright,
       barStyle: colorScheme === 'dark' ? 'light-content' : 'dark-content',
     }),
-    [colors.card, colorScheme],
+    [colorScheme, schemedTheme.surfaceDim, schemedTheme.surfaceBright],
   );
 
   return (

@@ -15,6 +15,7 @@ import ToolsStack from './stacks/Tools';
 import SettingsNavigator from './stacks/Settings';
 import HomeLogo from './components/HomeLogo';
 import DrawerContent from './components/DrawerContent';
+import {useTheme} from '@/theme';
 
 /******************************************************************************
  *                                   TYPES                                    *
@@ -97,8 +98,34 @@ const MAIN_STACK_SCREENS: MainStackScreen[] = [
 const Drawer = createDrawerNavigator<MainStackParams>();
 
 const MainStack = () => {
+  const {colorScheme, schemedTheme} = useTheme();
   const translations = useTranslations(state => state.translations);
   const currPage = useSession(state => state.currPage);
+
+  const drawerOptions: DrawerNavigationOptions = useMemo(
+    () => ({
+      drawerType: 'slide',
+      headerTitleAlign: 'center',
+      headerStyle: {
+        height: 56,
+        backgroundColor:
+          colorScheme === 'dark'
+            ? schemedTheme.surfaceDim
+            : schemedTheme.surfaceBright,
+      },
+      headerLeftContainerStyle: {
+        overflow: 'hidden',
+      },
+      drawerStyle: {
+        backgroundColor:
+          colorScheme === 'dark'
+            ? schemedTheme.surfaceDim
+            : schemedTheme.surfaceBright,
+        width: 240,
+      },
+    }),
+    [schemedTheme, colorScheme],
+  );
 
   const screenOptions: DrawerNavigationOptions[] = useMemo(
     () =>
@@ -118,7 +145,7 @@ const MainStack = () => {
     <Drawer.Navigator
       initialRouteName={INITIAL_ROUTE}
       drawerContent={DrawerContent}
-      screenOptions={DRAWER_OPTIONS}>
+      screenOptions={drawerOptions}>
       {MAIN_STACK_SCREENS.map((screem, i) => (
         <Drawer.Screen
           key={i}

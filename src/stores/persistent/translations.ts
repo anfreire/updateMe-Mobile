@@ -42,6 +42,8 @@ const TRANSLATIONS = [
   'File Fingerprint',
   'App',
   'Provider',
+  'Tap on the middle circle to test the color',
+  'Use System',
 ] as const;
 
 const DEFAULT_TRANSLATIONS: Record<Translation, string> = Object.fromEntries(

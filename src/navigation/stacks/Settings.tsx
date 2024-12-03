@@ -4,7 +4,6 @@ import {
   NativeStackNavigationOptions,
 } from '@react-navigation/native-stack';
 import {SettingsStackPage, SettingsStackParams} from '@/navigation/types';
-import SourceColorScreen from '@/screens/Settings/screens/SourceColor';
 import SettingsScreen from '@/screens/Settings';
 
 /******************************************************************************
@@ -32,11 +31,6 @@ const SettingsStack = () => {
         name="settings"
         navigationKey="settings"
         component={SettingsScreen}
-      />
-      <Stack.Screen
-        name="sourceColor"
-        navigationKey="sourceColor"
-        component={SourceColorScreen}
       />
     </Stack.Navigator>
   );

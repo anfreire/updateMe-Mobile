@@ -54,7 +54,7 @@ export type ToolsStackRoute = RouteProp<ToolsStackParams>;
  *                               SETTINGS STACK                               *
  ******************************************************************************/
 
-export type SettingsStackPage = 'settings' | 'sourceColor';
+export type SettingsStackPage = 'settings';
 
 export type SettingsStackParams = {
   settings:
@@ -65,7 +65,6 @@ export type SettingsStackParams = {
         };
       }[SettingsSection]
     | undefined;
-  sourceColor: undefined;
 };
 
 export type SettingsStackNavigation = NavigationProp<SettingsStackParams>;

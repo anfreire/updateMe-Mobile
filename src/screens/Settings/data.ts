@@ -60,7 +60,7 @@ export type SettingsScreenSection = {
  *                             APPEARANCE - ITEMS                             *
  ******************************************************************************/
 
-const SourceColor: SettingsScreenItemScreen = {
+const SourceColor: SettingsScreenItemDialog<'appearance'> = {
   title: 'Source Color',
   description: 'Change the source color',
   icon: {
@@ -68,7 +68,7 @@ const SourceColor: SettingsScreenItemScreen = {
   },
   section: 'appearance',
   item: 'sourceColor',
-  type: 'screen',
+  type: 'dialog',
   data: 'sourceColor',
 } as const;
 

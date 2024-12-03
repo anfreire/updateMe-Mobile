@@ -5,7 +5,7 @@ import {deepEqual} from 'fast-equals';
  *                                   TYPES                                    *
  ******************************************************************************/
 
-export type Dialog = 'share' | 'colorScheme';
+export type Dialog = 'share' | 'colorScheme' | 'sourceColor';
 
 export type CustomDialogProps = {
   title: string;
