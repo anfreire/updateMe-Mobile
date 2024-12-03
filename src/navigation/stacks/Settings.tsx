@@ -4,8 +4,8 @@ import {
   NativeStackNavigationOptions,
 } from '@react-navigation/native-stack';
 import {SettingsStackPage, SettingsStackParams} from '@/navigation/types';
-import SettingsScreen from '@/screens/Settings';
 import SourceColorScreen from '@/screens/Settings/screens/SourceColor';
+import SettingsScreen from '@/screens/Settings';
 
 /******************************************************************************
  *                                 CONSTANTS                                  *

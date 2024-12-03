@@ -5,7 +5,7 @@ import {
 } from '@react-navigation/native-stack';
 import {HomeStackPage, HomeStackParams} from '@/navigation/types';
 import HomeScreen from '@/screens/Home';
-import CurrAppScreen from '@/screens/CurrApp';
+import CurrAppScreen from '@/screens/Home/screens/CurrApp';
 
 /******************************************************************************
  *                                 CONSTANTS                                  *

@@ -2,6 +2,7 @@ import React, {memo, useMemo} from 'react';
 import {ActiveDialogType, useDialogs} from '@/stores/runtime/dialogs';
 import ShareDialog from './ShareDialog';
 import CustomDialog from './CustomDialog';
+import ColorSchemeDialog from './ColorSchemeDialog';
 
 /******************************************************************************
  *                                 CONSTANTS                                  *
@@ -13,6 +14,7 @@ const ACTIVE_DIALOG_TO_COMPONENT: Record<
 > = {
   custom: CustomDialog,
   share: ShareDialog,
+  colorScheme: ColorSchemeDialog,
 } as const;
 
 /******************************************************************************

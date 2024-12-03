@@ -1,9 +1,8 @@
 import {MultiIconType} from '@/common/components/MultiIcon';
-import {SettingsStackPage} from '@/navigation';
+import {SettingsStackPage} from '@/navigation/types';
 import {
   SettingsSection,
   SettingsSectionItem,
-  SettingsSectionItemValue,
 } from '@/stores/persistent/settings';
 import {Translation} from '@/stores/persistent/translations';
 import {Dialog} from '@/stores/runtime/dialogs';
@@ -12,50 +11,39 @@ import {Dialog} from '@/stores/runtime/dialogs';
  *                                TYPES - ITEM                                *
  ******************************************************************************/
 
-interface SettingsScreenItemBase {
+interface SettingsScreenItemBase<T extends SettingsSection = SettingsSection> {
   title: Translation;
   description: Translation;
   icon: {
     name: string;
     type?: MultiIconType;
   };
+  section: T;
+  item: SettingsSectionItem<T>;
 }
 
 export interface SettingsScreenItemCheckbox<
   T extends SettingsSection = SettingsSection,
-> extends SettingsScreenItemBase {
+> extends SettingsScreenItemBase<T> {
   type: 'checkbox';
-  data: {
-    section: T;
-    item: SettingsSectionItem<T>;
-  };
 }
 
-export interface SettingsScreenItemSelect<
+export interface SettingsScreenItemDialog<
   T extends SettingsSection = SettingsSection,
-  V extends SettingsSectionItem<T> = SettingsSectionItem<T>,
-> extends SettingsScreenItemBase {
-  type: 'select';
-  data: {
-    section: T;
-    item: SettingsSectionItem<T>;
-    values: Partial<Record<Translation, SettingsSectionItemValue<T, V>>>;
-  };
-}
-
-export interface SettingsScreenItemDialog extends SettingsScreenItemBase {
+> extends SettingsScreenItemBase<T> {
   type: 'dialog';
   data: Dialog;
 }
 
-export interface SettingsScreenItemScreen extends SettingsScreenItemBase {
+export interface SettingsScreenItemScreen<
+  T extends SettingsSection = SettingsSection,
+> extends SettingsScreenItemBase<T> {
   type: 'screen';
   data: SettingsStackPage;
 }
 
 export type SettingsScreenItem =
   | SettingsScreenItemCheckbox
-  | SettingsScreenItemSelect
   | SettingsScreenItemDialog
   | SettingsScreenItemScreen;
 
@@ -78,26 +66,22 @@ const SourceColor: SettingsScreenItemScreen = {
   icon: {
     name: 'palette',
   },
+  section: 'appearance',
+  item: 'sourceColor',
   type: 'screen',
   data: 'sourceColor',
 } as const;
 
-const ColorScheme: SettingsScreenItemSelect<'appearance', 'colorScheme'> = {
+const ColorScheme: SettingsScreenItemDialog<'appearance'> = {
   title: 'Color Scheme',
   description: 'Change the color scheme',
   icon: {
     name: 'theme-light-dark',
   },
-  type: 'select',
-  data: {
-    section: 'appearance',
-    item: 'colorScheme',
-    values: {
-      System: 'system',
-      Light: 'light',
-      Dark: 'dark',
-    },
-  },
+  section: 'appearance',
+  item: 'colorScheme',
+  type: 'dialog',
+  data: 'colorScheme',
 } as const;
 
 /******************************************************************************

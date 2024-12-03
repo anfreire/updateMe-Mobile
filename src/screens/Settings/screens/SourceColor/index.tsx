@@ -1,6 +1,6 @@
 import React, {memo} from 'react';
-import {Page, PageProps} from '@/navigation';
 import {useCurrPageEffect} from '@/common/hooks/useCurrPageEffect';
+import {Page} from '@/navigation/types';
 
 /******************************************************************************
  *                                 CONSTANTS                                  *
@@ -12,14 +12,7 @@ const CURR_PAGE: Page = 'sourceColor';
  *                                 COMPONENT                                  *
  ******************************************************************************/
 
-type SourceColorScreenProps = PageProps<typeof CURR_PAGE>;
-
-const SourceColorScreen = ({
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  navigation,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  route,
-}: SourceColorScreenProps) => {
+const SourceColorScreen = () => {
   useCurrPageEffect(CURR_PAGE);
   return <></>;
 };

@@ -1,5 +1,5 @@
 import React, {memo, useCallback} from 'react';
-import {TouchableWithoutFeedback, View} from 'react-native';
+import {StyleSheet, TouchableWithoutFeedback, View} from 'react-native';
 import {Path, Svg} from 'react-native-svg';
 import Animated, {
   useAnimatedStyle,
@@ -7,8 +7,8 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 import {Text} from 'react-native-paper';
-import {cssInterop} from 'nativewind';
 import {APP_TITLE} from '@/../data';
+import {useTheme} from '@/theme';
 
 const AnimatedSvg = Animated.createAnimatedComponent(Svg);
 const AnimatedPath = Animated.createAnimatedComponent(Path);
@@ -24,25 +24,12 @@ const SVG_SIZE = 25;
 const SVG_STROKE_WIDTH = 0.5;
 
 /******************************************************************************
- *                                   CONFIG                                   *
- ******************************************************************************/
-
-cssInterop(AnimatedPath, {
-  className: {
-    // @ts-expect-error - TS2322
-    target: 'style',
-    nativeStyleToProp: {
-      fill: true,
-    },
-  },
-});
-
-/******************************************************************************
  *                                 COMPONENT                                  *
  ******************************************************************************/
 
 const HomeLogo = () => {
   const rotation = useSharedValue<number>(0);
+  const {schemedTheme} = useTheme();
 
   const rotatingStyles = useAnimatedStyle(() => ({
     transform: [{rotate: `${rotation.value}deg`}],
@@ -69,25 +56,51 @@ const HomeLogo = () => {
   }, [startRotating]);
 
   return (
-    <TouchableWithoutFeedback className="w-100 h-100" onPress={handleOnPress}>
-      <View className="w-100 h-100 flex-row items-center justify-start">
+    <TouchableWithoutFeedback
+      style={styles.touchableWithoutFeedback}
+      onPress={handleOnPress}>
+      <View style={styles.wrapper}>
         <AnimatedSvg
           style={rotatingStyles}
           width={SVG_SIZE}
           height={SVG_SIZE}
           viewBox={SVG_VIEW_BOX}>
           <AnimatedPath
-            // @ts-expect-error - TS2322
-            className="fill-onSurface"
+            fill={schemedTheme.onSurface}
             strokeWidth={SVG_STROKE_WIDTH}
             d={SVG_PATH}
           />
         </AnimatedSvg>
-        <Text className="text-2xl ml-2 text-onSurface">{APP_TITLE}</Text>
+        <Text style={[styles.text, {color: schemedTheme.onSurface}]}>
+          {APP_TITLE}
+        </Text>
       </View>
     </TouchableWithoutFeedback>
   );
 };
+
+/******************************************************************************
+ *                                   STYLES                                   *
+ ******************************************************************************/
+
+const styles = StyleSheet.create({
+  touchableWithoutFeedback: {
+    width: '100%',
+    height: '100%',
+  },
+  wrapper: {
+    width: '100%',
+    height: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+  },
+  text: {
+    fontSize: 22,
+    fontFamily: 'sans-serif',
+    marginLeft: 5,
+  },
+});
 
 /******************************************************************************
  *                                   EXPORT                                   *

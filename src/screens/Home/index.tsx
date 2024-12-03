@@ -1,6 +1,7 @@
 import React, {memo} from 'react';
-import {PageProps, Page} from '@/navigation';
 import {useCurrPageEffect} from '@/common/hooks/useCurrPageEffect';
+import {Page} from '@/navigation/types';
+import {useNavigate} from '@/common/hooks/useNavigate';
 import {Button} from 'react-native-paper';
 
 /******************************************************************************
@@ -13,28 +14,23 @@ const CURR_PAGE: Page = 'home';
  *                                 COMPONENT                                  *
  ******************************************************************************/
 
-const HomeScreen = ({
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  navigation,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  route,
-}: PageProps<typeof CURR_PAGE>) => {
+const HomeScreen = () => {
+  const navigate = useNavigate();
   useCurrPageEffect(CURR_PAGE);
   return (
     <>
       <Button
-        onPress={() =>
-          navigation.navigate('drawer-stack', {
-            screen: 'settings-stack',
+        onPress={() => {
+          navigate({
+            stack: 'settings-stack',
+            screen: 'settings',
             params: {
-              screen: 'settings',
-              params: {
-                settingTitle: 'Source Color',
-              },
+              section: 'appearance',
+              item: 'colorScheme',
             },
-          })
-        }>
-        Go
+          });
+        }}>
+        Test
       </Button>
     </>
   );

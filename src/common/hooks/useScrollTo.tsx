@@ -1,12 +1,12 @@
-import React, {useCallback} from 'react';
+import {useCallback} from 'react';
 import {useWindowDimensions, View} from 'react-native';
 import Animated, {
-  useAnimatedRef,
   useSharedValue,
   scrollTo as reanimatedScrollTo,
   withTiming,
   Easing,
   useDerivedValue,
+  useAnimatedRef,
 } from 'react-native-reanimated';
 
 /******************************************************************************
@@ -55,9 +55,11 @@ export function useScrollTo() {
       if (!itemRef.current || !scrollViewRef.current) {
         return;
       }
+
       itemRef.current.measureLayout(
-        scrollViewRef.current.getInnerViewNode(),
+        scrollViewRef.current!.getInnerViewNode().getNativeRef(),
         (_, top, __, height) => {
+          console.log('top', top);
           scrollToPos(
             getScrollY(
               screenHeight,

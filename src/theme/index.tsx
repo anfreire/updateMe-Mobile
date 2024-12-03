@@ -20,7 +20,6 @@ import merge from 'deepmerge';
 import {createContext, useCallback, useContext, useMemo} from 'react';
 import {useShallow} from 'zustand/shallow';
 import {useSettings} from '@/stores/persistent/settings';
-import {colorScheme as nativeWindColorScheme, vars} from 'nativewind';
 
 /******************************************************************************
  *                                   TYPES                                    *
@@ -35,7 +34,6 @@ type useThemeState = {
   colorScheme: ColorSchemeType;
   schemedTheme: Material3Scheme;
   sourceColor: string;
-  cssVars: Record<string, string>;
 };
 
 type useThemeActions = {
@@ -105,17 +103,6 @@ const ThemeProvider = ({
     [theme, colorScheme],
   );
 
-  const cssVars = useMemo(() => {
-    const nativeWindCssVars: {[key: string]: string} = {};
-    for (const [key, value] of Object.entries(derivedThemes.schemedTheme)) {
-      if (typeof value !== 'string') {
-        continue;
-      }
-      nativeWindCssVars[`--${key}`] = value;
-    }
-    return vars(nativeWindCssVars);
-  }, [derivedThemes.schemedTheme]);
-
   const setSourceColor = useCallback(
     (color: string) => {
       setSettingWithPrevious('appearance', 'sourceColor', prevSourceColor => {
@@ -134,7 +121,6 @@ const ThemeProvider = ({
       if (prevColorScheme === newColorScheme) {
         return prevColorScheme;
       }
-      nativeWindColorScheme.set(newColorScheme);
       return newColorScheme;
     });
   }, []);
@@ -150,7 +136,6 @@ const ThemeProvider = ({
       colorScheme,
       schemedTheme: derivedThemes.schemedTheme,
       sourceColor: derivedThemes.schemedTheme.primary,
-      cssVars,
       setSourceColor,
       setColorScheme,
       resetSourceColor,
@@ -161,7 +146,6 @@ const ThemeProvider = ({
       theme,
       colorScheme,
       derivedThemes,
-      cssVars,
       setSourceColor,
       setColorScheme,
       resetSourceColor,

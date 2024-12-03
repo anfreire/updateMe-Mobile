@@ -1,45 +1,40 @@
 import React, {memo, useCallback} from 'react';
 import {useSettings} from '@/stores/persistent/settings';
+import {SettingsItemProps} from '.';
 import {useShallow} from 'zustand/shallow';
 import {Style} from 'react-native-paper/lib/typescript/components/List/utils';
-import {View} from 'react-native';
 import {Checkbox} from 'react-native-paper';
-import SettingsItemBase from './SettingsItemBase';
-import {SettingsItemProps} from '.';
+import {StyleSheet, View} from 'react-native';
+import SettingsItemBase from './Base';
 import {SettingsScreenItemCheckbox} from '../../data';
 
 /******************************************************************************
  *                                 COMPONENT                                  *
  ******************************************************************************/
 
-interface SettingsItemCheckboxProps extends Omit<SettingsItemProps, 'item'> {
-  item: SettingsScreenItemCheckbox;
-}
-
 const SettingsItemCheckbox = ({
   item,
   scrollToItem,
-  route,
-}: SettingsItemCheckboxProps) => {
+}: SettingsItemProps<SettingsScreenItemCheckbox>) => {
   const [persistedValue, setSettingWithPrevious] = useSettings(
     useShallow(state => [
-      state.settings[item.data.section][item.data.item!],
+      state.settings[item.section][item.item!],
       state.setSettingWithPrevious,
     ]),
   );
 
   const onPress = useCallback(() => {
     setSettingWithPrevious(
-      item.data.section,
-      item.data.item,
+      item.section,
+      item.item,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       prev => !prev as any,
     );
-  }, [item.data.section, item.data.item]);
+  }, [item.section, item.item]);
 
   const rightItem = useCallback(
     (props: {color: string; style?: Style}) => (
-      <View className="justify-center items-center">
+      <View style={styles.iconWrapper}>
         <Checkbox
           status={persistedValue ? 'checked' : 'unchecked'}
           onPress={onPress}
@@ -52,13 +47,24 @@ const SettingsItemCheckbox = ({
 
   return (
     <SettingsItemBase
-      item={item as unknown as SettingsScreenItemCheckbox}
-      rightItem={rightItem}
+      item={item}
       scrollToItem={scrollToItem}
-      route={route}
+      rightItem={rightItem}
+      onPress={onPress}
     />
   );
 };
+
+/******************************************************************************
+ *                                   STYLES                                   *
+ ******************************************************************************/
+
+const styles = StyleSheet.create({
+  iconWrapper: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+});
 
 /******************************************************************************
  *                                   EXPORT                                   *

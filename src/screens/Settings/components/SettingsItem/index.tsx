@@ -1,19 +1,16 @@
-import React, {memo, useMemo} from 'react';
+import React from 'react';
 import {View} from 'react-native';
 import {SettingsScreenItem} from '../../data';
-import {SettingsScreenProps} from '../..';
-import SettingsItemCheckbox from './SettingsItemCheckbox';
-import SettingsItemSelect from './SettingsItemSelect';
-import SettingsItemDialog from './SettingsItemDialog';
-import SettingsItemScreen from './SettingsItemScreen';
+import SettingsItemCheckbox from './Checkbox';
+import SettingsItemDialog from './Dialog';
+import SettingsItemScreen from './Screen';
 
 /******************************************************************************
  *                                 CONSTANTS                                  *
  ******************************************************************************/
 
-const SETTINGS_ITEM_TYPE_TO_COMPONENT = {
+const ITEM_TYPE_TO_COMPONENT = {
   checkbox: SettingsItemCheckbox,
-  select: SettingsItemSelect,
   dialog: SettingsItemDialog,
   screen: SettingsItemScreen,
 } as const;
@@ -22,23 +19,20 @@ const SETTINGS_ITEM_TYPE_TO_COMPONENT = {
  *                                 COMPONENT                                  *
  ******************************************************************************/
 
-export interface SettingsItemProps extends SettingsScreenProps {
-  item: SettingsScreenItem;
+export interface SettingsItemProps<
+  T extends SettingsScreenItem = SettingsScreenItem,
+> {
+  item: T;
   scrollToItem: (itemRef: React.RefObject<View>) => void;
 }
 
-const SettingsItem = (props: SettingsItemProps) => {
-  const Component = useMemo(
-    () => SETTINGS_ITEM_TYPE_TO_COMPONENT[props.item.type],
-    [props.item.type],
-  );
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return <Component {...(props as any)} />;
+const SettingsItem = ({item, scrollToItem}: SettingsItemProps) => {
+  const Component = ITEM_TYPE_TO_COMPONENT[item.type];
+  return <Component item={item as never} scrollToItem={scrollToItem} />;
 };
 
 /******************************************************************************
  *                                   EXPORT                                   *
  ******************************************************************************/
 
-export default memo(SettingsItem);
+export default React.memo(SettingsItem);

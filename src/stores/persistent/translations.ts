@@ -36,6 +36,12 @@ const TRANSLATIONS = [
   'Light',
   'Dark',
   'Appearance',
+  'Revert',
+  'Save',
+  'File Analysis',
+  'File Fingerprint',
+  'App',
+  'Provider',
 ] as const;
 
 const DEFAULT_TRANSLATIONS: Record<Translation, string> = Object.fromEntries(

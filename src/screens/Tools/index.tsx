@@ -1,64 +1,24 @@
-import React from 'react';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
-
-import ToolsScreen from './screens/Tools';
-import AnalyzeScreen from './screens/Analyze';
-import Sha256Screen from './screens/Sha256';
-
-/******************************************************************************
- *                                   TYPES                                    *
- ******************************************************************************/
-
-export type ToolsStackPage = 'tools' | 'analyze' | 'sha256';
-
-export type ToolsStackParams = {
-  tools: undefined;
-  analyze: undefined;
-  sha256: undefined;
-};
+import React, {memo} from 'react';
+import {useCurrPageEffect} from '@/common/hooks/useCurrPageEffect';
+import {Page} from '@/navigation/types';
 
 /******************************************************************************
  *                                 CONSTANTS                                  *
  ******************************************************************************/
 
-const INITIAL_ROUTE_NAME: ToolsStackPage = 'tools' as const;
-
-const SCREEN_OPTIONS = {
-  headerShown: false,
-} as const;
+const CURR_PAGE: Page = 'tools';
 
 /******************************************************************************
  *                                 COMPONENT                                  *
  ******************************************************************************/
 
-const Stack = createNativeStackNavigator<ToolsStackParams>();
-
-const ToolsNavigator = () => {
-  return (
-    <Stack.Navigator
-      initialRouteName={INITIAL_ROUTE_NAME}
-      screenOptions={SCREEN_OPTIONS}>
-      <Stack.Screen
-        name="tools"
-        navigationKey="tools"
-        component={ToolsScreen}
-      />
-      <Stack.Screen
-        name="analyze"
-        navigationKey="analyze"
-        component={AnalyzeScreen}
-      />
-      <Stack.Screen
-        name="sha256"
-        navigationKey="sha256"
-        component={Sha256Screen}
-      />
-    </Stack.Navigator>
-  );
+const ToolsScreen = () => {
+  useCurrPageEffect(CURR_PAGE);
+  return <></>;
 };
 
 /******************************************************************************
  *                                   EXPORT                                   *
  ******************************************************************************/
 
-export default ToolsNavigator;
+export default memo(ToolsScreen);

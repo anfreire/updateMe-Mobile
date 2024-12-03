@@ -1,58 +1,56 @@
-import React from 'react';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
-
-import {Translation} from '@/stores/persistent/translations';
-import SettingsScreen from './screens/Settings';
-import SourceColorScreen from './screens/SourceColor';
-
-/******************************************************************************
- *                                   TYPES                                    *
- ******************************************************************************/
-
-export type SettingsStackPage = 'settings' | 'sourceColor';
-
-export type SettingsStackParams = {
-  settings: undefined | {settingTitle: Translation};
-  sourceColor: undefined;
-};
+import React, {memo} from 'react';
+import {useCurrPageEffect} from '@/common/hooks/useCurrPageEffect';
+import {useScrollTo} from '@/common/hooks/useScrollTo';
+import {SettingsScreenSection, SettingsScreenSections} from './data';
+import Animated from 'react-native-reanimated';
+import SettingsSection from './components/SettingsSection';
+import {Page} from '@/navigation/types';
+import {StyleSheet, View} from 'react-native';
 
 /******************************************************************************
  *                                 CONSTANTS                                  *
  ******************************************************************************/
 
-const INITIAL_ROUTE_NAME = 'settings' as const;
-
-const SCREEN_OPTIONS = {
-  headerShown: false,
-} as const;
+const CURR_PAGE: Page = 'settings';
 
 /******************************************************************************
  *                                 COMPONENT                                  *
  ******************************************************************************/
 
-const Stack = createNativeStackNavigator<SettingsStackParams>();
+const SettingsScreen = () => {
+  const {scrollViewRef, scrollToItem} = useScrollTo();
 
-const SettingsNavigator = () => {
+  useCurrPageEffect(CURR_PAGE);
+
   return (
-    <Stack.Navigator
-      initialRouteName={INITIAL_ROUTE_NAME}
-      screenOptions={SCREEN_OPTIONS}>
-      <Stack.Screen
-        name="settings"
-        navigationKey="settings"
-        component={SettingsScreen}
+    <Animated.ScrollView ref={scrollViewRef} style={styles.scrollView}>
+      <View
+        // eslint-disable-next-line react-native/no-inline-styles
+        style={{height: 1000}}
       />
-      <Stack.Screen
-        name="sourceColor"
-        navigationKey="sourceColor"
-        component={SourceColorScreen}
-      />
-    </Stack.Navigator>
+      {SettingsScreenSections.map((section: SettingsScreenSection) => (
+        <SettingsSection
+          key={section.title}
+          section={section}
+          scrollToItem={scrollToItem}
+        />
+      ))}
+    </Animated.ScrollView>
   );
 };
+
+/******************************************************************************
+ *                                   STYLES                                   *
+ ******************************************************************************/
+
+const styles = StyleSheet.create({
+  scrollView: {
+    paddingTop: 0,
+  },
+});
 
 /******************************************************************************
  *                                   EXPORT                                   *
  ******************************************************************************/
 
-export default SettingsNavigator;
+export default memo(SettingsScreen);

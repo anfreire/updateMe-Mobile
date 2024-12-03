@@ -1,5 +1,5 @@
 import React, {memo, useCallback, useEffect, useMemo} from 'react';
-import {useWindowDimensions} from 'react-native';
+import {StyleSheet, useWindowDimensions} from 'react-native';
 import {Button, Dialog} from 'react-native-paper';
 import {Share} from 'react-native';
 import {useDialogs} from '@/stores/runtime/dialogs';
@@ -80,7 +80,7 @@ const ShareDialog = () => {
   return (
     <Dialog visible onDismiss={closeDialog}>
       <Dialog.Title>{labels.title}</Dialog.Title>
-      <Dialog.Content className="flex justify-center items-center my-5 gap-5">
+      <Dialog.Content style={styles.dialogContent}>
         <FastImage
           source={QRCODE_RELEASES}
           resizeMode="contain"
@@ -96,6 +96,20 @@ const ShareDialog = () => {
     </Dialog>
   );
 };
+
+/******************************************************************************
+ *                                   STYLES                                   *
+ ******************************************************************************/
+
+const styles = StyleSheet.create({
+  dialogContent: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginVertical: 20,
+    gap: 20,
+  },
+});
 
 /******************************************************************************
  *                                   EXPORT                                   *

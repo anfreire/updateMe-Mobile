@@ -58,7 +58,6 @@ export type MultiIconType =
 
 interface MultiIconProps extends IconProps {
   type?: MultiIconType;
-  className?: string;
 }
 
 const MultiIcon = (props: MultiIconProps) => {

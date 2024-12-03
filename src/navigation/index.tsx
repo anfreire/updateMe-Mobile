@@ -45,7 +45,10 @@ const DRAWER_OPTIONS: DrawerNavigationOptions = {
   headerStyle: {
     height: 56,
   },
-};
+  headerLeftContainerStyle: {
+    overflow: 'hidden',
+  },
+} as const;
 
 const MAIN_STACK_SCREENS: MainStackScreen[] = [
   {

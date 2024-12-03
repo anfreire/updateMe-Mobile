@@ -131,3 +131,13 @@ export type AllPages =
 export type Page = Exclude<AllPages, `${string}-stack`>;
 
 export type Stack = Extract<AllPages, `${string}-stack`>;
+
+export type NestedScreenPage =
+  | HomeStackPage
+  | SettingsStackPage
+  | ToolsStackPage
+  | ProvidersStackPage;
+
+// export type useNavigateProps = Parameters<
+//   ReturnType<typeof useNavigation<MainStackNavigation>>['navigate']
+// >[0];

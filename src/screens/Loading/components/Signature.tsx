@@ -1,4 +1,5 @@
 import {interpolate, useTranslations} from '@/stores/persistent/translations';
+import {useTheme} from '@/theme';
 import React, {memo, useMemo} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 
@@ -14,6 +15,7 @@ const DEVELOPER_NAME = 'anfreire';
 
 const Signature = () => {
   const translations = useTranslations(state => state.translations);
+  const {schemedTheme} = useTheme();
 
   const label = useMemo(
     () => interpolate(translations['Developed by $1'], DEVELOPER_NAME),
@@ -21,10 +23,8 @@ const Signature = () => {
   );
 
   return (
-    <View className="absolute bottom-0 p-4 flex flex-col justify-center items-center opacity-40">
-      <Text className="text-primary" style={styles.font}>
-        {label}
-      </Text>
+    <View style={styles.container}>
+      <Text style={[styles.font, {color: schemedTheme.primary}]}>{label}</Text>
     </View>
   );
 };
@@ -34,6 +34,16 @@ const Signature = () => {
  ******************************************************************************/
 
 const styles = StyleSheet.create({
+  container: {
+    position: 'absolute',
+    bottom: 0,
+    padding: 16,
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    opacity: 0.4,
+  },
   font: {
     fontFamily: 'JetBrains Mono',
   },

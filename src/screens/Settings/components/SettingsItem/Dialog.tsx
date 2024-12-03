@@ -1,24 +1,19 @@
 import React, {memo, useCallback} from 'react';
 import {SettingsItemProps} from '.';
-import {SettingsScreenItemScreen} from '../../data';
-import {View} from 'react-native';
+import {useDialogs} from '@/stores/runtime/dialogs';
+import {SettingsScreenItemDialog} from '../../data';
 import {Style} from 'react-native-paper/lib/typescript/components/List/utils';
 import MultiIcon from '@/common/components/MultiIcon';
-import SettingsItemBase from './SettingsItemBase';
+import {StyleSheet, View} from 'react-native';
+import SettingsItemBase from './Base';
 
 /******************************************************************************
  *                                   UTILS                                    *
  ******************************************************************************/
 
-const rightItem = ({color, style}: {color: string; style?: Style}) => (
-  <View className="justify-center items-center">
-    <MultiIcon
-      color={color}
-      style={style}
-      size={20}
-      type="material-icons"
-      name="chevron-right"
-    />
+const rightItem = (props: {color: string; style?: Style}) => (
+  <View style={styles.iconWrapper}>
+    <MultiIcon {...props} size={20} name="open-in-app" />
   </View>
 );
 
@@ -26,26 +21,18 @@ const rightItem = ({color, style}: {color: string; style?: Style}) => (
  *                                 COMPONENT                                  *
  ******************************************************************************/
 
-interface SettingsItemScreenProps extends Omit<SettingsItemProps, 'item'> {
-  item: SettingsScreenItemScreen;
-}
-
-const SettingsItemScreen = ({
+const SettingsItemDialog = ({
   item,
   scrollToItem,
-  navigation,
-  route,
-}: SettingsItemScreenProps) => {
-  const onPress = useCallback(
-    () => navigation.navigate(item.data),
-    [item, navigation],
-  );
+}: SettingsItemProps<SettingsScreenItemDialog>) => {
+  const openDialog = useDialogs(state => state.openDialog);
+
+  const onPress = useCallback(() => openDialog(item.data), [item]);
 
   return (
     <SettingsItemBase
       item={item}
       scrollToItem={scrollToItem}
-      route={route}
       rightItem={rightItem}
       onPress={onPress}
     />
@@ -53,7 +40,18 @@ const SettingsItemScreen = ({
 };
 
 /******************************************************************************
+ *                                   STYLES                                   *
+ ******************************************************************************/
+
+const styles = StyleSheet.create({
+  iconWrapper: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+});
+
+/******************************************************************************
  *                                   EXPORT                                   *
  ******************************************************************************/
 
-export default memo(SettingsItemScreen);
+export default memo(SettingsItemDialog);

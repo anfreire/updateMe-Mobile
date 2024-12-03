@@ -1,5 +1,10 @@
 import React, {useMemo} from 'react';
-import {SafeAreaView, StatusBar, StatusBarStyle} from 'react-native';
+import {
+  SafeAreaView,
+  StatusBar,
+  StatusBarStyle,
+  StyleSheet,
+} from 'react-native';
 import Toast from './Toast';
 import Dialogs from './Dialogs';
 import {useTheme} from '@/theme';
@@ -13,7 +18,7 @@ import {Portal} from 'react-native-paper';
 type LayoutProps = React.PropsWithChildren;
 
 const Layout = ({children}: LayoutProps) => {
-  const {cssVars, colorScheme} = useTheme();
+  const {colorScheme} = useTheme();
   const {colors} = useReactNavigationTheme();
 
   const statusBarProps: {
@@ -30,7 +35,7 @@ const Layout = ({children}: LayoutProps) => {
   return (
     <>
       <StatusBar {...statusBarProps} />
-      <SafeAreaView className="flex-1" style={cssVars}>
+      <SafeAreaView style={styles.safeAreaView}>
         <Portal>
           <Toast />
           <Dialogs />
@@ -40,6 +45,16 @@ const Layout = ({children}: LayoutProps) => {
     </>
   );
 };
+
+/******************************************************************************
+ *                                   STYLES                                   *
+ ******************************************************************************/
+
+const styles = StyleSheet.create({
+  safeAreaView: {
+    flex: 1,
+  },
+});
 
 /******************************************************************************
  *                                   EXPORT                                   *
