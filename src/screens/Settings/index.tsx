@@ -2,10 +2,9 @@ import React, {memo} from 'react';
 import {useCurrPageEffect} from '@/common/hooks/useCurrPageEffect';
 import {useScrollTo} from '@/common/hooks/useScrollTo';
 import {SettingsScreenSection, SettingsScreenSections} from './data';
-import Animated from 'react-native-reanimated';
 import SettingsSection from './components/SettingsSection';
 import {Page} from '@/navigation/types';
-import {StyleSheet, View} from 'react-native';
+import {ScrollView} from 'react-native';
 
 /******************************************************************************
  *                                 CONSTANTS                                  *
@@ -23,11 +22,7 @@ const SettingsScreen = () => {
   useCurrPageEffect(CURR_PAGE);
 
   return (
-    <Animated.ScrollView ref={scrollViewRef} style={styles.scrollView}>
-      <View
-        // eslint-disable-next-line react-native/no-inline-styles
-        style={{height: 1000}}
-      />
+    <ScrollView ref={scrollViewRef}>
       {SettingsScreenSections.map((section: SettingsScreenSection) => (
         <SettingsSection
           key={section.title}
@@ -35,19 +30,9 @@ const SettingsScreen = () => {
           scrollToItem={scrollToItem}
         />
       ))}
-    </Animated.ScrollView>
+    </ScrollView>
   );
 };
-
-/******************************************************************************
- *                                   STYLES                                   *
- ******************************************************************************/
-
-const styles = StyleSheet.create({
-  scrollView: {
-    paddingTop: 0,
-  },
-});
 
 /******************************************************************************
  *                                   EXPORT                                   *

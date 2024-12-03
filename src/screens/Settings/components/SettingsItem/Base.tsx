@@ -1,10 +1,4 @@
-import React, {
-  memo,
-  useCallback,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-} from 'react';
+import React, {memo, useCallback, useEffect, useMemo, useRef} from 'react';
 import {List} from 'react-native-paper';
 import Animated from 'react-native-reanimated';
 import {useTranslations} from '@/stores/persistent/translations';
@@ -33,7 +27,7 @@ const SettingsItemBase = ({
   rightItem,
   onPress,
 }: SettingsItemBaseProps) => {
-  const animatedListItemRef = useRef<View>(null);
+  const itemRef = useRef<View>(null);
   const translations = useTranslations(state => state.translations);
   const {pulsingStyles, startPulsing, cancelPulsing} = usePulsing();
   const {params} = useRoute<MainStackRoute>();
@@ -55,10 +49,10 @@ const SettingsItemBase = ({
     [item.icon],
   );
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     console.log(params);
     if (
-      !animatedListItemRef.current ||
+      !itemRef.current ||
       !params ||
       !('section' in params) ||
       !('item' in params) ||
@@ -67,8 +61,8 @@ const SettingsItemBase = ({
     ) {
       return;
     }
+    scrollToItem(itemRef);
     startPulsing();
-    scrollToItem(animatedListItemRef);
 
     return () => {
       cancelPulsing();
@@ -84,7 +78,7 @@ const SettingsItemBase = ({
 
   return (
     <AnimatedListItem
-      ref={animatedListItemRef}
+      ref={itemRef}
       title={labels.title}
       description={labels.description}
       right={rightItem}

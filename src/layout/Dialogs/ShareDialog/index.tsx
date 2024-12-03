@@ -71,11 +71,6 @@ function useShareDialog() {
 
 const ShareDialog = () => {
   const {closeDialog, labels, imageSize, handleShare} = useShareDialog();
-  const openToast = useToast(state => state.openToast);
-
-  useEffect(() => {
-    openToast('hello');
-  }, []);
 
   return (
     <Dialog visible onDismiss={closeDialog}>

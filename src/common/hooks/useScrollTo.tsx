@@ -1,21 +1,5 @@
-import {useCallback} from 'react';
-import {useWindowDimensions, View} from 'react-native';
-import Animated, {
-  useSharedValue,
-  scrollTo as reanimatedScrollTo,
-  withTiming,
-  Easing,
-  useDerivedValue,
-  useAnimatedRef,
-} from 'react-native-reanimated';
-
-/******************************************************************************
- *                                 CONSTANTS                                  *
- ******************************************************************************/
-const TIMING_CONFIG = {
-  duration: 1600,
-  easing: Easing.bezier(0.4, 0, 0.2, 1),
-};
+import {useCallback, useRef} from 'react';
+import {ScrollView, useWindowDimensions, View} from 'react-native';
 
 /******************************************************************************
  *                                   UTILS                                    *
@@ -38,17 +22,8 @@ function getScrollY(
  ******************************************************************************/
 
 export function useScrollTo() {
-  const scrollViewRef = useAnimatedRef<Animated.ScrollView>();
-  const scrollY = useSharedValue(0);
+  const scrollViewRef = useRef<ScrollView>(null);
   const {height: screenHeight} = useWindowDimensions();
-
-  useDerivedValue(() => {
-    reanimatedScrollTo(scrollViewRef, 0, scrollY.value, true);
-  });
-
-  const scrollToPos = useCallback((y: number) => {
-    scrollY.value = withTiming(y, TIMING_CONFIG);
-  }, []);
 
   const scrollToItem = useCallback(
     (itemRef: React.RefObject<View>) => {
@@ -57,22 +32,22 @@ export function useScrollTo() {
       }
 
       itemRef.current.measureLayout(
-        scrollViewRef.current!.getInnerViewNode().getNativeRef(),
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        scrollViewRef.current as any,
         (_, top, __, height) => {
-          console.log('top', top);
-          scrollToPos(
-            getScrollY(
+          scrollViewRef.current!.scrollTo({
+            y: getScrollY(
               screenHeight,
               scrollViewRef.current!.getInnerViewNode().height,
               top,
               height,
             ),
-          );
+          });
         },
       );
     },
-    [screenHeight, scrollToPos],
+    [screenHeight],
   );
 
-  return {scrollViewRef, scrollToItem, scrollToPos};
+  return {scrollViewRef, scrollToItem};
 }
