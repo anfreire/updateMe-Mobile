@@ -44,6 +44,11 @@ const TRANSLATIONS = [
   'Provider',
   'Tap on the middle circle to test the color',
   'Use System',
+  'Scan files with VirusTotal for threats',
+  'Generate the SHA-256 hash of a file',
+  'Build and test new providers',
+  'Provider Studio',
+  'Help',
 ] as const;
 
 const DEFAULT_TRANSLATIONS: Record<Translation, string> = Object.fromEntries(

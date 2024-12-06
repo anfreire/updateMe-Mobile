@@ -1,9 +1,11 @@
-import {Page} from '@/navigation';
+import {NestedScreenPage} from '@/navigation/types';
 import {create} from 'zustand';
 
 /******************************************************************************
  *                                   TYPES                                    *
  ******************************************************************************/
+
+export type CurrPage = NestedScreenPage | 'loading';
 
 export interface SessionFlags extends Record<string, boolean> {}
 
@@ -22,13 +24,13 @@ const INITIAL_SESSION_TRACKERS: SessionTrackers = {} as const;
  ******************************************************************************/
 
 type useSessionState = {
-  currPage: Page;
+  currPage: CurrPage;
   flags: SessionFlags;
   trackers: SessionTrackers;
 };
 
 type useSessionActions = {
-  setCurrPage: (page: Page) => void;
+  setCurrPage: (page: CurrPage) => void;
   activateFlag: (key: keyof SessionFlags) => void;
   addTracker: (key: keyof SessionTrackers, value: string) => void;
 };

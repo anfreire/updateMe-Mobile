@@ -1,9 +1,9 @@
 import React, {memo, useMemo} from 'react';
 import {ActiveDialogType, useDialogs} from '@/stores/runtime/dialogs';
-import ShareDialog from './ShareDialog';
-import CustomDialog from './CustomDialog';
-import ColorSchemeDialog from './ColorSchemeDialog';
-import SourceColorDialog from './SourceColorDialog';
+import ShareDialog from './Share';
+import CustomDialog from './Custom';
+import ColorSchemeDialog from './ColorScheme';
+import SourceColorDialog from './SourceColor';
 
 /******************************************************************************
  *                                 CONSTANTS                                  *

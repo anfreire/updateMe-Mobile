@@ -8,7 +8,6 @@ import {
 import Toast from './Toast';
 import Dialogs from './Dialogs';
 import {useTheme} from '@/theme';
-import {useTheme as useReactNavigationTheme} from '@react-navigation/native';
 import {Portal} from 'react-native-paper';
 
 /******************************************************************************

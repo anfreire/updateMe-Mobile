@@ -24,16 +24,19 @@ const DEFAULT_STATE: Settings = {
 
 export interface Settings {
   appearance: {
-    sourceColor?: string;
+    sourceColor: string | undefined;
     colorScheme: 'system' | 'light' | 'dark';
   };
 }
 
 export type SettingsSection = keyof Settings;
 
-export type SettingsSectionItem<T extends SettingsSection> = {
-  [K in keyof Settings[T]]: K;
-}[keyof Settings[T]];
+export type SettingsSectionItem<T extends SettingsSection> = Exclude<
+  {
+    [K in keyof Settings[T]]: K;
+  }[keyof Settings[T]],
+  undefined
+>;
 
 export type SettingsSectionItemInferred = {
   [K in SettingsSection]: SettingsSectionItem<K>;

@@ -1,4 +1,4 @@
-import {MultiIconType} from '@/common/components/MultiIcon';
+import {useMultiIconProps} from '@/common/components/MultiIcon';
 import {SettingsStackPage} from '@/navigation/types';
 import {
   SettingsSection,
@@ -14,10 +14,7 @@ import {Dialog} from '@/stores/runtime/dialogs';
 interface SettingsScreenItemBase<T extends SettingsSection = SettingsSection> {
   title: Translation;
   description: Translation;
-  icon: {
-    name: string;
-    type?: MultiIconType;
-  };
+  icon: useMultiIconProps;
   section: T;
   item: SettingsSectionItem<T>;
 }

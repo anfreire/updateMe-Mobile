@@ -1,9 +1,9 @@
-import React, {ReactNode, useMemo} from 'react';
+import React, {useMemo} from 'react';
 import {
   createDrawerNavigator,
   DrawerNavigationOptions,
 } from '@react-navigation/drawer';
-import {buildMultiIcon, MultiIconType} from '@/common/components/MultiIcon';
+import {buildMultiIcon, useMultiIconProps} from '@/common/components/MultiIcon';
 import {Translation, useTranslations} from '@/stores/persistent/translations';
 import {useSession} from '@/stores/runtime/session';
 import {MainStackPage, MainStackParams} from './types';
@@ -12,10 +12,12 @@ import DownloadsScreen from '@/screens/Downloads';
 import UpdatesScreen from '@/screens/Updates';
 import ProvidersStack from './stacks/Providers';
 import ToolsStack from './stacks/Tools';
-import SettingsNavigator from './stacks/Settings';
+import SettingsStack from './stacks/Settings';
+import HelpStack from './stacks/Help';
 import HomeLogo from './components/HomeLogo';
 import DrawerContent from './components/DrawerContent';
 import {useTheme} from '@/theme';
+import HeaderLeft from './components/HeaderLeft';
 
 /******************************************************************************
  *                                   TYPES                                    *
@@ -23,7 +25,7 @@ import {useTheme} from '@/theme';
 
 export interface DrawerItemBase {
   title: Translation;
-  icon: {name: string; type?: MultiIconType};
+  icon: useMultiIconProps;
 }
 
 export interface MainStackScreen extends DrawerItemBase {
@@ -31,7 +33,7 @@ export interface MainStackScreen extends DrawerItemBase {
   component:
     | React.ComponentType
     | React.MemoExoticComponent<React.ComponentType>;
-  headerTitle?: () => ReactNode;
+  headerTitle?: () => React.ReactNode;
 }
 
 /******************************************************************************
@@ -39,17 +41,6 @@ export interface MainStackScreen extends DrawerItemBase {
  ******************************************************************************/
 
 const INITIAL_ROUTE: MainStackPage = 'home-stack' as const;
-
-const DRAWER_OPTIONS: DrawerNavigationOptions = {
-  drawerType: 'slide',
-  headerTitleAlign: 'center',
-  headerStyle: {
-    height: 56,
-  },
-  headerLeftContainerStyle: {
-    overflow: 'hidden',
-  },
-} as const;
 
 const MAIN_STACK_SCREENS: MainStackScreen[] = [
   {
@@ -87,7 +78,13 @@ const MAIN_STACK_SCREENS: MainStackScreen[] = [
     name: 'settings-stack',
     title: 'Settings',
     icon: {name: 'cog'},
-    component: SettingsNavigator,
+    component: SettingsStack,
+  },
+  {
+    name: 'help-stack',
+    title: 'Help',
+    icon: {name: 'help-circle'},
+    component: HelpStack,
   },
 ] as const;
 
@@ -102,30 +99,30 @@ const MainStack = () => {
   const translations = useTranslations(state => state.translations);
   const currPage = useSession(state => state.currPage);
 
-  const drawerOptions: DrawerNavigationOptions = useMemo(
-    () => ({
+  const drawerOptions: DrawerNavigationOptions = useMemo(() => {
+    const backgroundColor =
+      colorScheme === 'dark'
+        ? schemedTheme.surfaceDim
+        : schemedTheme.surfaceBright;
+
+    return {
       drawerType: 'slide',
       headerTitleAlign: 'center',
       headerStyle: {
         height: 56,
-        backgroundColor:
-          colorScheme === 'dark'
-            ? schemedTheme.surfaceDim
-            : schemedTheme.surfaceBright,
+        backgroundColor,
       },
       headerLeftContainerStyle: {
         overflow: 'hidden',
       },
+      headerLeft: HeaderLeft,
       drawerStyle: {
-        backgroundColor:
-          colorScheme === 'dark'
-            ? schemedTheme.surfaceDim
-            : schemedTheme.surfaceBright,
+        backgroundColor,
         width: 240,
+        gap: 20,
       },
-    }),
-    [schemedTheme, colorScheme],
-  );
+    };
+  }, [colorScheme, schemedTheme]);
 
   const screenOptions: DrawerNavigationOptions[] = useMemo(
     () =>

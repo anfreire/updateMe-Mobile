@@ -30,21 +30,21 @@ type NavigateStackProps = {
 export type useNavigateProps = NavigateScreenProps | NavigateStackProps;
 
 export function useNavigate() {
-  const navigation = useNavigation<MainStackNavigation>();
+  const {navigate: nativeNavigate} = useNavigation<MainStackNavigation>();
 
   const navigate = useCallback(
     ({stack, screen, params}: NavigateScreenProps | NavigateStackProps) => {
       if (!stack) {
-        navigation.navigate(screen, params);
+        nativeNavigate(screen, params);
       } else {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        navigation.navigate(stack as any, {
+        nativeNavigate(stack as any, {
           screen,
           params,
         });
       }
     },
-    [navigation],
+    [nativeNavigate],
   );
 
   return navigate;

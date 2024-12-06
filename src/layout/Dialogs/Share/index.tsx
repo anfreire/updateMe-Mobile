@@ -1,4 +1,4 @@
-import React, {memo, useCallback, useEffect, useMemo} from 'react';
+import React, {memo, useCallback, useMemo} from 'react';
 import {StyleSheet, useWindowDimensions} from 'react-native';
 import {Button, Dialog} from 'react-native-paper';
 import {Share} from 'react-native';
@@ -6,7 +6,6 @@ import {useDialogs} from '@/stores/runtime/dialogs';
 import {APP_RELEASES_URL, APP_TITLE} from '@/../data';
 import FastImage from 'react-native-fast-image';
 import {interpolate, useTranslations} from '@/stores/persistent/translations';
-import {useToast} from '@/stores/runtime/toast';
 
 /******************************************************************************
  *                                 CONSTANTS                                  *
@@ -26,10 +25,10 @@ function getImageSize(windowWidth: number, windowHeight: number) {
 }
 
 /******************************************************************************
- *                                    HOOK                                    *
+ *                                 COMPONENT                                  *
  ******************************************************************************/
 
-function useShareDialog() {
+const ShareDialog = () => {
   const translations = useTranslations(state => state.translations);
   const {width, height} = useWindowDimensions();
   const closeDialog = useDialogs(state => state.closeDialog);
@@ -56,21 +55,6 @@ function useShareDialog() {
       {dialogTitle: title},
     );
   }, [translations]);
-
-  return {
-    closeDialog,
-    labels,
-    imageSize,
-    handleShare,
-  };
-}
-
-/******************************************************************************
- *                                 COMPONENT                                  *
- ******************************************************************************/
-
-const ShareDialog = () => {
-  const {closeDialog, labels, imageSize, handleShare} = useShareDialog();
 
   return (
     <Dialog visible onDismiss={closeDialog}>

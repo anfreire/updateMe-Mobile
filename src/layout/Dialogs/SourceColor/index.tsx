@@ -1,39 +1,40 @@
-import React, {
-  memo,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
-import {StyleSheet} from 'react-native';
+import React, {memo, useCallback, useEffect, useMemo, useRef} from 'react';
+import {Pressable, StyleSheet} from 'react-native';
 import {Button, Dialog, IconButton} from 'react-native-paper';
-import {ColorPicker, fromHsv, toHsv} from 'react-native-color-picker';
-import {HsvColor} from 'react-native-color-picker/dist/typeHelpers';
+import ColorPicker, {
+  HueCircular,
+  type returnedResults,
+} from 'reanimated-color-picker';
 import {useTheme} from '@/theme';
 import {useDialogs} from '@/stores/runtime/dialogs';
 import {useToast} from '@/stores/runtime/toast';
 import {useTranslations} from '@/stores/persistent/translations';
 import {Logger} from '@/stores/persistent/logs';
 import {useShallow} from 'zustand/shallow';
+import Animated, {
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from 'react-native-reanimated';
+
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 /******************************************************************************
- *                                    HOOK                                    *
+ *                                 COMPONENT                                  *
  ******************************************************************************/
 
-function useSourceColorPickerDialog() {
-  const {sourceColor, setSourceColor, resetSourceColor} = useTheme();
+const SourceColorDialog = () => {
+  const {schemedTheme, sourceColor, setSourceColor, resetSourceColor} =
+    useTheme();
   const initialSourceColor = useRef<string | null>(null);
   const closeDialog = useDialogs(state => state.closeDialog);
   const [openToast, closeToast] = useToast(
     useShallow(state => [state.openToast, state.closeToast]),
   );
   const translations = useTranslations(state => state.translations);
-  const [activeColor, setActiveColor] = useState<HsvColor>({
-    h: 0,
-    s: 0,
-    v: 0,
-  });
+  const selectedColor = useSharedValue(sourceColor);
+  const scale = useSharedValue(1);
 
   const labels = useMemo(
     () => ({
@@ -45,6 +46,36 @@ function useSourceColorPickerDialog() {
     }),
     [translations],
   );
+
+  const previewAnimatedStyles = useAnimatedStyle(
+    () => ({
+      backgroundColor: selectedColor.value,
+      transform: [{scale: scale.value}],
+    }),
+    [selectedColor],
+  );
+
+  const handleOnChange = useCallback((color: returnedResults) => {
+    'worklet';
+    selectedColor.value = color.hex;
+  }, []);
+
+  const handlePressIn = useCallback(() => {
+    'worklet';
+    scale.value = withTiming(0.975, {
+      duration: 100,
+      easing: Easing.linear,
+    });
+    setSourceColor(selectedColor.value);
+  }, [setSourceColor]);
+
+  const handlePressOut = useCallback(() => {
+    'worklet';
+    scale.value = withTiming(1, {
+      duration: 100,
+      easing: Easing.linear,
+    });
+  }, []);
 
   const handleClose = useCallback(() => {
     initialSourceColor.current = null;
@@ -75,46 +106,16 @@ function useSourceColorPickerDialog() {
   }, [handleClose, resetSourceColor]);
 
   const handleSave = useCallback(() => {
-    setSourceColor(fromHsv(activeColor));
+    setSourceColor(selectedColor.value);
     handleClose();
-  }, [activeColor, handleClose, setSourceColor]);
+  }, [handleClose, setSourceColor]);
 
   useEffect(() => {
     if (initialSourceColor.current === null) {
       initialSourceColor.current = sourceColor;
-      setActiveColor(toHsv(sourceColor));
+      selectedColor.value = sourceColor;
     }
   }, [sourceColor]);
-
-  return {
-    labels,
-    activeColor,
-    sourceColor,
-    setSourceColor,
-    setActiveColor,
-    handleInfoPress,
-    handleCancel,
-    handleUseSystem,
-    handleSave,
-  };
-}
-
-/******************************************************************************
- *                                 COMPONENT                                  *
- ******************************************************************************/
-
-const SourceColorDialog = () => {
-  const {
-    labels,
-    activeColor,
-    sourceColor,
-    setSourceColor,
-    setActiveColor,
-    handleInfoPress,
-    handleCancel,
-    handleUseSystem,
-    handleSave,
-  } = useSourceColorPickerDialog();
 
   return (
     <Dialog
@@ -130,14 +131,26 @@ const SourceColorDialog = () => {
       />
       <Dialog.Title>{labels.title}</Dialog.Title>
       <Dialog.Content style={styles.content}>
-        <ColorPicker
-          color={activeColor}
-          onColorSelected={setSourceColor}
-          defaultColor={sourceColor}
-          style={styles.colorPicker}
-          hideSliders
-          onColorChange={setActiveColor}
-        />
+        <ColorPicker value={selectedColor.value} onChange={handleOnChange}>
+          <HueCircular
+            containerStyle={[
+              {backgroundColor: schemedTheme.elevation.level3},
+              styles.hueCircularContainer,
+            ]}
+            style={styles.hueCircular}
+            thumbShape="circle"
+            sliderThickness={15}
+            thumbScaleAnimationValue={1.1}
+            thumbInnerStyle={styles.thumb}
+            thumbStyle={styles.thumb}
+            thumbSize={30}>
+            <AnimatedPressable
+              onPressIn={handlePressIn}
+              onPressOut={handlePressOut}
+              style={[styles.preview, previewAnimatedStyles]}
+            />
+          </HueCircular>
+        </ColorPicker>
       </Dialog.Content>
       <Dialog.Actions style={styles.actions}>
         <Button onPress={handleCancel}>{labels.cancel}</Button>
@@ -158,18 +171,33 @@ const styles = StyleSheet.create({
   },
   infoButton: {
     position: 'absolute',
-    top: -16,
-    right: 0,
+    top: -12,
+    right: 8,
     zIndex: 1000,
   },
   content: {
     alignItems: 'center',
     justifyContent: 'center',
     display: 'flex',
+    flexDirection: 'column',
+    marginVertical: 16,
+    position: 'relative',
   },
-  colorPicker: {
-    width: 300,
-    height: 300,
+  hueCircular: {
+    width: 275,
+    height: 275,
+  },
+  hueCircularContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  thumb: {
+    borderColor: 'transparent',
+  },
+  preview: {
+    width: 150,
+    height: 150,
+    borderRadius: 150,
   },
   actions: {
     justifyContent: 'space-around',

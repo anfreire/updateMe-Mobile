@@ -13,9 +13,10 @@ const NESTED_SCREEN_TO_TITLE: Record<
   settings: 'Settings',
   tools: 'Tools',
   providers: 'Providers',
-  analyze: 'File Analysis',
-  sha256: 'File Fingerprint',
-  sourceColor: 'Source Color',
+  fileAnalysis: 'File Analysis',
+  fileFingerprint: 'File Fingerprint',
+  providerStudio: 'Provider Studio',
+  help: 'Help',
   currApp: 'App', // TODO: Replace with actual app name
   currProvider: 'Provider', // TODO: Replace with actual provider name
 } as const;

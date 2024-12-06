@@ -3,6 +3,7 @@ import {
   SettingsSectionItem,
 } from '@/stores/persistent/settings';
 import {NavigationProp, RouteProp} from '@react-navigation/native';
+import {DrawerNavigationProp} from '@react-navigation/drawer';
 
 /******************************************************************************
  *                                 HOME STACK                                 *
@@ -38,17 +39,31 @@ export type ProvidersStackRoute = RouteProp<ProvidersStackParams>;
  *                                TOOLS STACK                                 *
  ******************************************************************************/
 
-export type ToolsStackPage = 'tools' | 'analyze' | 'sha256';
+export type ToolsStackPage =
+  | 'tools'
+  | 'fileAnalysis'
+  | 'fileFingerprint'
+  | 'providerStudio';
 
 export type ToolsStackParams = {
-  tools: undefined | {toolPage: Exclude<ToolsStackPage, 'tools'>};
-  analyze: undefined;
-  sha256: undefined;
+  tools: undefined | {item: Exclude<ToolsStackPage, 'tools'>};
+  fileAnalysis: undefined | {filePath: string};
+  fileFingerprint: undefined | {filePath: string};
+  providerStudio: undefined;
 };
 
 export type ToolsStackNavigation = NavigationProp<ToolsStackParams>;
 
 export type ToolsStackRoute = RouteProp<ToolsStackParams>;
+
+/******************************************************************************
+ *                                 HELP STACK                                 *
+ ******************************************************************************/
+export type HelpStackPage = 'help';
+
+export type HelpStackParams = {
+  help: undefined | {item: Exclude<HelpStackPage, 'help'>};
+};
 
 /******************************************************************************
  *                               SETTINGS STACK                               *
@@ -79,40 +94,29 @@ export type MainStackPage =
   | 'home-stack'
   | 'providers-stack'
   | 'tools-stack'
+  | 'help-stack'
   | 'settings-stack'
   | 'downloads'
   | 'updates';
 
+type StackParams<P extends string, T extends Record<P, object | undefined>> = {
+  [K in P]: {
+    screen: K;
+    params: T[K];
+  };
+}[P];
+
 export type MainStackParams = {
-  'home-stack': {
-    [K in HomeStackPage]: {
-      screen: K;
-      params: HomeStackParams[K];
-    };
-  }[HomeStackPage];
-  'providers-stack': {
-    [K in ProvidersStackPage]: {
-      screen: K;
-      params: ProvidersStackParams[K];
-    };
-  }[ProvidersStackPage];
-  'tools-stack': {
-    [K in ToolsStackPage]: {
-      screen: K;
-      params: ToolsStackParams[K];
-    };
-  }[ToolsStackPage];
-  'settings-stack': {
-    [K in SettingsStackPage]: {
-      screen: K;
-      params: SettingsStackParams[K];
-    };
-  }[SettingsStackPage];
+  'home-stack': StackParams<HomeStackPage, HomeStackParams>;
+  'providers-stack': StackParams<ProvidersStackPage, ProvidersStackParams>;
+  'tools-stack': StackParams<ToolsStackPage, ToolsStackParams>;
+  'help-stack': StackParams<HelpStackPage, HelpStackParams>;
+  'settings-stack': StackParams<SettingsStackPage, SettingsStackParams>;
   downloads: undefined;
   updates: undefined;
 };
 
-export type MainStackNavigation = NavigationProp<MainStackParams>;
+export type MainStackNavigation = DrawerNavigationProp<MainStackParams>;
 
 export type MainStackRoute = RouteProp<MainStackParams>;
 
@@ -124,6 +128,7 @@ export type AllPages =
   | HomeStackPage
   | ProvidersStackPage
   | ToolsStackPage
+  | HelpStackPage
   | SettingsStackPage
   | MainStackPage;
 
@@ -131,12 +136,4 @@ export type Page = Exclude<AllPages, `${string}-stack`>;
 
 export type Stack = Extract<AllPages, `${string}-stack`>;
 
-export type NestedScreenPage =
-  | HomeStackPage
-  | SettingsStackPage
-  | ToolsStackPage
-  | ProvidersStackPage;
-
-// export type useNavigateProps = Parameters<
-//   ReturnType<typeof useNavigation<MainStackNavigation>>['navigate']
-// >[0];
+export type NestedScreenPage = Exclude<AllPages, MainStackPage>;

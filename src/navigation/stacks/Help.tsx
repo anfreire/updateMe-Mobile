@@ -1,38 +1,39 @@
 import React from 'react';
-import {View} from 'react-native';
-import {SettingsScreenItem} from '../../data';
-import SettingsItemCheckbox from './Checkbox';
-import SettingsItemDialog from './Dialog';
-import SettingsItemScreen from './Screen';
+import {
+  createNativeStackNavigator,
+  NativeStackNavigationOptions,
+} from '@react-navigation/native-stack';
+import {HelpStackPage, HelpStackParams} from '@/navigation/types';
+import HelpScreen from '@/screens/Help';
 
 /******************************************************************************
  *                                 CONSTANTS                                  *
  ******************************************************************************/
 
-const ITEM_TYPE_TO_COMPONENT = {
-  checkbox: SettingsItemCheckbox,
-  dialog: SettingsItemDialog,
-  screen: SettingsItemScreen,
+const INITIAL_ROUTE: HelpStackPage = 'help' as const;
+
+const SCREEN_OPTIONS: NativeStackNavigationOptions = {
+  headerShown: false,
 } as const;
 
 /******************************************************************************
  *                                 COMPONENT                                  *
  ******************************************************************************/
 
-export interface SettingsItemProps<
-  T extends SettingsScreenItem = SettingsScreenItem,
-> {
-  item: T;
-  scrollToItem: (itemRef: React.RefObject<View>) => void;
-}
+const Stack = createNativeStackNavigator<HelpStackParams>();
 
-const SettingsItem = ({item, scrollToItem}: SettingsItemProps) => {
-  const Component = ITEM_TYPE_TO_COMPONENT[item.type];
-  return <Component item={item as never} scrollToItem={scrollToItem} />;
+const ProvidersStack = () => {
+  return (
+    <Stack.Navigator
+      initialRouteName={INITIAL_ROUTE}
+      screenOptions={SCREEN_OPTIONS}>
+      <Stack.Screen name="help" navigationKey="help" component={HelpScreen} />
+    </Stack.Navigator>
+  );
 };
 
 /******************************************************************************
  *                                   EXPORT                                   *
  ******************************************************************************/
 
-export default React.memo(SettingsItem);
+export default ProvidersStack;

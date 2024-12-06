@@ -32,10 +32,10 @@
     "expo-notifications": "~0.29.8",
     "fast-equals": "^5.0.1",
     "react": "18.3.1",
+    "react-content-loader": "^7.0.2",
     "react-native": "0.76.3",
     "react-native-background-fetch": "^4.2.5",
     "react-native-blob-util": "^0.19.11",
-    "react-native-color-picker": "^0.6.0",
     "react-native-document-picker": "^9.3.1",
     "react-native-draggable-flatlist": "^4.0.1",
     "react-native-fast-image": "^8.6.3",
@@ -49,6 +49,7 @@
     "react-native-share": "^11.1.0",
     "react-native-svg": "^15.9.0",
     "react-native-vector-icons": "^10.2.0",
+    "reanimated-color-picker": "^3.0.6",
     "zustand": "^5.0.1"
   },
   "devDependencies": {

@@ -5,8 +5,9 @@ import {
 } from '@react-navigation/native-stack';
 import {ToolsStackPage, ToolsStackParams} from '@/navigation/types';
 import ToolsScreen from '@/screens/Tools';
-import AnalyzeScreen from '@/screens/Tools/screens/Analyze';
-import Sha256Screen from '@/screens/Tools/screens/Sha256';
+import FileAnalysisScreen from '@/screens/Tools/screens/FileAnalysis';
+import FileFingerprintScreen from '@/screens/Tools/screens/FileFingerprint';
+import ProviderStudioScreen from '@/screens/Tools/screens/ProviderStudio';
 
 /******************************************************************************
  *                                 CONSTANTS                                  *
@@ -35,14 +36,19 @@ const ToolsStack = () => {
         component={ToolsScreen}
       />
       <Stack.Screen
-        name="analyze"
-        navigationKey="analyze"
-        component={AnalyzeScreen}
+        name="providerStudio"
+        navigationKey="providerStudio"
+        component={ProviderStudioScreen}
       />
       <Stack.Screen
-        name="sha256"
-        navigationKey="sha256"
-        component={Sha256Screen}
+        name="fileAnalysis"
+        navigationKey="fileAnalysis"
+        component={FileAnalysisScreen}
+      />
+      <Stack.Screen
+        name="fileFingerprint"
+        navigationKey="fileFingerprint"
+        component={FileFingerprintScreen}
       />
     </Stack.Navigator>
   );

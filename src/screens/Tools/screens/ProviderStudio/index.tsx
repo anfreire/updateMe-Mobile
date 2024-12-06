@@ -1,27 +1,18 @@
 import React, {memo} from 'react';
-
-import {Page, PageProps} from '@/navigation';
-
 import {useCurrPageEffect} from '@/common/hooks/useCurrPageEffect';
+import {Page} from '@/navigation/types';
 
 /******************************************************************************
  *                                 CONSTANTS                                  *
  ******************************************************************************/
 
-const CURR_PAGE: Page = 'analyze';
+const CURR_PAGE: Page = 'providerStudio';
 
 /******************************************************************************
  *                                 COMPONENT                                  *
  ******************************************************************************/
 
-type AnalyzeScreenProps = PageProps<typeof CURR_PAGE>;
-
-const AnalyzeScreen = ({
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  navigation,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  route,
-}: AnalyzeScreenProps) => {
+const ProviderStudioScreen = () => {
   useCurrPageEffect(CURR_PAGE);
   return <></>;
 };
@@ -30,4 +21,4 @@ const AnalyzeScreen = ({
  *                                   EXPORT                                   *
  ******************************************************************************/
 
-export default memo(AnalyzeScreen);
+export default memo(ProviderStudioScreen);

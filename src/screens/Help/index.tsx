@@ -1,27 +1,18 @@
 import React, {memo} from 'react';
-
-import {Page, PageProps} from '@/navigation';
-
 import {useCurrPageEffect} from '@/common/hooks/useCurrPageEffect';
+import {Page} from '@/navigation/types';
 
 /******************************************************************************
  *                                 CONSTANTS                                  *
  ******************************************************************************/
 
-const CURR_PAGE: Page = 'sha256';
+const CURR_PAGE: Page = 'help';
 
 /******************************************************************************
  *                                 COMPONENT                                  *
  ******************************************************************************/
 
-type Sha256ScreenProps = PageProps<typeof CURR_PAGE>;
-
-const Sha256Screen = ({
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  navigation,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  route,
-}: Sha256ScreenProps) => {
+const HelpScreen = () => {
   useCurrPageEffect(CURR_PAGE);
   return <></>;
 };
@@ -30,4 +21,4 @@ const Sha256Screen = ({
  *                                   EXPORT                                   *
  ******************************************************************************/
 
-export default memo(Sha256Screen);
+export default memo(HelpScreen);

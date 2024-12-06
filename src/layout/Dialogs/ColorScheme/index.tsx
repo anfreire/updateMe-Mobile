@@ -3,11 +3,11 @@ import {Button, Dialog, SegmentedButtons} from 'react-native-paper';
 import {SavedColorSchemeType, useTheme} from '@/theme';
 import {Translation, useTranslations} from '@/stores/persistent/translations';
 import {IconSource} from 'react-native-paper/lib/typescript/components/Icon';
-import MultiIcon from '@/common/components/MultiIcon';
+import {buildMultiIcon} from '@/common/components/MultiIcon';
 import {useSettings} from '@/stores/persistent/settings';
 import {useDialogs} from '@/stores/runtime/dialogs';
 import {Logger} from '@/stores/persistent/logs';
-import { StyleSheet } from 'react-native';
+import {StyleSheet} from 'react-native';
 
 /******************************************************************************
  *                                 CONSTANTS                                  *
@@ -21,29 +21,25 @@ const colorSchemeOptions: {
   {
     label: 'System',
     value: 'system',
-    icon: props => <MultiIcon {...props} type="material-icons" name="memory" />,
+    icon: buildMultiIcon('memory', 'material-icons'),
   },
   {
     label: 'Light',
     value: 'light',
-    icon: props => (
-      <MultiIcon {...props} type="material-icons" name="light-mode" />
-    ),
+    icon: buildMultiIcon('light-mode', 'material-icons'),
   },
   {
     label: 'Dark',
     value: 'dark',
-    icon: props => (
-      <MultiIcon {...props} type="material-icons" name="dark-mode" />
-    ),
+    icon: buildMultiIcon('dark-mode', 'material-icons'),
   },
-];
+] as const;
 
 /******************************************************************************
- *                                    HOOK                                    *
+ *                                 COMPONENT                                  *
  ******************************************************************************/
 
-function useColorSchemePickerDialog() {
+const ColorSchemeDialog = () => {
   const colorScheme = useSettings(
     state => state.settings.appearance.colorScheme,
   );
@@ -89,31 +85,6 @@ function useColorSchemePickerDialog() {
     setColorScheme(initialColorScheme.current);
     closeDialog();
   }, [setColorScheme]);
-
-  return {
-    colorScheme,
-    labels,
-    translatedColorSchemeOptions,
-    handleColorSchemeChange,
-    handleRevert,
-    closeDialog,
-  };
-}
-
-/******************************************************************************
- *                                 COMPONENT                                  *
- ******************************************************************************/
-
-const ColorSchemePickerDialog = () => {
-  const {
-    colorScheme,
-    labels,
-    translatedColorSchemeOptions,
-    handleColorSchemeChange,
-    handleRevert,
-    closeDialog,
-  } = useColorSchemePickerDialog();
-
   return (
     <Dialog
       visible
@@ -143,10 +114,10 @@ const ColorSchemePickerDialog = () => {
 
 const styles = StyleSheet.create({
   segmentedButtons: {
-    marginVertical: 15,
+    marginVertical: 20,
   },
   dialogActions: {
-    justifyContent: 'space-between',
+    justifyContent: 'space-around',
   },
 });
 
@@ -154,4 +125,4 @@ const styles = StyleSheet.create({
  *                                   EXPORT                                   *
  ******************************************************************************/
 
-export default React.memo(ColorSchemePickerDialog);
+export default React.memo(ColorSchemeDialog);
