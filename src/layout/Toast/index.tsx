@@ -31,10 +31,10 @@ const TOAST_COLORS = {
 type ToastType = keyof typeof TOAST_COLORS;
 
 /******************************************************************************
- *                                    HOOK                                    *
+ *                                 COMPONENT                                  *
  ******************************************************************************/
 
-function useToastComponent() {
+const Toast = () => {
   const [activeToast, closeToast] = useToast(
     useShallow(state => [state.activeToast, state.closeToast]),
   );
@@ -49,16 +49,6 @@ function useToastComponent() {
       }),
     };
   }, [activeToast, colorScheme]);
-
-  return {activeToast, closeToast, snackbarStyle};
-}
-
-/******************************************************************************
- *                                 COMPONENT                                  *
- ******************************************************************************/
-
-const Toast = () => {
-  const {activeToast, closeToast, snackbarStyle} = useToastComponent();
 
   if (!activeToast) {
     return null;

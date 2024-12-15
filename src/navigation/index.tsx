@@ -7,9 +7,10 @@ import {buildMultiIcon, useMultiIconProps} from '@/common/components/MultiIcon';
 import {Translation, useTranslations} from '@/stores/persistent/translations';
 import {useSession} from '@/stores/runtime/session';
 import {MainStackPage, MainStackParams} from './types';
-import HomeStack from './stacks/Home';
 import DownloadsScreen from '@/screens/Downloads';
 import UpdatesScreen from '@/screens/Updates';
+import HomeScreen from '@/screens/Home';
+import CurrAppScreen from '@/screens/CurrApp';
 import ProvidersStack from './stacks/Providers';
 import ToolsStack from './stacks/Tools';
 import SettingsStack from './stacks/Settings';
@@ -28,28 +29,43 @@ export interface DrawerItemBase {
   icon: useMultiIconProps;
 }
 
-export interface MainStackScreen extends DrawerItemBase {
+export interface BaseMainStackScreen {
   name: MainStackPage;
   component:
-    | React.ComponentType
-    | React.MemoExoticComponent<React.ComponentType>;
-  headerTitle?: () => React.ReactNode;
+    | React.MemoExoticComponent<React.ComponentType>
+    | React.ComponentType;
+}
+
+export type StaticMainStackScreen = DrawerItemBase & BaseMainStackScreen;
+
+export interface DynamicMainStackScreen extends StaticMainStackScreen {
+  headerTitle: () => React.ReactNode;
 }
 
 /******************************************************************************
  *                                 CONSTANTS                                  *
  ******************************************************************************/
 
-const INITIAL_ROUTE: MainStackPage = 'home-stack' as const;
+const INITIAL_ROUTE: MainStackPage = 'home' as const;
 
-const MAIN_STACK_SCREENS: MainStackScreen[] = [
+const DYNAMIC_STACK_SCREENS: DynamicMainStackScreen[] = [
   {
-    name: 'home-stack',
+    name: 'home',
     title: 'Home',
     icon: {name: 'home'},
-    component: HomeStack,
+    component: HomeScreen,
     headerTitle: () => <HomeLogo />,
   },
+];
+
+const HIDDEN_STACK_SCREENS: BaseMainStackScreen[] = [
+  {
+    name: 'currApp',
+    component: CurrAppScreen,
+  },
+];
+
+const STATIC_STACK_SCREENS: StaticMainStackScreen[] = [
   {
     name: 'downloads',
     title: 'Downloads',
@@ -88,6 +104,12 @@ const MAIN_STACK_SCREENS: MainStackScreen[] = [
   },
 ] as const;
 
+const hiddenScreenOptions: DrawerNavigationOptions[] = HIDDEN_STACK_SCREENS.map(
+  () => ({
+    drawerItemStyle: {display: 'none'},
+  }),
+);
+
 /******************************************************************************
  *                                 COMPONENT                                  *
  ******************************************************************************/
@@ -121,21 +143,28 @@ const MainStack = () => {
         width: 240,
         gap: 20,
       },
+      unmountInactiveRoutes: true,
     };
   }, [colorScheme, schemedTheme]);
 
-  const screenOptions: DrawerNavigationOptions[] = useMemo(
+  const dynamicScreenOptions: DrawerNavigationOptions[] = useMemo(
     () =>
-      MAIN_STACK_SCREENS.map(screen => ({
+      DYNAMIC_STACK_SCREENS.map(screen => ({
         title: translations[screen.title],
         drawerIcon: buildMultiIcon(screen.icon.name, screen.icon.type),
         headerTitle: screen.headerTitle,
-        drawerItemStyle:
-          screen.name === 'home-stack' && currPage === 'home'
-            ? {display: 'none'}
-            : {},
+        drawerItemStyle: screen.name === currPage ? {display: 'none'} : {},
       })),
     [translations, currPage],
+  );
+
+  const staticScreenOptions: DrawerNavigationOptions[] = useMemo(
+    () =>
+      STATIC_STACK_SCREENS.map(screen => ({
+        title: translations[screen.title],
+        drawerIcon: buildMultiIcon(screen.icon.name, screen.icon.type),
+      })),
+    [translations],
   );
 
   return (
@@ -143,13 +172,31 @@ const MainStack = () => {
       initialRouteName={INITIAL_ROUTE}
       drawerContent={DrawerContent}
       screenOptions={drawerOptions}>
-      {MAIN_STACK_SCREENS.map((screem, i) => (
+      {DYNAMIC_STACK_SCREENS.map((screen, i) => (
         <Drawer.Screen
-          key={i}
-          name={screem.name}
-          navigationKey={screem.name}
-          options={screenOptions[i]}
-          component={screem.component}
+          key={screen.name}
+          name={screen.name}
+          navigationKey={screen.name}
+          options={dynamicScreenOptions[i]}
+          component={screen.component}
+        />
+      ))}
+      {HIDDEN_STACK_SCREENS.map((screen, i) => (
+        <Drawer.Screen
+          key={screen.name}
+          name={screen.name}
+          navigationKey={screen.name}
+          options={hiddenScreenOptions[i]}
+          component={screen.component}
+        />
+      ))}
+      {STATIC_STACK_SCREENS.map((screen, i) => (
+        <Drawer.Screen
+          key={screen.name}
+          name={screen.name}
+          navigationKey={screen.name}
+          options={staticScreenOptions[i]}
+          component={screen.component}
         />
       ))}
     </Drawer.Navigator>

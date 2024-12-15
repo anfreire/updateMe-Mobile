@@ -49,6 +49,11 @@ const TRANSLATIONS = [
   'Build and test new providers',
   'Provider Studio',
   'Help',
+  'Pick a file',
+  'File path',
+  'No file selected',
+  'Failed to pick file',
+  'Failed to calculate file hash',
 ] as const;
 
 const DEFAULT_TRANSLATIONS: Record<Translation, string> = Object.fromEntries(

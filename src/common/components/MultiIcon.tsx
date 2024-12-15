@@ -100,7 +100,7 @@ const ICON_TYPE_TO_COMPONENT: Record<
 interface MultiIconProps<T extends MultiIconType = MultiIconType>
   extends Omit<IconProps, 'name'> {
   name: IconName<T>;
-  type?: MultiIconType;
+  type?: T;
 }
 
 const MultiIcon = (props: MultiIconProps) => {
@@ -135,9 +135,7 @@ export function buildMultiIcon<T extends MultiIconType | undefined = undefined>(
  *                                    HOOK                                    *
  ******************************************************************************/
 
-export interface useMultiIconProps<
-  T extends MultiIconType | undefined = undefined,
-> {
+export interface useMultiIconProps<T extends MultiIconType = MultiIconType> {
   type?: T;
   name: IconName<T>;
 }

@@ -19,7 +19,7 @@ function App(): React.JSX.Element {
   useEffect(() => {
     const timeot = setTimeout(() => {
       setIsLoading(false);
-    }, 500);
+    }, 100);
     return () => clearTimeout(timeot);
   }, []);
 

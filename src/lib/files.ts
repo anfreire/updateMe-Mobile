@@ -53,12 +53,32 @@ export async function fileExists(path: string): Promise<boolean> {
 
 export async function getFileInfo(
   path: string,
-): Promise<ReactNativeBlobUtilStat> {
-  return await ReactNativeBlobUtil.fs.stat(makeAbsolutePath(path));
+): Promise<ReactNativeBlobUtilStat | null> {
+  try {
+    return await ReactNativeBlobUtil.fs.stat(makeAbsolutePath(path));
+  } catch (err) {
+    Logger.error(
+      'FilesModule',
+      'Get File Info',
+      `Failed to get info for ${path}`,
+      err,
+    );
+    return null;
+  }
 }
 
-export async function getFileHash(path: string): Promise<string> {
-  return await ReactNativeBlobUtil.fs.hash(makeAbsolutePath(path), 'sha256');
+export async function getFileHash(path: string): Promise<string | null> {
+  try {
+    return await ReactNativeBlobUtil.fs.hash(makeAbsolutePath(path), 'sha256');
+  } catch (err) {
+    Logger.error(
+      'FilesModule',
+      'Get File Hash',
+      `Failed to get hash for ${path}`,
+      err,
+    );
+    return null;
+  }
 }
 
 export async function listDir(): Promise<string[]> {
