@@ -105,7 +105,6 @@ const ScrollableScrollView = forwardRef<
   const handleOnScroll = useCallback(
     (event: NativeSyntheticEvent<NativeScrollEvent>) => {
       monitoredScrollY.value = event.nativeEvent.contentOffset.y;
-      console.log('monitoredScrollY', monitoredScrollY.value);
     },
     [],
   );
