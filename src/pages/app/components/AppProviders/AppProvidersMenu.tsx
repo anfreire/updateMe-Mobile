@@ -148,7 +148,7 @@ const AppProvidersMenu = ({
         editable={false}
         mode="outlined"
         numberOfLines={1}
-        placeholder={currApp.defaultProviderTitle}
+        value={currApp.defaultProviderTitle}
         style={styles.textInput}
         dense
         contentStyle={styles.textInputContent}
@@ -188,20 +188,21 @@ const AppProvidersMenu = ({
 const styles = StyleSheet.create({
   container: {
     width: '100%',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexDirection: 'column',
-    gap: 7,
+    alignItems: 'flex-start',
+    gap: 12,
   },
   textInput: {
-    width: 200,
+    width: '100%',
+    minWidth: '100%',
+    flexShrink: 0,
   },
   textInputContent: {
-    fontSize: 14,
+    paddingRight: 12,
+    textAlign: 'left',
   },
   menuItemTitle: {
     fontSize: 14,
+    fontWeight: '500',
   },
 });
 

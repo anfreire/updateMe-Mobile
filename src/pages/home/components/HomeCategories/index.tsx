@@ -1,6 +1,7 @@
 import * as React from 'react';
 import {useRefreshControlBuilder} from '@/hooks/useRefreshControlBuilder';
 import {FlashList} from '@shopify/flash-list';
+import {StyleSheet, View} from 'react-native';
 import HomeCategoriesSection from './HomeCategoriesSection';
 import {Categories, useCategories} from '@/states/fetched/categories';
 import {useIndex} from '@/states/fetched';
@@ -75,11 +76,23 @@ const HomeCategories = ({
     <FlashList
       data={Object.keys(filteredCategories)}
       renderItem={renderItem}
-      estimatedItemSize={124}
+      estimatedItemSize={60}
       refreshControl={refreshControl}
+      contentContainerStyle={styles.listContent}
+      showsVerticalScrollIndicator={false}
     />
   );
 };
+
+/******************************************************************************
+ *                                   STYLES                                   *
+ ******************************************************************************/
+
+const styles = StyleSheet.create({
+  listContent: {
+    paddingBottom: 20,
+  },
+});
 
 /******************************************************************************
  *                                   EXPORT                                   *

@@ -22,6 +22,7 @@ import {
   PopulatedDefaultProviders,
   useProviders,
 } from '@/states/computed/providers';
+import {useTheme} from '@/theme';
 
 /******************************************************************************
  *                                 CONSTANTS                                  *
@@ -51,6 +52,7 @@ function useAppScreen() {
   );
   const {setOptions} = useNavigation<NavigationProps>();
   const {params} = useRoute<RouteProps>();
+  const {schemedTheme} = useTheme();
 
   const appTitle = React.useMemo(() => {
     return params && 'app' in params ? params.app : null;
@@ -62,6 +64,7 @@ function useAppScreen() {
     () => refreshVersions(index, populatedDefaultProviders),
     [index, populatedDefaultProviders],
   );
+
   React.useEffect(() => {
     if (!appTitle) {
       return;
@@ -72,7 +75,6 @@ function useAppScreen() {
   useFocusEffect(
     React.useCallback(() => {
       const interval: NodeJS.Timeout = setInterval(refresh, REFRESH_INTERVAL);
-
       return () => {
         clearInterval(interval);
       };
@@ -83,7 +85,7 @@ function useAppScreen() {
 
   const refreshControl = useRefreshControlBuilder(refresh);
 
-  return {currApp, refreshControl};
+  return {currApp, refreshControl, schemedTheme};
 }
 
 /******************************************************************************
@@ -91,24 +93,41 @@ function useAppScreen() {
  ******************************************************************************/
 
 const AppScreen = () => {
-  const {currApp, refreshControl} = useAppScreen();
+  const {currApp, refreshControl, schemedTheme} = useAppScreen();
 
   if (!currApp) {
     return <LoadingView />;
   }
 
   return (
-    <>
+    <View style={[styles.container, {backgroundColor: schemedTheme.surface}]}>
       <RelatedAppBanner currApp={currApp} />
-      <ScrollView refreshControl={refreshControl}>
-        <View style={styles.contentContainer}>
+
+      <ScrollView
+        refreshControl={refreshControl}
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}>
+        {/* Compact Header Section */}
+        <View style={styles.headerSection}>
           <AppLogo title={currApp.title} icon={currApp.icon} />
+        </View>
+
+        {/* Primary Action Section */}
+        <View style={styles.actionSection}>
           <AppInfo currApp={currApp} />
-          <AppFeatures features={currApp.features} />
+        </View>
+
+        {/* Secondary Content */}
+        <View style={styles.contentSection}>
+          {currApp.features && currApp.features.length > 0 && (
+            <AppFeatures features={currApp.features} />
+          )}
+
           <AppProvider currApp={currApp} />
         </View>
       </ScrollView>
-    </>
+    </View>
   );
 };
 
@@ -117,13 +136,26 @@ const AppScreen = () => {
  ******************************************************************************/
 
 const styles = StyleSheet.create({
-  contentContainer: {
-    width: '100%',
-    height: '100%',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 20,
+  container: {
+    flex: 1,
+  },
+  scrollView: {
+    flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
+    paddingBottom: 24,
+  },
+  headerSection: {
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+  },
+  actionSection: {
+    paddingHorizontal: 20,
+    paddingBottom: 24,
+  },
+  contentSection: {
+    paddingHorizontal: 20,
     gap: 20,
   },
 });

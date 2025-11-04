@@ -1,9 +1,10 @@
 import * as React from 'react';
 import {useIndex} from '@/states/fetched';
-import {StyleSheet} from 'react-native';
-import {List} from 'react-native-paper';
+import {StyleSheet, TouchableOpacity, View} from 'react-native';
+import {Text} from 'react-native-paper';
 import {useNavigation} from '@react-navigation/native';
 import {NavigationProps} from '@/types/navigation';
+import {useTheme} from '@/theme';
 import FastImage from 'react-native-fast-image';
 
 /******************************************************************************
@@ -13,23 +14,19 @@ import FastImage from 'react-native-fast-image';
 function useHomeCategoriesItem(app: string) {
   const index = useIndex(state => state.index);
   const {navigate} = useNavigation<NavigationProps>();
+  const {schemedTheme} = useTheme();
 
-  const buildAppIcon = React.useCallback(
-    () => (
-      <FastImage
-        resizeMode="contain"
-        style={styles.appIcon}
-        source={{uri: index[app].icon}}
-      />
-    ),
-    [app, index],
-  );
+  const appData = index[app];
 
   const handleOnPress = React.useCallback(() => {
     navigate('app', {app});
   }, [app, navigate]);
 
-  return {buildAppIcon, handleOnPress};
+  return {
+    appData,
+    schemedTheme,
+    handleOnPress,
+  };
 }
 
 /******************************************************************************
@@ -41,16 +38,32 @@ export interface HomeItemProps {
 }
 
 const HomeCategoriesItem = ({app}: HomeItemProps) => {
-  const {buildAppIcon, handleOnPress} = useHomeCategoriesItem(app);
+  const {appData, schemedTheme, handleOnPress} = useHomeCategoriesItem(app);
+
+  if (!appData) {
+    return null;
+  }
 
   return (
-    <List.Item
-      key={app}
-      title={app}
-      style={styles.homeItem}
-      left={buildAppIcon}
+    <TouchableOpacity
       onPress={handleOnPress}
-    />
+      style={styles.container}
+      activeOpacity={0.6}>
+      <View style={styles.iconContainer}>
+        <FastImage
+          resizeMode="cover"
+          style={styles.appIcon}
+          source={{uri: appData.icon}}
+        />
+      </View>
+
+      <Text
+        variant="bodyMedium"
+        style={[styles.appTitle, {color: schemedTheme.onSurface}]}
+        numberOfLines={1}>
+        {app}
+      </Text>
+    </TouchableOpacity>
   );
 };
 
@@ -59,16 +72,27 @@ const HomeCategoriesItem = ({app}: HomeItemProps) => {
  ******************************************************************************/
 
 const styles = StyleSheet.create({
-  appIcon: {
-    width: 25,
-    height: 25,
-    borderRadius: 5,
+  container: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 10,
+    gap: 12,
+  },
+  iconContainer: {
+    width: 32,
+    height: 32,
+    borderRadius: 8,
     overflow: 'hidden',
   },
-  homeItem: {
-    paddingLeft: 25,
-    backgroundColor: 'transparent',
-    width: '100%',
+  appIcon: {
+    width: 32,
+    height: 32,
+    borderRadius: 8,
+  },
+  appTitle: {
+    flex: 1,
+    fontWeight: '500',
+    letterSpacing: 0.1,
   },
 });
 
